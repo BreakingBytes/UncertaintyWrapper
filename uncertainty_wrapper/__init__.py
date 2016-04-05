@@ -12,7 +12,8 @@ Diagonals of :math:`dF_{ij}` are standard deviations squared.
 from functools import wraps, partial
 import numpy as np
 from algopy import zeros as azeros
-import numdifftools.nd_algopy as nda  # 170us per loop, about 5000x faster!
+import numdifftools as nd  # numerical differentiation
+import numdifftools.nd_algopy as nda  # autodiff, 1000X faster
 import logging
 
 LOGGER = logging.getLogger()
