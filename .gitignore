@@ -60,3 +60,12 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# IDE
+UncertaintyWrapper.sublime-project
+UncertaintyWrapper.sublime-workspace
+.idea/
+.settings/
+.project
+.pydevproject
+.spyderproject

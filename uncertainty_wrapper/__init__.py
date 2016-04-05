@@ -1,3 +1,14 @@
+"""
+Uncertainty wrapper calculates uncertainties of wrapped functions using
+ALGOPY.
+
+.. math::
+
+    dF_{ij} = J_{ij} * S_{x_i}{x_j} * J_{ij}^{-1}
+
+Diagonals of :math:`dF_{ij}` are standard deviations squared.
+"""
+
 from functools import wraps, partial
 import numpy as np
 from algopy import zeros as azeros
@@ -22,7 +33,8 @@ LOGGER.setLevel(logging.DEBUG)
 
 def uncertainty(dx, jac=None):
     def unc_wrapper(f):
-        if jac is None:
+        inner_jac = jac
+        if inner_jac is None:
             inner_jac = nda.Jacobian(f)
         @wraps(f)
         def wrapper(*args, **kwargs):
