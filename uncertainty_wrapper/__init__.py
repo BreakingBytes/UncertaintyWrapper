@@ -11,51 +11,75 @@ Diagonals of :math:`dF_{ij}` are standard deviations squared.
 
 from functools import wraps, partial
 import numpy as np
-from algopy import zeros as azeros
-import numdifftools as nd  # numerical differentiation
-import numdifftools.nd_algopy as nda  # autodiff, 1000X faster
 import logging
 
-LOGGER = logging.getLogger()
+logging.basicConfig()
+LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
+DELTA = np.finfo(float).eps ** (1.0 / 3.0) / 2.0
 
 
-# def uncertainty(f, x, dx, j=None):
-#     """
-#     estimate uncertainty
-#     """
-#     if j is None:
-#         j = partial(jacobian(x, func=f)
-#     #nx = len(x)  # degrees of freedom
-#     #if len(dx) == nx:
-#     #    dx *= np.eye(nx)
-#     #return np.dot(np.dot(J, dx), J.T).diagonal()
-#     return np.dot(j*j, dx)
+# TODO: make this a class, add DELTA as class variable and flatten sas method
+def jacobian(func, x, *args, **kwargs):
+    """
+    Estimate Jacobian matrices :math:`\frac{\partial f_i}{\partial x_jk}` where
+    :math:`k` are independent observations of :math:`x`.
 
-def uncertainty(dx, jac=None):
-    def unc_wrapper(f):
-        inner_jac = jac
-        if inner_jac is None:
-            inner_jac = nda.Jacobian(f)
-        @wraps(f)
-        def wrapper(*args, **kwargs):
-            data = f(*args, **kwargs)
-            j = inner_jac(*args, **kwargs)
-            unc = np.dot(j*j, dx)
-            nargs = len(args)
-            dt = np.dtype([('data', 'float', nargs), ('unc', 'float', nargs)])
-            return np.array(zip(data, unc), dtype=dt)
-        return wrapper
-    return unc_wrapper
+    The independent variable, :math:`x`, must be a numpy array with exactly 2
+    dimensions. The first dimension is the number of independent arguments,
+    and the second dimentions is the number of observations.
+
+    The function must return a numpy array with exactly 2 dimensions. The first
+    is the number of returns and the second dimension corresponds to the number
+    of observations.
+
+    Use ``numpy.atleast_2d()`` to get the correct dimensions for scalars.
+
+    :param func: function
+    :param x: independent variables grouped by observation
+    :return: Jacobian matrices for each observation
+    """
+    nargs = x.shape[0]  # degrees of freedom
+    nobs = x.size / nargs  # number of observations
+    f = lambda x_: func(x_, *args, **kwargs)
+    j = None  # matrix of zeros
+    for n in xrange(nargs):
+        dx = np.zeros((nargs, nobs))
+        dx[n] += x[n] * DELTA
+        df = (f(x + dx) - f(x - dx)) / dx[n] / 2.0
+        # derivatives df/d_n
+        if j is None:
+            j = np.zeros((df.shape[0], nargs, nobs))
+        j[n] = df
+    return j.T
 
 
+def jflatten(j):
+    """
+    flatten jacobian into 2-D
+    """
+    nobs, nf, nx = j.shape
+    nrows, ncols = nf * nobs, nx * nobs
+    jflat = np.zeros((nrows, ncols))
+    for n in xrange(nobs):
+        r, c = n * nf, n * nx
+        jflat[r:(r + nf), c:(c + nx)] = j[n]
+    return jflat
 
 
-def unc_decorator(dx, jac=None):
-    def outer_wrapper(f):
-        if jac is None:
-            inner_jac = nda.Jacobian(f)
-        def inner_wrapper(*args, **kwargs):
-            y = f(*args, **kwargs)
-        return inner_wrapper
-    return outer_wrapper
+# Propagate uncertainty given covariance using Jacobian estimate.
+# TODO: allow user to supply analytical Jacobian, only fall back on Jacob
+# estimate if jac is None
+# TODO: check for negative covariance, what do we do?
+# TODO: what is the expected format for COV if some have multiple
+# observations, is it necessary to flatten J first??
+def unc_wrapper(f):
+    @wraps(f)
+    def wrapper(x, __covariance__=None, *args, **kwargs):
+        avg = f(x, *args, **kwargs)
+        if __covariance__ is None:
+            return avg
+        jac = jflatten(jacobian(f, x, *args, **kwargs))
+        cov = np.dot(np.dot(jac, __covariance__), jac.T)
+        return avg, cov
+    return wrapper
