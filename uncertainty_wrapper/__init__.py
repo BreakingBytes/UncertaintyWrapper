@@ -16,6 +16,12 @@ import logging
 logging.basicConfig()
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
+__VERSION__ = 0.1
+__RELEASE__ = u"Hadean"
+__URL__ = u'https://github.com/SunPower/UncertaintyWrapper'
+__AUTHOR__ = u"Mark Mikofski"
+__EMAIL__ = u'mark.mikofski@sunpowercorp.com'
+
 DELTA = np.finfo(float).eps ** (1.0 / 3.0) / 2.0
 
 
