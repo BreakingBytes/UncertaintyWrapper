@@ -9,7 +9,7 @@ ALGOPY.
 Diagonals of :math:`dF_{ij}` are standard deviations squared.
 """
 
-from functools import wraps, partial
+from functools import wraps
 import numpy as np
 import logging
 
