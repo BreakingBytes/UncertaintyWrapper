@@ -25,7 +25,7 @@ __EMAIL__ = u'mark.mikofski@sunpowercorp.com'
 DELTA = np.finfo(float).eps ** (1.0 / 3.0) / 2.0
 
 
-# TODO: make this a class, add DELTA as class variable and flatten sas method
+# TODO: make this a class, add DELTA as class variable and flatten as method
 def jacobian(func, x, *args, **kwargs):
     """
     Estimate Jacobian matrices :math:`\frac{\partial f_i}{\partial x_jk}` where
