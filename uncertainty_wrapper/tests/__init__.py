@@ -87,7 +87,7 @@ ALPHA_ISC = 0.0003551
 VOC = Voc((EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG))
 assert np.isclose(VOC, 0.62816490891656673)
 LOGGER.debug('Voc = %g[V]', VOC)
-VD = np.arange(0, VOC, 0.0025)
+VD = np.arange(0, VOC, 0.005)
 X = np.array([EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG])
 COV = np.diag(np.random.rand(X.size) * X / 10.0)
 X = X.reshape(-1, 1).repeat(VD.size, axis=1)
@@ -95,7 +95,6 @@ X = X.reshape(-1, 1).repeat(VD.size, axis=1)
 def test_IV():
     f = unc_wrapper(IV)
     return f(X, COV, VD)
-
 
 
 if __name__ == '__main__':
