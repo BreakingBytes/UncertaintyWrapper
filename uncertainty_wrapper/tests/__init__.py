@@ -87,14 +87,19 @@ ALPHA_ISC = 0.0003551
 VOC = Voc((EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG))
 assert np.isclose(VOC, 0.62816490891656673)
 LOGGER.debug('Voc = %g[V]', VOC)
-VD = np.arange(0, VOC, 0.1)
-X = [[arg] * VD.size for arg in (EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG)]
-COV = np.diag(np.random.rand(9))
+VD = np.arange(0, VOC, 0.0025)
+X = np.array([EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG])
+COV = np.diag(np.random.rand(X.size) * X / 10.0)
+X = X.reshape(-1, 1).repeat(VD.size, axis=1)
+
+def test_no_threads():
+    f = unc_wrapper(IV)
+    return f(X, COV, VD)
 
 
 def test_threading():
     f = unc_wrapper(IV)
-    return f(np.array(X), COV, VD)
+    return f(X, COV, VD, __threading__=True)
 
 
 if __name__ == '__main__':

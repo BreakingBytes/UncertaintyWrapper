@@ -34,7 +34,11 @@ def partial_derivative(f, x, n, nargs, nobs, delta=DELTA):
     dx[n] += x[n] * DELTA
     df = (f(x + dx) - f(x - dx)) / dx[n] / 2.0
     return df
-    #QUEUE.put((n, df))
+
+
+def pde_queue(f, x, n, nargs, nobs, delta=DELTA):
+    df = partial_derivative(f, x, n, nargs, nobs, delta)
+    QUEUE.put((n, df))
 
 
 # TODO: make this a class, add DELTA as class variable and flatten as method
@@ -61,18 +65,6 @@ def jacobian(func, x, *args, **kwargs):
     nobs = x.size / nargs  # number of observations
     f = lambda x_: func(x_, *args, **kwargs)
     j = None  # matrix of zeros
-#     for n in xrange(nargs):
-#         thread = Thread(target=partial_derivative, args=(f, x, n, nargs, nobs))
-#         thread.daemon = True
-#         thread.start()
-#     for _ in xrange(nargs):
-#         # derivatives df/d_n
-#         n, df = QUEUE.get()
-#         if j is None:
-#             j = np.zeros((nargs, df.shape[0], nobs))
-#             # better to transpose J once than to transpose df each time
-#             # j[:,:,n] = df.T
-#         j[n] = df
     for n in xrange(nargs):
         df = partial_derivative(f, x, n, nargs, nobs)
         if j is None:
@@ -80,6 +72,26 @@ def jacobian(func, x, *args, **kwargs):
         j[n] = df
         # better to transpose J once than to transpose df each time
         # j[:,:,n] = df.T
+    return j.T
+
+
+def jacobian_threads(func, x, *args, **kwargs):
+    nargs = x.shape[0]  # degrees of freedom
+    nobs = x.size / nargs  # number of observations
+    f = lambda x_: func(x_, *args, **kwargs)
+    j = None  # matrix of zeros
+    for n in xrange(nargs):
+        thread = Thread(target=pde_queue, args=(f, x, n, nargs, nobs))
+        thread.daemon = True
+        thread.start()
+    for _ in xrange(nargs):
+        # derivatives df/d_n
+        n, df = QUEUE.get()
+        if j is None:
+            j = np.zeros((nargs, df.shape[0], nobs))
+            # better to transpose J once than to transpose df each time
+            # j[:,:,n] = df.T
+        j[n] = df
     return j.T
 
 
@@ -105,8 +117,12 @@ def jflatten(j):
 def unc_wrapper(f):
     @wraps(f)
     def wrapper(x, __covariance__, *args, **kwargs):
+        __threading__ = kwargs.pop('__threading__', None)
         avg = f(x, *args, **kwargs)
-        jac = jacobian(f, x, *args, **kwargs)
+        if __threading__:
+            jac = jacobian_threads(f, x, *args, **kwargs)
+        else:
+            jac = jacobian(f, x, *args, **kwargs)
         nobs = jac.shape[0]
         cov = np.tile(__covariance__, (nobs, nobs))
         jac = jflatten(jac)
