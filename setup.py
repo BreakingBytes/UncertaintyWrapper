@@ -16,7 +16,7 @@ from uncertainty_wrapper import (
 
 import os
 
-README = 'README.md'
+README = 'README.rst'
 try:
     with open(os.path.join(os.path.dirname(__file__), README), 'r') as readme:
         README = readme.read()
