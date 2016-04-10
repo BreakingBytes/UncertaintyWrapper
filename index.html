@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>UncertaintyWrapper &mdash; Uncertainty Wrapper 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Uncertainty Wrapper 0.1 documentation" href="#" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="uncertaintywrapper">
+<h1>UncertaintyWrapper<a class="headerlink" href="#uncertaintywrapper" title="Permalink to this headline">¶</a></h1>
+<p>Use <cite>&#64;unc_wrapper</cite> decorator to wrap any Python callable to append the
+covariance and Jacobian matrices to the return values.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Use <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">uncertainty_wrapper</span></tt> to install from
+<a class="reference external" href="https://pypi.python.org/pypi/uncertainty_wrapper">PyPI</a> or download a source
+distribution, extract and use <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></tt>.</p>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="http://www.numpy.org/">NumPy</a></li>
+<li><a class="reference external" href="https://nose.readthedocs.org/en/latest/index.html">Nose</a> for testing.</li>
+<li><a class="reference external" href="http://www.sphinx-doc.org/en/stable/">Sphinx</a> to build documentation.</li>
+</ul>
+</div>
+<div class="section" id="history">
+<h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="v0-2-archean-eon">
+<h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.2">v0.2</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Archean">Archean Eon</a><a class="headerlink" href="#v0-2-archean-eon" title="Permalink to this headline">¶</a></h3>
+<p>Releases are named after
+<a class="reference external" href="https://en.wikipedia.org/wiki/Geologic_time_scale">geological eons, periods and epochs</a>.</p>
+<ul class="simple">
+<li>Fix nargs and nf order mixup in Jacobian</li>
+<li>add more complex test</li>
+<li>fix tile cov by nobs</li>
+<li>move partial derivative to subfunction</li>
+<li>try threading, but same speed, and would only work with NumPy anyway</li>
+</ul>
+</div>
+<div class="section" id="v0-1-hadean-eon">
+<h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.1">v0.1</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Hadean">Hadean Eon</a><a class="headerlink" href="#v0-1-hadean-eon" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>adds covariance to output</li>
+<li>allows __covariance__ to be passed as input</li>
+<li>uses estimate Jacobian based on central finite difference method</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="welcome-to-uncertainty-wrapper-s-documentation">
+<h1>Welcome to Uncertainty Wrapper&#8217;s documentation!<a class="headerlink" href="#welcome-to-uncertainty-wrapper-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Uncertainty Wrapper</a></h1>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=&repo=&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="simple">
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Mark Mikofski.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster </a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
