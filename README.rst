@@ -19,20 +19,27 @@ Requirements
 * `Nose <https://nose.readthedocs.org/en/latest/index.html>`_ for testing.
 * `Sphinx <http://www.sphinx-doc.org/en/stable/>`_ to build documentation.
 
+
 History
 -------
-
-`v0.2 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.2>`_ `Archean Eon <https://en.wikipedia.org/wiki/Archean>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
-
 Releases are named after
 `geological eons, periods and epochs <https://en.wikipedia.org/wiki/Geologic_time_scale>`_.
+
+`v0.2.1 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.2>`_ `Eoarchean Era <https://en.wikipedia.org/wiki/Eoarchean>`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* update documentation
+
+
+`v0.2 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.2>`_ `Archean Eon <https://en.wikipedia.org/wiki/Archean>`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Fix nargs and nf order mixup in Jacobian
 * add more complex test
 * fix tile cov by nobs
 * move partial derivative to subfunction
 * try threading, but same speed, and would only work with NumPy anyway
+
 
 `v0.1 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.1>`_ `Hadean Eon <https://en.wikipedia.org/wiki/Hadean>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
