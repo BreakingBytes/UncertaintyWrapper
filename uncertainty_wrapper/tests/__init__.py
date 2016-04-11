@@ -1,4 +1,8 @@
-"""tests"""
+"""
+Tests
+
+SunPower Corp. (c) 2016
+"""
 
 from nose.tools import ok_, eq_, raises
 import numpy as np
@@ -12,7 +16,7 @@ LOGGER.setLevel(logging.DEBUG)
 
 def test_unc_wrapper():
     """
-    test uncertainty wrapper
+    Test uncertainty wrapper
     """
     x, cov = np.array([[1.0]]), np.array([[0.1]])
     

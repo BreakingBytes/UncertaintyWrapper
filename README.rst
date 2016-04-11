@@ -1,8 +1,9 @@
 UncertaintyWrapper
 ==================
 
-Use `@unc_wrapper` decorator to wrap any Python callable to append the
-covariance and Jacobian matrices to the return values.
+Use ``@unc_wrapper`` decorator to wrap any Python callable to append the
+covariance and Jacobian matrices to the return values. See documentation and
+tests for usage and examples.
 
 Installation
 ------------
@@ -22,7 +23,7 @@ History
 -------
 
 `v0.2 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.2>`_ `Archean Eon <https://en.wikipedia.org/wiki/Archean>`_
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 
 Releases are named after
 `geological eons, periods and epochs <https://en.wikipedia.org/wiki/Geologic_time_scale>`_.
@@ -34,7 +35,7 @@ Releases are named after
 * try threading, but same speed, and would only work with NumPy anyway
 
 `v0.1 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.1>`_ `Hadean Eon <https://en.wikipedia.org/wiki/Hadean>`_
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * adds covariance to output
 * allows __covariance__ to be passed as input
