@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting Started &mdash; Uncertainty Wrapper 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Uncertainty Wrapper 0.1 documentation" href="index.html" />
+    <link rel="next" title="API" href="api.html" />
+    <link rel="prev" title="Welcome to Uncertainty Wrapper’s documentation!" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getting-started">
+<span id="id1"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>You can wrap any Python callable using <a class="reference internal" href="api.html#uncertainty_wrapper.unc_wrapper" title="uncertainty_wrapper.unc_wrapper"><tt class="xref py py-func docutils literal"><span class="pre">unc_wrapper()</span></tt></a>
+that adds covariance as an input argument then calculates and appends the
+covariance and Jacobian matrices to the return values. However you will need to
+manipulate the input arguments to match the expected <a class="reference internal" href="api.html#api"><em>API</em></a>.</p>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>The following examples are from <a class="reference external" href="https://github.com/mikofski/uncertainty_benchmarks">Uncertainty Benchmarks</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">uncertainty_wrapper</span> <span class="kn">import</span> <span class="n">unc_wrapper</span>
+<span class="c"># unc_wrapper expects input args to be 2-D NumPy arrays</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="c"># simple test functions with multiple input arguments and return</span>
+<span class="c"># values and whose derivatives are easily derived.</span>
+<span class="n">NARGS</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c"># number of input arguments</span>
+<span class="n">F</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+                        <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">])</span>
+<span class="n">G</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+                        <span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])])</span>
+<span class="n">AVG</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">NARGS</span><span class="p">)</span> <span class="o">*</span> <span class="mf">10.</span>  <span class="c"># some test input arguments</span>
+<span class="c"># randomly generated symmetrical covariance matrix</span>
+<span class="n">COV</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">NARGS</span><span class="p">,</span> <span class="n">NARGS</span><span class="p">)</span> <span class="o">/</span> <span class="mf">10.</span>
+<span class="n">TOL</span> <span class="o">=</span> <span class="mf">1e-6</span>  <span class="c"># make it sparse, set anything less than 1e-6 to zero</span>
+<span class="n">COV</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">COV</span> <span class="o">&gt;</span> <span class="n">TOL</span><span class="p">,</span> <span class="n">COV</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">NARGS</span><span class="p">,</span> <span class="n">NARGS</span><span class="p">)))</span>
+<span class="n">COV</span> <span class="o">*=</span> <span class="n">COV</span><span class="o">.</span><span class="n">T</span>  <span class="c"># must be symmetrical</span>
+
+<span class="nd">@unc_wrapper</span>
+<span class="k">def</span> <span class="nf">example</span><span class="p">(</span><span class="n">avg</span><span class="o">=</span><span class="n">AVG</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="n">F</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Example of unc_wrapper usage&quot;&quot;&quot;</span>
+    <span class="n">avg</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">avg</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">avg</span>
+
+<span class="c"># uses @wraps from functools so docstrings should work</span>
+<span class="k">print</span> <span class="n">example</span><span class="o">.</span><span class="n">__doc__</span>
+<span class="c"># Example of unc_wrapper usage</span>
+
+<span class="c"># reshape args as row stack since there is only one observation and</span>
+<span class="c"># unc_wrapper expects there to be multiple observations</span>
+<span class="n">AVG</span> <span class="o">=</span> <span class="n">AVG</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">NARGS</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c"># the wrapped example now takes a second argument called</span>
+<span class="c"># __covariance__</span>
+<span class="n">retval</span> <span class="o">=</span> <span class="n">example</span><span class="p">(</span><span class="n">AVG</span><span class="p">,</span> <span class="n">COV</span><span class="p">,</span> <span class="n">F</span><span class="p">)</span>
+<span class="c"># and appends covariance and Jacobian matrices to the return values</span>
+<span class="n">avg</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">jac</span> <span class="o">=</span> <span class="n">retval</span>
+
+<span class="c"># squeeze out extra dimension we added since there&#39;s only one</span>
+<span class="c"># observation and display results</span>
+<span class="n">avg</span> <span class="o">=</span> <span class="n">avg</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">avg</span>
+<span class="c"># [ 11.13976423,   3.27799112]</span>
+<span class="k">print</span> <span class="n">cov</span>
+<span class="c"># [[ 0.27347267,  0.13844758],</span>
+<span class="c">#  [ 0.13844758,  0.07171001]])</span>
+<span class="k">print</span> <span class="n">jac</span>
+<span class="c"># [[ 6.67525707,  6.67525707],</span>
+<span class="c">#  [-2.35549673,  4.31976033]])</span>
+
+<span class="c"># compare to analytical derivatives</span>
+<span class="k">print</span> <span class="n">G</span><span class="p">(</span><span class="n">AVG</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="c"># [[ 6.67525707  6.67525707]</span>
+<span class="c">#  [-2.35549673  4.31976033]]</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Uncertainty Wrapper</a></h1>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=&repo=&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Uncertainty Wrapper&#8217;s documentation!</a></li>
+      <li>Next: <a href="api.html" title="next chapter">API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Mark Mikofski.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster </a>
+      
+      |
+      <a href="_sources/getting_started.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

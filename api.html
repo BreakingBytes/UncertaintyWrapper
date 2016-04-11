@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API &mdash; Uncertainty Wrapper 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="Uncertainty Wrapper 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Getting Started" href="getting_started.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api">
+<span id="id1"></span><h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-uncertainty_wrapper">
+<span id="uncertainty-wrapper"></span><h2>Uncertainty Wrapper<a class="headerlink" href="#module-uncertainty_wrapper" title="Permalink to this headline">¶</a></h2>
+<p>Uncertainty wrapper calculates uncertainties of wrapped functions using
+central finite difference approximation of the Jacobian matrix.</p>
+<div class="math">
+\[dF_{ij} = J_{ij} * S_{x_i}{x_j} * J_{ij}^{-1}\]</div>
+<p>Diagonals of <span class="math">\(dF_{ij}\)</span> are standard deviations squared.</p>
+<p>SunPower Corp. (c) 2016</p>
+<div class="section" id="step-size">
+<h3>Step Size<a class="headerlink" href="#step-size" title="Permalink to this headline">¶</a></h3>
+<dl class="data">
+<dt id="uncertainty_wrapper.DELTA">
+<tt class="descclassname">uncertainty_wrapper.</tt><tt class="descname">DELTA</tt><em class="property"> = 3.0277272261966714e-06</em><a class="headerlink" href="#uncertainty_wrapper.DELTA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="partial-derivative">
+<h3>Partial Derivative<a class="headerlink" href="#partial-derivative" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="uncertainty_wrapper.partial_derivative">
+<tt class="descclassname">uncertainty_wrapper.</tt><tt class="descname">partial_derivative</tt><big>(</big><em>f</em>, <em>x</em>, <em>n</em>, <em>nargs</em>, <em>nobs</em>, <em>delta=3.0277272261966714e-06</em><big>)</big><a class="headerlink" href="#uncertainty_wrapper.partial_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate partial derivative using central finite difference approximation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>f</strong> &#8211; function</li>
+<li><strong>x</strong> &#8211; sequence of arguments</li>
+<li><strong>n</strong> &#8211; index of argument derivateve is with respect to</li>
+<li><strong>nargs</strong> &#8211; number of arguments</li>
+<li><strong>nobs</strong> &#8211; number of observations</li>
+<li><strong>delta</strong> &#8211; optional step size, default is <span class="math">\(\epsilon^{1/3}\)</span> where
+<span class="math">\(\epsilon\)</span> is machine precision</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="jacobian">
+<h3>Jacobian<a class="headerlink" href="#jacobian" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="uncertainty_wrapper.jacobian">
+<tt class="descclassname">uncertainty_wrapper.</tt><tt class="descname">jacobian</tt><big>(</big><em>func</em>, <em>x</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#uncertainty_wrapper.jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Estimate Jacobian matrices <span class="math">\(\frac{\partial f_i}{\partial x_{j,k}}\)</span>
+where <span class="math">\(k\)</span> are independent observations of <span class="math">\(x\)</span>.</p>
+<p>The independent variable, <span class="math">\(x\)</span>, must be a numpy array with exactly 2
+dimensions. The first dimension is the number of independent arguments,
+and the second dimensions is the number of observations.</p>
+<p>The function must return a Numpy array with exactly 2 dimensions. The first
+is the number of returns and the second dimension corresponds to the number
+of observations. If the input argument is 2-D then the output should also
+be 2-D</p>
+<p>Constant arguments can be passed as additional positional arguments or
+keyword arguments. If any constant argument increases the number of
+observations of the return value, tile the input arguments to match.</p>
+<p>Use <tt class="xref py py-func docutils literal"><span class="pre">numpy.atleast_2d()</span></tt> or <tt class="xref py py-func docutils literal"><span class="pre">numpy.ndarray.reshape()</span></tt> to get the
+correct dimensions for scalars.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>func</strong> &#8211; function</li>
+<li><strong>x</strong> &#8211; independent variables grouped by observation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Jacobian matrices for each observation</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="flatten-jacobian">
+<h3>Flatten Jacobian<a class="headerlink" href="#flatten-jacobian" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="uncertainty_wrapper.jflatten">
+<tt class="descclassname">uncertainty_wrapper.</tt><tt class="descname">jflatten</tt><big>(</big><em>j</em><big>)</big><a class="headerlink" href="#uncertainty_wrapper.jflatten" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flatten Jacobian into 2-D</p>
+</dd></dl>
+
+</div>
+<div class="section" id="wrapper">
+<h3>Wrapper<a class="headerlink" href="#wrapper" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="uncertainty_wrapper.unc_wrapper">
+<tt class="descclassname">uncertainty_wrapper.</tt><tt class="descname">unc_wrapper</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#uncertainty_wrapper.unc_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wrap function, add <tt class="docutils literal"><span class="pre">__covariance__</span></tt> argument in 2nd position and append
+calculated covariance and Jacobian matrices to return values.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="module-uncertainty_wrapper.tests">
+<span id="tests"></span><h2>Tests<a class="headerlink" href="#module-uncertainty_wrapper.tests" title="Permalink to this headline">¶</a></h2>
+<p>Tests</p>
+<p>SunPower Corp. (c) 2016</p>
+<div class="section" id="test-uncertainty-wrapper">
+<h3>Test Uncertainty Wrapper<a class="headerlink" href="#test-uncertainty-wrapper" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="uncertainty_wrapper.tests.test_unc_wrapper">
+<tt class="descclassname">uncertainty_wrapper.tests.</tt><tt class="descname">test_unc_wrapper</tt><big>(</big><big>)</big><a class="headerlink" href="#uncertainty_wrapper.tests.test_unc_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test uncertainty wrapper</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Uncertainty Wrapper</a></h1>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=&repo=&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-uncertainty_wrapper">Uncertainty Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-uncertainty_wrapper.tests">Tests</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="getting_started.html" title="previous chapter">Getting Started</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Mark Mikofski.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster </a>
+      
+      |
+      <a href="_sources/api.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
