@@ -4,7 +4,7 @@ central finite difference approximation of the Jacobian matrix.
 
 .. math::
 
-    dF_{ij} = J_{ij} * S_{x_i}{x_j} * J_{ij}^{-1}
+    dF_{ij} = J_{ij} * S_{x_i}{x_j} * J_{ij}^{T}
 
 Diagonals of :math:`dF_{ij}` are standard deviations squared.
 
