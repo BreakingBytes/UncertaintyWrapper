@@ -13,6 +13,7 @@ SunPower Corp. (c) 2016
 
 from functools import wraps
 import numpy as np
+import inspect
 import logging
 
 logging.basicConfig()
@@ -98,24 +99,51 @@ def jflatten(j):
     return jflat
 
 
-# Propagate uncertainty given covariance using Jacobian estimate.
 # TODO: allow user to supply analytical Jacobian, only fall back on Jacob
 # estimate if jac is None
 # TODO: check for negative covariance, what do we do?
 # TODO: what is the expected format for COV if some have multiple
 # observations, is it necessary to flatten J first??
-def unc_wrapper(f):
-    """
-    Wrap function, add ``__covariance__`` argument in 2nd position and append
-    calculated covariance and Jacobian matrices to return values.
-    """
-    @wraps(f)
-    def wrapper(x, __covariance__, *args, **kwargs):
-        avg = f(x, *args, **kwargs)
-        jac = jacobian(f, x, *args, **kwargs)
-        nobs = jac.shape[0]
-        cov = np.tile(__covariance__, (nobs, nobs))
-        jac = jflatten(jac)
-        cov = np.dot(np.dot(jac, cov), jac.T)
-        return avg, cov, jac
-    return wrapper
+# group args as specified
+
+
+def unc_wrapper_args(*covariance_keys):
+    def unc_wrapper(f):
+        """
+        Wrap function, pop ``__covariance__`` argument from keyword arguments,
+        propagate uncertainty given covariance using Jacobian estimate. and append
+        calculated covariance and Jacobian matrices to return values.
+        """
+        argspec = inspect.getargspec(f)
+
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            cov_keys = covariance_keys
+            cov = kwargs.pop('__covariance__', None)  # pop covariance
+            ndflts = len(argspec.defaults)
+            kwargs.update(zip(argspec.args[-ndflts:], argspec.defaults))
+            kwargs.update(zip(argspec.args, args))  # convert args to kwargs
+            if len(cov_keys) > 0:
+                x = np.array([[kwargs.pop(k)] for k in cov_keys])
+            elif cov_keys is None:
+                cov_keys = kwargs.keys()
+                x = np.array(kwargs.values())
+            else:
+                x = kwargs.pop(argspec.args[0])
+
+            def g(y, **gkwargs):
+                if cov_keys:
+                    gkwargs.update(zip(cov_keys, x))
+                    return f(**gkwargs)
+                return f(y, **gkwargs)
+
+            avg = g(x, **kwargs)
+            jac = jacobian(g, x, **kwargs)
+            nobs = jac.shape[0]
+            cov = np.tile(cov, (nobs, nobs))
+            jac = jflatten(jac)
+            cov = np.dot(np.dot(jac, cov), jac.T)
+            return avg, cov, jac
+        return wrapper
+    return unc_wrapper
+

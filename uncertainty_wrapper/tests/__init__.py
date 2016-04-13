@@ -4,12 +4,16 @@ Tests
 SunPower Corp. (c) 2016
 """
 
-from nose.tools import ok_, eq_, raises
+from nose.tools import ok_
 import numpy as np
-from uncertainty_wrapper import unc_wrapper
+from uncertainty_wrapper import unc_wrapper_args
 import logging
 from scipy.constants import Boltzmann as KB, elementary_charge as QE
+from datetime import datetime, timedelta
+from solar_utils import *
+import pytz
 
+PST = pytz.timezone('US/Pacific')
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
 
@@ -20,7 +24,7 @@ def test_unc_wrapper():
     """
     x, cov = np.array([[1.0]]), np.array([[0.1]])
     
-    @unc_wrapper
+    @unc_wrapper_args()
     def f(y):
         return np.exp(y)
     
@@ -96,10 +100,32 @@ X = np.array([EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG])
 COV = np.diag(np.random.rand(X.size) * X / 10.0)
 X = X.reshape(-1, 1).repeat(VD.size, axis=1)
 
-def test_IV():
-    f = unc_wrapper(IV)
-    return f(X, COV, VD)
 
+def test_IV():
+    f = unc_wrapper_args()(IV)
+    return f(X, VD, __covariance__=COV)
+
+
+@unc_wrapper_args('lat', 'lon', 'press', 'tamb', 'seconds')
+def solar_position(lat, lon, press, tamb, dt, seconds=0):
+    """
+    calculate solar position
+    """
+    utcoffset = dt.utcoffset() or 0.0
+    loc = [lat, lon, utcoffset.total_seconds() / 3600.]
+    timestamps = (np.datetime64(dt) + timedelta(seconds * 1e6, 'us'))
+    ntimestamps = timestamps.size
+    an, am = np.zeros(ntimestamps, 2), np.zeros(ntimestamps, 2)
+    for n, ts in enumerate(timestamps):
+        dt = ts.item().timetuple()[:6]
+        an[n], am[n] = solposAM(loc, dt, [press, tamb])
+    return np.concatenate([an, am])
+
+
+def test_solpos():
+    dt = PST.localize(datetime(2016, 4, 13, 12, 30, 0))
+    return solar_position(37.405, -121.95, 1013.25, 20.0, dt,
+                          __covariance__=np.diag([0.05, 0.05, 1.0, 1.0, 1.0]))
 
 if __name__ == '__main__':
     test_unc_wrapper()
