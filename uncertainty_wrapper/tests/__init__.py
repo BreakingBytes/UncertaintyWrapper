@@ -6,10 +6,10 @@ SunPower Corp. (c) 2016
 
 from nose.tools import ok_
 import numpy as np
-from uncertainty_wrapper import unc_wrapper_args
+from uncertainty_wrapper import unc_wrapper, unc_wrapper_args
 import logging
 from scipy.constants import Boltzmann as KB, elementary_charge as QE
-from datetime import datetime, timedelta
+from datetime import datetime
 from solar_utils import *
 import pytz
 
@@ -24,7 +24,7 @@ def test_unc_wrapper():
     """
     x, cov = np.array([[1.0]]), np.array([[0.1]])
     
-    @unc_wrapper_args()
+    @unc_wrapper
     def f(y):
         return np.exp(y)
     
@@ -102,7 +102,7 @@ X = X.reshape(-1, 1).repeat(VD.size, axis=1)
 
 
 def test_IV():
-    f = unc_wrapper_args()(IV)
+    f = unc_wrapper(IV)
     return f(X, VD, __covariance__=COV)
 
 
@@ -112,14 +112,20 @@ def solar_position(lat, lon, press, tamb, dt, seconds=0):
     calculate solar position
     """
     utcoffset = dt.utcoffset() or 0.0
-    loc = [lat, lon, utcoffset.total_seconds() / 3600.]
-    timestamps = (np.datetime64(dt) + timedelta(seconds * 1e6, 'us'))
+    dst = dt.dst() or 0.0
+    loc = [lat, lon, (utcoffset.total_seconds() - dst.total_seconds()) / 3600.0]
+    naive = dt.replace(tzinfo=None)
+    timestamps = np.datetime64(naive) + np.timedelta64(int(seconds * 1e6), 'us')
+    timestamps = timestamps.reshape((-1,))
     ntimestamps = timestamps.size
-    an, am = np.zeros(ntimestamps, 2), np.zeros(ntimestamps, 2)
+    an, am = np.zeros((ntimestamps, 2)), np.zeros((ntimestamps, 2))
     for n, ts in enumerate(timestamps):
         dt = ts.item().timetuple()[:6]
+        LOGGER.debug('datetime: %r', dt)
+        LOGGER.debug('location: %r', loc)
+        LOGGER.debug('p = %g[mbar], T = %g[C]', press, tamb)
         an[n], am[n] = solposAM(loc, dt, [press, tamb])
-    return np.concatenate([an, am])
+    return np.concatenate([an, am], axis=1).reshape((-1,1))
 
 
 def test_solpos():

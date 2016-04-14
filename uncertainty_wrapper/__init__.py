@@ -41,7 +41,7 @@ def partial_derivative(f, x, n, nargs, nobs, delta=DELTA):
         :math:`\\epsilon` is machine precision
     """
     dx = np.zeros((nargs, nobs))
-    dx[n] += x[n] * DELTA
+    dx[n] += x[n] * delta
     df = (f(x + dx) - f(x - dx)) / dx[n] / 2.0
     return df
 
@@ -120,8 +120,9 @@ def unc_wrapper_args(*covariance_keys):
         def wrapper(*args, **kwargs):
             cov_keys = covariance_keys
             cov = kwargs.pop('__covariance__', None)  # pop covariance
-            ndflts = len(argspec.defaults)
-            kwargs.update(zip(argspec.args[-ndflts:], argspec.defaults))
+            if argspec.defaults is not None:
+                ndflts = len(argspec.defaults)
+                kwargs.update(zip(argspec.args[-ndflts:], argspec.defaults))
             kwargs.update(zip(argspec.args, args))  # convert args to kwargs
             if len(cov_keys) > 0:
                 x = np.array([[kwargs.pop(k)] for k in cov_keys])
@@ -133,17 +134,18 @@ def unc_wrapper_args(*covariance_keys):
 
             def g(y, **gkwargs):
                 if cov_keys:
-                    gkwargs.update(zip(cov_keys, x))
+                    gkwargs.update(zip(cov_keys, y))
                     return f(**gkwargs)
                 return f(y, **gkwargs)
 
             avg = g(x, **kwargs)
             jac = jacobian(g, x, **kwargs)
             nobs = jac.shape[0]
-            cov = np.tile(cov, (nobs, nobs))
+            cov = jflatten(np.tile(cov, (nobs, 1, 1)))
             jac = jflatten(jac)
             cov = np.dot(np.dot(jac, cov), jac.T)
             return avg, cov, jac
         return wrapper
     return unc_wrapper
 
+unc_wrapper = unc_wrapper_args()
