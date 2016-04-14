@@ -97,8 +97,9 @@ assert np.isclose(VOC, 0.62816490891656673)
 LOGGER.debug('Voc = %g[V]', VOC)
 VD = np.arange(0, VOC, 0.005)
 X = np.array([EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG])
-COV = np.diag(np.random.rand(X.size) * X / 10.0)
+COV = np.diag(np.random.rand(X.size) / 1000.0)
 X = X.reshape(-1, 1).repeat(VD.size, axis=1)
+COV = np.tile(COV, (VD.size, 1, 1))
 
 
 def test_IV():
@@ -111,6 +112,8 @@ def solar_position(lat, lon, press, tamb, dt, seconds=0):
     """
     calculate solar position
     """
+    seconds = np.sign(seconds) * np.ceil(np.abs(seconds))
+    # seconds = np.where(x >0 0, np.ceil(seconds), np.floor(seconds))
     utcoffset = dt.utcoffset() or 0.0
     dst = dt.dst() or 0.0
     loc = [lat, lon, (utcoffset.total_seconds() - dst.total_seconds()) / 3600.0]
@@ -121,17 +124,19 @@ def solar_position(lat, lon, press, tamb, dt, seconds=0):
     an, am = np.zeros((ntimestamps, 2)), np.zeros((ntimestamps, 2))
     for n, ts in enumerate(timestamps):
         dt = ts.item().timetuple()[:6]
-        LOGGER.debug('datetime: %r', dt)
-        LOGGER.debug('location: %r', loc)
-        LOGGER.debug('p = %g[mbar], T = %g[C]', press, tamb)
+        LOGGER.debug('datetime: %r', datetime(*dt).strftime('%Y/%m/%d-%H:%M:%S.%f'))
+        LOGGER.debug('lat: %f, lon: %f, tz: %d', *loc)
+        LOGGER.debug('p = %f[mbar], T = %f[C]', press, tamb)
         an[n], am[n] = solposAM(loc, dt, [press, tamb])
-    return np.concatenate([an, am], axis=1).reshape((-1,1))
+    return np.concatenate([an, am], axis=1).reshape((-1, 1))
 
 
 def test_solpos():
     dt = PST.localize(datetime(2016, 4, 13, 12, 30, 0))
     return solar_position(37.405, -121.95, 1013.25, 20.0, dt,
-                          __covariance__=np.diag([0.05, 0.05, 1.0, 1.0, 1.0]))
+                          __covariance__=np.diag([0.01] * 5))
 
 if __name__ == '__main__':
     test_unc_wrapper()
+    test_IV()
+    test_solpos()

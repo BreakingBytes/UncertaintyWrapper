@@ -41,9 +41,10 @@ def partial_derivative(f, x, n, nargs, nobs, delta=DELTA):
         :math:`\\epsilon` is machine precision
     """
     dx = np.zeros((nargs, nobs))
-    dx[n] += x[n] * delta
-    df = (f(x + dx) - f(x - dx)) / dx[n] / 2.0
-    return df
+    # scale delta by (|x| + 1.0) to avoid noise from machine precision
+    dx[n] += (1.0 + np.abs(x[n])) * delta
+    # apply central difference approximation
+    return (f(x + dx) - f(x - dx)) / dx[n] / 2.0
 
 
 # TODO: make this a class, add DELTA as class variable and flatten as method
@@ -125,10 +126,10 @@ def unc_wrapper_args(*covariance_keys):
                 kwargs.update(zip(argspec.args[-ndflts:], argspec.defaults))
             kwargs.update(zip(argspec.args, args))  # convert args to kwargs
             if len(cov_keys) > 0:
-                x = np.array([[kwargs.pop(k)] for k in cov_keys])
+                x = np.array([np.atleast_1d(kwargs.pop(k)) for k in cov_keys])
             elif cov_keys is None:
                 cov_keys = kwargs.keys()
-                x = np.array(kwargs.values())
+                x = np.reshape(kwargs.values(), (len(cov_keys), -1))
             else:
                 x = kwargs.pop(argspec.args[0])
 
@@ -140,10 +141,13 @@ def unc_wrapper_args(*covariance_keys):
 
             avg = g(x, **kwargs)
             jac = jacobian(g, x, **kwargs)
-            nobs = jac.shape[0]
-            cov = jflatten(np.tile(cov, (nobs, 1, 1)))
+            # covariance must account for all observations
+            if cov.ndim == 3:
+                # if covariance is an array of covariances, flatten it.
+                cov = jflatten(cov)
             jac = jflatten(jac)
-            cov = np.dot(np.dot(jac, cov), jac.T)
+            if cov is not None:
+                cov = np.dot(np.dot(jac, cov * x.T.flatten()), jac.T)
             return avg, cov, jac
         return wrapper
     return unc_wrapper
