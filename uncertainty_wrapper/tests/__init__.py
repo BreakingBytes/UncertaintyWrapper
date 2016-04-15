@@ -128,7 +128,7 @@ def solar_position(lat, lon, press, tamb, dt, seconds=0):
         LOGGER.debug('lat: %f, lon: %f, tz: %d', *loc)
         LOGGER.debug('p = %f[mbar], T = %f[C]', press, tamb)
         an[n], am[n] = solposAM(loc, dt, [press, tamb])
-    return np.concatenate([an, am], axis=1).reshape((-1, 1))
+    return an[:, 0], an[:, 1], am[:, 0], am[:, 1]
 
 
 def test_solpos():

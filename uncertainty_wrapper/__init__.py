@@ -136,13 +136,14 @@ def unc_wrapper_args(*covariance_keys):
             def g(y, **gkwargs):
                 if cov_keys:
                     gkwargs.update(zip(cov_keys, y))
-                    return f(**gkwargs)
+                    return np.array(f(**gkwargs))
+                # assumes independent and dependent vars already grouped
                 return f(y, **gkwargs)
 
             avg = g(x, **kwargs)
             jac = jacobian(g, x, **kwargs)
             # covariance must account for all observations
-            if cov.ndim == 3:
+            if cov is not None and cov.ndim == 3:
                 # if covariance is an array of covariances, flatten it.
                 cov = jflatten(cov)
             jac = jflatten(jac)
