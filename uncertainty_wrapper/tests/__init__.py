@@ -97,7 +97,7 @@ assert np.isclose(VOC, 0.62816490891656673)
 LOGGER.debug('Voc = %g[V]', VOC)
 VD = np.arange(0, VOC, 0.005)
 X = np.array([EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG])
-COV = np.diag(np.random.rand(X.size) / 1000.0)
+COV = np.diag([1e-6] * X.size)
 X = X.reshape(-1, 1).repeat(VD.size, axis=1)
 COV = np.tile(COV, (VD.size, 1, 1))
 

@@ -42,7 +42,7 @@ def partial_derivative(f, x, n, nargs, nobs, delta=DELTA):
     """
     dx = np.zeros((nargs, nobs))
     # scale delta by (|x| + 1.0) to avoid noise from machine precision
-    dx[n] += (1.0 + np.abs(x[n])) * delta
+    dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
     return (f(x + dx) - f(x - dx)) / dx[n] / 2.0
 
