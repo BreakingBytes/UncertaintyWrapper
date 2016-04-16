@@ -121,36 +121,49 @@ def unc_wrapper_args(*covariance_keys):
     :return: function value, covariance and Jacobian
     """
     def wrapper(f):
-        """
-
-        """
-        argspec = inspect.getargspec(f)
-
         @wraps(f)
         def wrapped_function(*args, **kwargs):
-            cov_keys = covariance_keys
             cov = kwargs.pop('__covariance__', None)  # pop covariance
-            if argspec.defaults is not None:
-                ndflts = len(argspec.defaults)
-                kwargs.update(zip(argspec.args[-ndflts:], argspec.defaults))
-            kwargs.update(zip(argspec.args, args))  # convert args to kwargs
+            # covariance keys cannot be defaults, they must be in args or kwargs
+            cov_keys = covariance_keys
+            # convert args to kwargs by index
+            kwargs.update({k: v for k, v in enumerate(args)})
+            args = ()  # empty args
+            # group covariance keys
             if len(cov_keys) > 0:
+                # uses specified keys
                 x = np.array([np.atleast_1d(kwargs.pop(k)) for k in cov_keys])
             elif cov_keys is None:
+                # use all keys
                 cov_keys = kwargs.keys()
                 x = np.reshape(kwargs.values(), (len(cov_keys), -1))
+                kwargs = {}  # empty kwargs
             else:
-                x = kwargs.pop(argspec.args[0])
+                # arguments already grouped
+                x = kwargs.pop(0)  # use first argument
+            # remaining args
+            if kwargs:
+                args = [(n, v) for n, v in kwargs.iteritems()
+                        if not isinstance(n, basestring)]
+                # sort by index
+                idx, args = zip(*sorted(args, key=lambda m: m[0]))
+                for n in idx: kwargs.pop(n)  # remove args from kwargs
 
-            def f_(x_, **kwargs_):
+            def f_(x_, *args_, **kwargs_):
                 if cov_keys:
                     kwargs_.update(zip(cov_keys, x_))
-                    return np.array(f(**kwargs_))
+                    args_list = reversed(list(args_))
+                    args_ = [(n, kwargs_.pop(n)) for n in cov_keys
+                             if not isinstance(n, basestring)]
+                    args_ = [a if n in cov_keys else args_list.pop() for n, a
+                             in sorted(args_, key=lambda m: m[0])]
+                    return np.array(f(*args_, **kwargs_))
                 # assumes independent and dependent vars already grouped
-                return f(x_, **kwargs_)
+                return f(x_, *args_, **kwargs_)
 
-            avg = f_(x, **kwargs)
-            jac = jacobian(f_, x, **kwargs)
+            # evaluate function and its Jacobian
+            avg = f_(x, *args, **kwargs)
+            jac = jacobian(f_, x, *args, **kwargs)
             # covariance must account for all observations
             if cov is not None and cov.ndim == 3:
                 # if covariance is an array of covariances, flatten it.

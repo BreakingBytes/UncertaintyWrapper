@@ -110,7 +110,7 @@ def test_IV():
     return f(X, VD, __covariance__=COV)
 
 
-@unc_wrapper_args('lat', 'lon', 'press', 'tamb', 'seconds')
+@unc_wrapper_args(0,1,2,3,'seconds')
 def solar_position(lat, lon, press, tamb, timestamps, seconds=0):
     """
     calculate solar position
@@ -145,7 +145,7 @@ def test_solpos():
     Test solar position calculation using NREL's SOLPOS.
     """
     dt = PST.localize(datetime(2016, 4, 13, 12, 30, 0))
-    return solar_position(37.405, -121.95, 1013.25, 20.0, dt,
+    return solar_position(37.405, -121.95, 1013.25, 20.0, dt, seconds=1,
                           __covariance__=np.diag([0.0001] * 5))
 
 if __name__ == '__main__':
