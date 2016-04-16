@@ -13,7 +13,6 @@ SunPower Corp. (c) 2016
 
 from functools import wraps
 import numpy as np
-import inspect
 import logging
 
 logging.basicConfig()
@@ -130,33 +129,40 @@ def unc_wrapper_args(*covariance_keys):
             kwargs.update({k: v for k, v in enumerate(args)})
             args = ()  # empty args
             # group covariance keys
-            if len(cov_keys) > 0:
-                # uses specified keys
-                x = np.array([np.atleast_1d(kwargs.pop(k)) for k in cov_keys])
-            elif cov_keys is None:
+            if cov_keys is None:
                 # use all keys
                 cov_keys = kwargs.keys()
                 x = np.reshape(kwargs.values(), (len(cov_keys), -1))
                 kwargs = {}  # empty kwargs
+            elif len(cov_keys) > 0:
+                # uses specified keys
+                x = np.array([np.atleast_1d(kwargs.pop(k)) for k in cov_keys])
             else:
                 # arguments already grouped
                 x = kwargs.pop(0)  # use first argument
             # remaining args
+            args_dict = {}
             if kwargs:
                 args = [(n, v) for n, v in kwargs.iteritems()
                         if not isinstance(n, basestring)]
                 # sort by index
                 idx, args = zip(*sorted(args, key=lambda m: m[0]))
-                for n in idx: kwargs.pop(n)  # remove args from kwargs
+                # remove args from kwargs
+                args_dict = {n: kwargs.pop(n) for n in idx}
 
             def f_(x_, *args_, **kwargs_):
+                args_dict_ = args_dict
+                args_list = list(args_)
                 if cov_keys:
-                    kwargs_.update(zip(cov_keys, x_))
-                    args_list = reversed(list(args_))
-                    args_ = [(n, kwargs_.pop(n)) for n in cov_keys
-                             if not isinstance(n, basestring)]
-                    args_ = [a if n in cov_keys else args_list.pop() for n, a
-                             in sorted(args_, key=lambda m: m[0])]
+                    kwargs_.update(zip(cov_keys, x_), **args_dict_)
+                    LOGGER.debug(kwargs_)
+                if kwargs_:
+                    args_ = [(n, v) for n, v in kwargs_.iteritems()
+                            if not isinstance(n, basestring)]
+                    # sort by index
+                    idx, args_ = zip(*sorted(args_, key=lambda m: m[0]))
+                    # remove args_ from kwargs_
+                    args_dict_ = {k: kwargs_.pop(n) for n in idx}
                     return np.array(f(*args_, **kwargs_))
                 # assumes independent and dependent vars already grouped
                 return f(x_, *args_, **kwargs_)
@@ -172,6 +178,8 @@ def unc_wrapper_args(*covariance_keys):
             if cov is not None:
                 cov *= x.T.flatten() ** 2
                 cov = np.dot(np.dot(jac, cov), jac.T)
+            if cov_keys is None or len(cov_keys) > 0:
+                return tuple(avg.tolist() + [cov, jac])
             return avg, cov, jac
         return wrapped_function
     return wrapper
