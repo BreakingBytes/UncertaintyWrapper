@@ -23,21 +23,21 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="top" title="Uncertainty Wrapper 0.1 documentation" href="#" />
     <link rel="next" title="Getting Started" href="getting_started.html" />
    
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
   </head>
-  <body>  
+  <body role="document">  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
   <div class="section" id="welcome-to-uncertainty-wrapper-s-documentation">
 <h1>Welcome to Uncertainty Wrapper&#8217;s documentation!<a class="headerlink" href="#welcome-to-uncertainty-wrapper-s-documentation" title="Permalink to this headline">¶</a></h1>
@@ -59,21 +59,21 @@
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
-<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
-<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
 </ul>
 </div>
 <div class="section" id="uncertaintywrapper">
 <h1>UncertaintyWrapper<a class="headerlink" href="#uncertaintywrapper" title="Permalink to this headline">¶</a></h1>
-<p>Use <tt class="docutils literal"><span class="pre">&#64;unc_wrapper</span></tt> decorator to wrap any Python callable to append the
+<p>Use <code class="docutils literal"><span class="pre">&#64;unc_wrapper</span></code> decorator to wrap any Python callable to append the
 covariance and Jacobian matrices to the return values. See documentation and
 tests for usage and examples.</p>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>Use <tt class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">uncertainty_wrapper</span></tt> to install from
+<p>Use <code class="docutils literal"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">uncertainty_wrapper</span></code> to install from
 <a class="reference external" href="https://pypi.python.org/pypi/uncertainty_wrapper">PyPI</a> or download a source
-distribution, extract and use <tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></tt>.</p>
+distribution, extract and use <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code>.</p>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
@@ -85,10 +85,30 @@ distribution, extract and use <tt class="docutils literal"><span class="pre">pyt
 </div>
 <div class="section" id="history">
 <h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="v0-2-archean-eon">
-<h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.2">v0.2</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Archean">Archean Eon</a><a class="headerlink" href="#v0-2-archean-eon" title="Permalink to this headline">¶</a></h3>
 <p>Releases are named after
 <a class="reference external" href="https://en.wikipedia.org/wiki/Geologic_time_scale">geological eons, periods and epochs</a>.</p>
+<div class="section" id="v0-3-proterozoic-eon">
+<h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3">v0.3</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Proterozoic">Proterozoic Eon</a><a class="headerlink" href="#v0-3-proterozoic-eon" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>new <code class="docutils literal"><span class="pre">unc_wrapper_args()</span></code> allows selection of independent variables that the
+partial derivatives are with respect to and also grouping those arguments
+together so that in the original function they can stay unpacked.</li>
+<li>return values are grouped correctly so that they can remain unpacked in
+original function. These allow Uncertainty Wrapper to be used with
+<a class="reference external" href="http://pint.readthedocs.org/en/0.6/wrapping.html">Pint&#8217;s wrapper</a></li>
+<li>covariance now specified as dimensionaless fraction of square of arguments</li>
+<li>more complex tests: IV curve and solar position (requires
+<a class="reference external" href="http://rredc.nrel.gov/solar/codesandalgorithms/solpos/">NREL&#8217;s solpos</a>)</li>
+</ul>
+</div>
+<div class="section" id="v0-2-1-eoarchean-era">
+<h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.2">v0.2.1</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Eoarchean">Eoarchean Era</a><a class="headerlink" href="#v0-2-1-eoarchean-era" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>update documentation</li>
+</ul>
+</div>
+<div class="section" id="v0-2-archean-eon">
+<h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.2">v0.2</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Archean">Archean Eon</a><a class="headerlink" href="#v0-2-archean-eon" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Fix nargs and nf order mixup in Jacobian</li>
 <li>add more complex test</li>
@@ -112,7 +132,7 @@ distribution, extract and use <tt class="docutils literal"><span class="pre">pyt
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <p class="logo">
   <a href="#">
@@ -131,6 +151,8 @@ distribution, extract and use <tt class="docutils literal"><span class="pre">pyt
 </p>
 
 
+
+
 <h3>Navigation</h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
@@ -145,7 +167,7 @@ distribution, extract and use <tt class="docutils literal"><span class="pre">pyt
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none">
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
       <input type="text" name="q" />
@@ -166,8 +188,8 @@ distribution, extract and use <tt class="docutils literal"><span class="pre">pyt
       &copy;2016, Mark Mikofski.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.6</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
       
       |
       <a href="_sources/index.txt"
