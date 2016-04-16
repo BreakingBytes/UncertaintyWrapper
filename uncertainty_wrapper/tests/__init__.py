@@ -97,7 +97,7 @@ assert np.isclose(VOC, 0.62816490891656673)
 LOGGER.debug('Voc = %g[V]', VOC)
 VD = np.arange(0, VOC, 0.005)
 X = np.array([EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG])
-COV = np.diag([1e-6] * X.size)
+COV = np.diag([1e-4] * X.size)
 X = X.reshape(-1, 1).repeat(VD.size, axis=1)
 COV = np.tile(COV, (VD.size, 1, 1))
 
@@ -134,7 +134,7 @@ def solar_position(lat, lon, press, tamb, dt, seconds=0):
 def test_solpos():
     dt = PST.localize(datetime(2016, 4, 13, 12, 30, 0))
     return solar_position(37.405, -121.95, 1013.25, 20.0, dt,
-                          __covariance__=np.diag([0.01] * 5))
+                          __covariance__=np.diag([0.0001] * 5))
 
 if __name__ == '__main__':
     test_unc_wrapper()

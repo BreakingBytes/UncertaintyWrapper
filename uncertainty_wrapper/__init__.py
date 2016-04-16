@@ -148,7 +148,8 @@ def unc_wrapper_args(*covariance_keys):
                 cov = jflatten(cov)
             jac = jflatten(jac)
             if cov is not None:
-                cov = np.dot(np.dot(jac, cov * x.T.flatten()), jac.T)
+                cov *= x.T.flatten() ** 2
+                cov = np.dot(np.dot(jac, cov), jac.T)
             return avg, cov, jac
         return wrapper
     return unc_wrapper
