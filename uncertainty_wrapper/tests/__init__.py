@@ -9,7 +9,7 @@ import numpy as np
 from uncertainty_wrapper import unc_wrapper, unc_wrapper_args
 import logging
 from scipy.constants import Boltzmann as KB, elementary_charge as QE
-from datetime import datetime
+from datetime import datetime, timedelta
 from solar_utils import *
 import pytz
 
@@ -103,28 +103,34 @@ COV = np.tile(COV, (VD.size, 1, 1))
 
 
 def test_IV():
+    """
+    Test calculation of photovoltaic cell IV curve using 2-diode model.
+    """
     f = unc_wrapper(IV)
     return f(X, VD, __covariance__=COV)
 
 
 @unc_wrapper_args('lat', 'lon', 'press', 'tamb', 'seconds')
-def solar_position(lat, lon, press, tamb, dt, seconds=0):
+def solar_position(lat, lon, press, tamb, timestamps, seconds=0):
     """
     calculate solar position
     """
     seconds = np.sign(seconds) * np.ceil(np.abs(seconds))
-    # seconds = np.where(x >0 0, np.ceil(seconds), np.floor(seconds))
-    utcoffset = dt.utcoffset() or 0.0
-    dst = dt.dst() or 0.0
-    loc = [lat, lon, (utcoffset.total_seconds() - dst.total_seconds()) / 3600.0]
-    naive = dt.replace(tzinfo=None)
-    timestamps = np.datetime64(naive) + np.timedelta64(int(seconds * 1e6), 'us')
-    timestamps = timestamps.reshape((-1,))
-    ntimestamps = timestamps.size
+    # seconds = np.where(x > 0, np.ceil(seconds), np.floor(seconds))
+    try:
+        ntimestamps = len(timestamps)
+    except TypeError:
+        ntimestamps = 1
+        timestamps = [timestamps]
     an, am = np.zeros((ntimestamps, 2)), np.zeros((ntimestamps, 2))
     for n, ts in enumerate(timestamps):
-        dt = ts.item().timetuple()[:6]
-        LOGGER.debug('datetime: %r', datetime(*dt).strftime('%Y/%m/%d-%H:%M:%S.%f'))
+        utcoffset = ts.utcoffset() or 0.0
+        dst = ts.dst() or 0.0
+        tz = (utcoffset.total_seconds() - dst.total_seconds()) / 3600.0
+        loc = [lat, lon, tz]
+        dt = ts + timedelta(seconds=seconds.item())
+        dt = dt.timetuple()[:6]
+        LOGGER.debug('datetime: %r', datetime(*dt).strftime('%Y/%m/%d-%H:%M:%S'))
         LOGGER.debug('lat: %f, lon: %f, tz: %d', *loc)
         LOGGER.debug('p = %f[mbar], T = %f[C]', press, tamb)
         an[n], am[n] = solposAM(loc, dt, [press, tamb])
@@ -132,6 +138,9 @@ def solar_position(lat, lon, press, tamb, dt, seconds=0):
 
 
 def test_solpos():
+    """
+    Test solar position calculation using NREL's SOLPOS.
+    """
     dt = PST.localize(datetime(2016, 4, 13, 12, 30, 0))
     return solar_position(37.405, -121.95, 1013.25, 20.0, dt,
                           __covariance__=np.diag([0.0001] * 5))

@@ -4,7 +4,7 @@ central finite difference approximation of the Jacobian matrix.
 
 .. math::
 
-    dF_{ij} = J_{ij} * S_{x_i}{x_j} * J_{ij}^{T}
+    dF_{ij} = J_{ij} * S_{x_i, x_j} * J_{ij}^{T}
 
 Diagonals of :math:`dF_{ij}` are standard deviations squared.
 
@@ -19,8 +19,8 @@ import logging
 logging.basicConfig()
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
-__VERSION__ = '0.2.1'
-__RELEASE__ = u"Eoarchean Era"
+__VERSION__ = '0.3'
+__RELEASE__ = u"Proterozoic Eon"
 __URL__ = u'https://github.com/SunPower/UncertaintyWrapper'
 __AUTHOR__ = u"Mark Mikofski"
 __EMAIL__ = u'mark.mikofski@sunpowercorp.com'
@@ -109,16 +109,25 @@ def jflatten(j):
 
 
 def unc_wrapper_args(*covariance_keys):
-    def unc_wrapper(f):
+    """
+    Wrap function, pop ``__covariance__`` argument from keyword arguments,
+    propagate uncertainty given covariance using Jacobian estimate and append
+    calculated covariance and Jacobian matrices to return values. User supplied
+    covariance keys can be any of the argument names used in the function. If
+    empty then assume the arguments are already grouped. If ``None`` then use
+    all of the arguments. See tests for examples.
+
+    :param covariance_keys: names of arguments that correspond to covariance
+    :return: function value, covariance and Jacobian
+    """
+    def wrapper(f):
         """
-        Wrap function, pop ``__covariance__`` argument from keyword arguments,
-        propagate uncertainty given covariance using Jacobian estimate. and append
-        calculated covariance and Jacobian matrices to return values.
+
         """
         argspec = inspect.getargspec(f)
 
         @wraps(f)
-        def wrapper(*args, **kwargs):
+        def wrapped_function(*args, **kwargs):
             cov_keys = covariance_keys
             cov = kwargs.pop('__covariance__', None)  # pop covariance
             if argspec.defaults is not None:
@@ -133,15 +142,15 @@ def unc_wrapper_args(*covariance_keys):
             else:
                 x = kwargs.pop(argspec.args[0])
 
-            def g(y, **gkwargs):
+            def f_(x_, **kwargs_):
                 if cov_keys:
-                    gkwargs.update(zip(cov_keys, y))
-                    return np.array(f(**gkwargs))
+                    kwargs_.update(zip(cov_keys, x_))
+                    return np.array(f(**kwargs_))
                 # assumes independent and dependent vars already grouped
-                return f(y, **gkwargs)
+                return f(x_, **kwargs_)
 
-            avg = g(x, **kwargs)
-            jac = jacobian(g, x, **kwargs)
+            avg = f_(x, **kwargs)
+            jac = jacobian(f_, x, **kwargs)
             # covariance must account for all observations
             if cov is not None and cov.ndim == 3:
                 # if covariance is an array of covariances, flatten it.
@@ -151,7 +160,8 @@ def unc_wrapper_args(*covariance_keys):
                 cov *= x.T.flatten() ** 2
                 cov = np.dot(np.dot(jac, cov), jac.T)
             return avg, cov, jac
-        return wrapper
-    return unc_wrapper
+        return wrapped_function
+    return wrapper
 
+# short cut for functions with arguments already grouped
 unc_wrapper = unc_wrapper_args()

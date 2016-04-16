@@ -25,8 +25,22 @@ History
 Releases are named after
 `geological eons, periods and epochs <https://en.wikipedia.org/wiki/Geologic_time_scale>`_.
 
+`v0.3 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3>`_ `Proterozoic Eon <https://en.wikipedia.org/wiki/Proterozoic>`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* new ``unc_wrapper_args()`` allows selection of independent variables that the
+  partial derivatives are with respect to and also grouping those arguments
+  together so that in the original function they can stay unpacked.
+* return values are grouped correctly so that they can remain unpacked in
+  original function. These allow Uncertainty Wrapper to be used with
+  `Pint's wrapper <http://pint.readthedocs.org/en/0.6/wrapping.html>`_
+* covariance now specified as dimensionaless fraction of square of arguments
+* more complex tests: IV curve and solar position (requires
+  `NREL's solpos <http://rredc.nrel.gov/solar/codesandalgorithms/solpos/>`_)
+
+
 `v0.2.1 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.2>`_ `Eoarchean Era <https://en.wikipedia.org/wiki/Eoarchean>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * update documentation
 
