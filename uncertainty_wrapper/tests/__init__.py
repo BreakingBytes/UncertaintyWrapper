@@ -124,9 +124,12 @@ def solar_position(lat, lon, press, tamb, timestamps, seconds=0):
         timestamps = [timestamps]
     an, am = np.zeros((ntimestamps, 2)), np.zeros((ntimestamps, 2))
     for n, ts in enumerate(timestamps):
-        utcoffset = ts.utcoffset() or 0.0
-        dst = ts.dst() or 0.0
-        tz = (utcoffset.total_seconds() - dst.total_seconds()) / 3600.0
+        utcoffset = ts.utcoffset()
+        dst = ts.dst()
+        if None in (utcoffset, dst):
+            tz = 0.0  # assume UTC if naive
+        else:
+            tz = (utcoffset.total_seconds() - dst.total_seconds()) / 3600.0
         loc = [lat, lon, tz]
         dt = ts + timedelta(seconds=seconds.item())
         dt = dt.timetuple()[:6]
