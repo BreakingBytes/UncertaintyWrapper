@@ -3,13 +3,19 @@
 Getting Started
 ===============
 You can wrap any Python callable using :func:`~uncertainty_wrapper.unc_wrapper`
-that adds covariance as an input argument then calculates and appends the
-covariance and Jacobian matrices to the return values. However you will need to
-manipulate the input arguments to match the expected :ref:`API`.
+or :func:`~uncertainty_wrapper.unc_wrapper_args`, that does the following:
+
+* looks for ``__covariance__`` as a keyword argument
+* calculates the Jacobian and covariance matrices
+* appends the Jacobian and covariance matrices to the return values.
+
+However you may need to manipulate the input arguments to match the expected
+:ref:`API`.
 
 Example
 -------
-The following examples are from `Uncertainty Benchmarks <https://github.com/mikofski/uncertainty_benchmarks>`_::
+The following example is from
+`Uncertainty Benchmarks <https://github.com/mikofski/uncertainty_benchmarks>`_::
 
     from uncertainty_wrapper import unc_wrapper
     # unc_wrapper expects input args to be 2-D NumPy arrays
@@ -18,8 +24,7 @@ The following examples are from `Uncertainty Benchmarks <https://github.com/miko
     # simple test functions with multiple input arguments and return
     # values and whose derivatives are easily derived.
     NARGS = 2  # number of input arguments
-    F = lambda x: np.array([x[0] ** 2 + 2 * x[0] * x[1] + x[1] ** 2,
-                            x[1] ** 2 - x[0] ** 2])
+    F = lambda x: np.array([(x[0] + x[1]) ** 2, x[1] ** 2 - x[0] ** 2])
     G = lambda x: np.array([(2 * (x[0] + x[1]), 2 * (x[1] + x[0])),
                             (-2 * x[0], 2 * x[1])])
     AVG = np.random.rand(NARGS) * 10.  # some test input arguments
@@ -42,10 +47,12 @@ The following examples are from `Uncertainty Benchmarks <https://github.com/miko
     # reshape args as row stack since there is only one observation and
     # unc_wrapper expects there to be multiple observations
     AVG = AVG.reshape((NARGS, 1))
+    print AVG
 
     # the wrapped example now takes a second argument called
     # __covariance__
-    retval = example(AVG, COV, F)
+    print COV
+    retval = example(AVG, F, __covariance__=COV)
     # and appends covariance and Jacobian matrices to the return values
     avg, cov, jac = retval
 

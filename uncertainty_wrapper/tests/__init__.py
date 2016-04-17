@@ -12,7 +12,10 @@ from scipy.constants import Boltzmann as KB, elementary_charge as QE
 from datetime import datetime, timedelta
 from solar_utils import *
 import pytz
+import pint
+from matplotlib import pyplot as plt
 
+UREG = pint.UnitRegistry()
 PST = pytz.timezone('US/Pacific')
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
@@ -110,11 +113,29 @@ def test_IV():
     return f(X, VD, __covariance__=COV)
 
 
-import pint
-ureg = pint.UnitRegistry()
+def plot_pv(pv, pv_cov):
+    """
+    IV and PV 2-axis plot with errorbars 
+    """
+    i_pv, v_pv, p_pv = pv
+    i_stdev = np.sqrt(pv_cov.diagonal()[::3])
+    v_stdev = np.sqrt(pv_cov.diagonal()[1::3])
+    p_stdev = np.sqrt(pv_cov.diagonal()[2::3]) 
+    fig, ax1 = plt.subplots()
+    ax1.errorbar(v_pv, i_pv, i_stdev, v_stdev)
+    ax1.set_xlabel('voltage [V]')
+    ax1.set_ylabel('current [A]', color='b')
+    ax1.set_ylim([0, 6.0])
+    ax2 = ax1.twinx()
+    ax2.errorbar(v_pv, p_pv, p_stdev, v_stdev, fmt='r')
+    ax2.set_ylabel('power [W]', color='r')
+    ax2.set_ylim([0, 3.0])
+    ax1.grid()
+    ax1.set_title('IV and PV curves')
+    return fig
 
 
-@ureg.wraps(('deg', 'deg', 'dimensionless', 'dimensionless', None, None),
+@UREG.wraps(('deg', 'deg', 'dimensionless', 'dimensionless'),
             ('deg', 'deg', 'millibar', 'degC', None, 'second'))
 @unc_wrapper_args(0, 1, 2, 3, 5)
 def solar_position(lat, lon, press, tamb, timestamps, seconds=0):
@@ -151,15 +172,18 @@ def test_solpos():
     Test solar position calculation using NREL's SOLPOS.
     """
     dt = PST.localize(datetime(2016, 4, 13, 12, 30, 0))
-    lat = 37.405 * ureg.deg
-    lon = -121.95 * ureg.deg
-    press = 101325 * ureg.Pa
-    tamb = 293.15 * ureg.degK
-    seconds = 1 * ureg.s
+    lat = 37.405 * UREG.deg
+    lon = -121.95 * UREG.deg
+    press = 101325 * UREG.Pa
+    tamb = 293.15 * UREG.degK
+    seconds = 1 * UREG.s
     cov = np.diag([0.0001] * 5)
     return solar_position(lat, lon, press, tamb, dt, seconds, __covariance__=cov)
 
+
 if __name__ == '__main__':
     test_unc_wrapper()
-    test_IV()
+    pv, pv_cov, pv_jac = test_IV()
     test_solpos()
+    fig = plot_pv(pv, pv_cov)
+    fig.show()

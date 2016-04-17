@@ -126,7 +126,7 @@ def unc_wrapper_args(*covariance_keys):
             # covariance keys cannot be defaults, they must be in args or kwargs
             cov_keys = covariance_keys
             # convert args to kwargs by index
-            kwargs.update({k: v for k, v in enumerate(args)})
+            kwargs.update({n: v for n, v in enumerate(args)})
             args = ()  # empty args
             # group covariance keys
             if cov_keys is None:
@@ -142,44 +142,48 @@ def unc_wrapper_args(*covariance_keys):
                 x = kwargs.pop(0)  # use first argument
             # remaining args
             args_dict = {}
+            
+            def args_from_kwargs(kwargs_):
+                """unpack positional arguments from keyword arguments"""
+                # create mapping of positional arguments by index
+                args_ = [(n, v) for n, v in kwargs_.iteritems()
+                         if not isinstance(n, basestring)]
+                # sort positional arguments by index
+                idx, args_ = zip(*sorted(args_, key=lambda m: m[0]))
+                # remove args_ and their indices from kwargs_
+                args_dict_ = {n: kwargs_.pop(n) for n in idx}
+                return args_, args_dict_
+            
             if kwargs:
-                args = [(n, v) for n, v in kwargs.iteritems()
-                        if not isinstance(n, basestring)]
-                # sort by index
-                idx, args = zip(*sorted(args, key=lambda m: m[0]))
-                # remove args from kwargs
-                args_dict = {n: kwargs.pop(n) for n in idx}
+                args, args_dict = args_from_kwargs(kwargs)
 
             def f_(x_, *args_, **kwargs_):
+                """call original function with independent variables grouped"""
                 args_dict_ = args_dict
-                args_list = list(args_)
                 if cov_keys:
                     kwargs_.update(zip(cov_keys, x_), **args_dict_)
-                    LOGGER.debug(kwargs_)
                 if kwargs_:
-                    args_ = [(n, v) for n, v in kwargs_.iteritems()
-                            if not isinstance(n, basestring)]
-                    # sort by index
-                    idx, args_ = zip(*sorted(args_, key=lambda m: m[0]))
-                    # remove args_ from kwargs_
-                    args_dict_ = {k: kwargs_.pop(n) for n in idx}
+                    args_, _ = args_from_kwargs(kwargs_)
                     return np.array(f(*args_, **kwargs_))
-                # assumes independent and dependent vars already grouped
+                # assumes independent variables already grouped
                 return f(x_, *args_, **kwargs_)
 
-            # evaluate function and its Jacobian
+            # evaluate function and Jacobian
             avg = f_(x, *args, **kwargs)
             jac = jacobian(f_, x, *args, **kwargs)
             # covariance must account for all observations
             if cov is not None and cov.ndim == 3:
                 # if covariance is an array of covariances, flatten it.
                 cov = jflatten(cov)
-            jac = jflatten(jac)
+            jac = jflatten(jac)  # flatten Jacobian
+            # calculate covariance
             if cov is not None:
-                cov *= x.T.flatten() ** 2
+                cov *= x.T.flatten() ** 2  # scale covariances by x squared
                 cov = np.dot(np.dot(jac, cov), jac.T)
+            # unpack returns for original function with ungrouped arguments
             if cov_keys is None or len(cov_keys) > 0:
                 return tuple(avg.tolist() + [cov, jac])
+            # assume grouped return if independent variables were already grouped
             return avg, cov, jac
         return wrapped_function
     return wrapper
