@@ -3,13 +3,20 @@
 Getting Started
 ===============
 You can wrap any Python callable using :func:`~uncertainty_wrapper.unc_wrapper`
-that adds covariance as an input argument then calculates and appends the
-covariance and Jacobian matrices to the return values. However you will need to
-manipulate the input arguments to match the expected :ref:`API`.
+or :func:`~uncertainty_wrapper.unc_wrapper_args`, that does the following:
 
-Example
--------
-The following examples are from `Uncertainty Benchmarks <https://github.com/mikofski/uncertainty_benchmarks>`_::
+* looks for ``__covariance__`` as a keyword argument
+* calculates the Jacobian and covariance matrices
+* appends the Jacobian and covariance matrices to the return values.
+
+However you may need to manipulate the input arguments to match the expected
+:ref:`API`.
+
+Simple Example
+--------------
+
+This simple example using two input arguments and two return values is from
+`Uncertainty Benchmarks <https://github.com/mikofski/uncertainty_benchmarks>`_::
 
     from uncertainty_wrapper import unc_wrapper
     # unc_wrapper expects input args to be 2-D NumPy arrays
@@ -18,16 +25,13 @@ The following examples are from `Uncertainty Benchmarks <https://github.com/miko
     # simple test functions with multiple input arguments and return
     # values and whose derivatives are easily derived.
     NARGS = 2  # number of input arguments
-    F = lambda x: np.array([x[0] ** 2 + 2 * x[0] * x[1] + x[1] ** 2,
-                            x[1] ** 2 - x[0] ** 2])
+    F = lambda x: np.array([(x[0] + x[1]) ** 2, x[1] ** 2 - x[0] ** 2])
     G = lambda x: np.array([(2 * (x[0] + x[1]), 2 * (x[1] + x[0])),
                             (-2 * x[0], 2 * x[1])])
     AVG = np.random.rand(NARGS) * 10.  # some test input arguments
     # randomly generated symmetrical covariance matrix
     COV = np.random.rand(NARGS, NARGS) / 10.
-    TOL = 1e-6  # make it sparse, set anything less than 1e-6 to zero
-    COV = np.where(COV > TOL, COV, np.zeros((NARGS, NARGS)))
-    COV *= COV.T  # must be symmetrical
+    COV = (COV + COV.T) / 2.0  # must be symmetrical
 
     @unc_wrapper
     def example(avg=AVG, f=F):
@@ -42,10 +46,17 @@ The following examples are from `Uncertainty Benchmarks <https://github.com/miko
     # reshape args as row stack since there is only one observation and
     # unc_wrapper expects there to be multiple observations
     AVG = AVG.reshape((NARGS, 1))
+    print AVG
+    # [[ 1.80222955]
+    #  [ 5.62897685]]
 
     # the wrapped example now takes a second argument called
     # __covariance__
-    retval = example(AVG, COV, F)
+    print COV
+    # [[ 0.06798386  0.05971218]
+    #  [ 0.05971218  0.09359305]]
+
+    retval = example(AVG, F, __covariance__=COV)
     # and appends covariance and Jacobian matrices to the return values
     avg, cov, jac = retval
 
@@ -53,15 +64,51 @@ The following examples are from `Uncertainty Benchmarks <https://github.com/miko
     # observation and display results
     avg = avg.squeeze()
     print avg
-    # [ 11.13976423,   3.27799112]
+    # [ 55.22282851  28.43734901]
+
     print cov
-    # [[ 0.27347267,  0.13844758],
-    #  [ 0.13844758,  0.07171001]])
+    # [[ 1164.60425675   790.5452895 ]
+    #  [  415.45944116   294.07938566]]
+
     print jac
-    # [[ 6.67525707,  6.67525707],
-    #  [-2.35549673,  4.31976033]])
+    # [[ 14.86241279  14.86241279]
+    #  [ -3.6044591   11.2579537 ]]
 
     # compare to analytical derivatives
     print G(AVG).squeeze()
-    # [[ 6.67525707  6.67525707]
-    #  [-2.35549673  4.31976033]]
+    # [[ 14.86241279  14.86241279]
+    #  [ -3.6044591   11.2579537 ]]
+
+Complex Example
+---------------
+
+A more complex example from the :mod:`~uncertainty_wrapper.tests.test_uncertainty`
+module called :func:`~uncertainty_wrapper.tests.test_uncertainty.test_IV`,
+includes combinations of several exponential and power operations. It contains
+9 input arguments, there 126 observations of each corresponding to different
+voltages and there are 3 return values. The calculated uncertainty using a 1%
+standard deviation (square root of variance) for all 9 inputs is shown below.
+
+.. image:: _static/IV_and_PV_plots_with_uncertainty.png
+
+The test compares the derivatives calculated using central finite difference
+approximation with an analytical calculation from 0.3[V] to 0.6[V]. Below 0.3[V]
+the approximations deviate from the analytical for
+:math:`\\frac{\\partial I_{sc}}{\\partial I_{sat_{1,0}}}`,
+:math:`\\frac{\\partial I_{sc}}{\\partial I_{sat_2}}` and
+:math:`\\frac{\\partial I_{sc}}{\\partial E_g}` while all other independent
+variables are consistently below 10e-7. The analytical derivatives are propagated
+using `AlgoPy <https://pythonhosted.org/algopy/>`_, an automatic differentiation
+package, which requires rewriting all NumPy operations like :math:`exp` using
+AlgoPy. This makes it impractical for use in most models, but still useful for
+testing.
+
+.. image:: _static/IV-PV-jac-errors.png
+
+Python Extension Example
+------------------------
+
+Often Python packages contain extensions in C/C++ which can't be tested using
+automatic differentiation. The Numdidfftools is an alternative package that can
+calculate derivatives more accurately than the central finite difference
+approximation.

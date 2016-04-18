@@ -45,12 +45,14 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="getting_started.html#example">Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#simple-example">Simple Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#complex-example">Complex Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#python-extension-example">Python Extension Example</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="api.html#module-uncertainty_wrapper">Uncertainty Wrapper</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.html#module-uncertainty_wrapper.tests">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-uncertainty_wrapper.core">Uncertainty Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#module-uncertainty_wrapper.tests.test_uncertainty_wrapper">Tests</a></li>
 </ul>
 </li>
 </ul>
@@ -79,14 +81,31 @@ distribution, extract and use <code class="docutils literal"><span class="pre">p
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><a class="reference external" href="http://www.numpy.org/">NumPy</a></li>
+</ul>
+<div class="section" id="optional-requirements">
+<h3>Optional Requirements<a class="headerlink" href="#optional-requirements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
 <li><a class="reference external" href="https://nose.readthedocs.org/en/latest/index.html">Nose</a> for testing.</li>
 <li><a class="reference external" href="http://www.sphinx-doc.org/en/stable/">Sphinx</a> to build documentation.</li>
+<li><a class="reference external" href="http://rredc.nrel.gov/solar/codesandalgorithms/solpos/">NREL SOLPOS</a> for testing</li>
+<li><a class="reference external" href="https://pythonhosted.org/algopy/">AlgoPy</a> for testing</li>
 </ul>
+</div>
 </div>
 <div class="section" id="history">
 <h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
 <p>Releases are named after
 <a class="reference external" href="https://en.wikipedia.org/wiki/Geologic_time_scale">geological eons, periods and epochs</a>.</p>
+<div class="section" id="v0-3-1-paleoproterozoic-era">
+<h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.1">v0.3.1</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Paleoproterozoic">Paleoproterozoic Era</a><a class="headerlink" href="#v0-3-1-paleoproterozoic-era" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixes #1 works with Pint&#8217;s &#64;ureg.wraps()</li>
+<li>Use indices for positional arguments. Don&#8217;t use inspect.argspec since not
+guaranteed to be the same for wrapped or decorated functions</li>
+<li>Test Jacobian estimate for IV with <a class="reference external" href="https://pythonhosted.org/algopy/">AlgoPy</a></li>
+<li>Show Jacobian errors plot in getting started docs.</li>
+</ul>
+</div>
 <div class="section" id="v0-3-proterozoic-eon">
 <h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3">v0.3</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Proterozoic">Proterozoic Eon</a><a class="headerlink" href="#v0-3-proterozoic-eon" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -95,7 +114,7 @@ partial derivatives are with respect to and also grouping those arguments
 together so that in the original function they can stay unpacked.</li>
 <li>return values are grouped correctly so that they can remain unpacked in
 original function. These allow Uncertainty Wrapper to be used with
-<a class="reference external" href="http://pint.readthedocs.org/en/0.6/wrapping.html">Pint&#8217;s wrapper</a></li>
+<a class="reference external" href="http://pint.readthedocs.org/en/latest/wrapping.html">Pint&#8217;s wrapper</a></li>
 <li>covariance now specified as dimensionaless fraction of square of arguments</li>
 <li>more complex tests: IV curve and solar position (requires
 <a class="reference external" href="http://rredc.nrel.gov/solar/codesandalgorithms/solpos/">NREL&#8217;s solpos</a>)</li>

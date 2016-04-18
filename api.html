@@ -41,8 +41,8 @@
             
   <div class="section" id="api">
 <span id="id1"></span><h1>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-uncertainty_wrapper">
-<span id="uncertainty-wrapper"></span><h2>Uncertainty Wrapper<a class="headerlink" href="#module-uncertainty_wrapper" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-uncertainty_wrapper.core">
+<span id="uncertainty-wrapper"></span><h2>Uncertainty Wrapper<a class="headerlink" href="#module-uncertainty_wrapper.core" title="Permalink to this headline">¶</a></h2>
 <p>Uncertainty wrapper calculates uncertainties of wrapped functions using
 central finite difference approximation of the Jacobian matrix.</p>
 <div class="math">
@@ -52,16 +52,16 @@ central finite difference approximation of the Jacobian matrix.</p>
 <div class="section" id="step-size">
 <h3>Step Size<a class="headerlink" href="#step-size" title="Permalink to this headline">¶</a></h3>
 <dl class="data">
-<dt id="uncertainty_wrapper.DELTA">
-<code class="descclassname">uncertainty_wrapper.</code><code class="descname">DELTA</code><em class="property"> = 3.0277272261966714e-06</em><a class="headerlink" href="#uncertainty_wrapper.DELTA" title="Permalink to this definition">¶</a></dt>
+<dt id="uncertainty_wrapper.core.DELTA">
+<code class="descclassname">uncertainty_wrapper.core.</code><code class="descname">DELTA</code><em class="property"> = 3.0277272261966714e-06</em><a class="headerlink" href="#uncertainty_wrapper.core.DELTA" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
 <div class="section" id="partial-derivative">
 <h3>Partial Derivative<a class="headerlink" href="#partial-derivative" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="uncertainty_wrapper.partial_derivative">
-<code class="descclassname">uncertainty_wrapper.</code><code class="descname">partial_derivative</code><span class="sig-paren">(</span><em>f</em>, <em>x</em>, <em>n</em>, <em>nargs</em>, <em>nobs</em>, <em>delta=3.0277272261966714e-06</em><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.partial_derivative" title="Permalink to this definition">¶</a></dt>
+<dt id="uncertainty_wrapper.core.partial_derivative">
+<code class="descclassname">uncertainty_wrapper.core.</code><code class="descname">partial_derivative</code><span class="sig-paren">(</span><em>f</em>, <em>x</em>, <em>n</em>, <em>nargs</em>, <em>nobs</em>, <em>delta=3.0277272261966714e-06</em><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.core.partial_derivative" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate partial derivative using central finite difference approximation.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -86,8 +86,8 @@ central finite difference approximation of the Jacobian matrix.</p>
 <div class="section" id="jacobian">
 <h3>Jacobian<a class="headerlink" href="#jacobian" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="uncertainty_wrapper.jacobian">
-<code class="descclassname">uncertainty_wrapper.</code><code class="descname">jacobian</code><span class="sig-paren">(</span><em>func</em>, <em>x</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.jacobian" title="Permalink to this definition">¶</a></dt>
+<dt id="uncertainty_wrapper.core.jacobian">
+<code class="descclassname">uncertainty_wrapper.core.</code><code class="descname">jacobian</code><span class="sig-paren">(</span><em>func</em>, <em>x</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.core.jacobian" title="Permalink to this definition">¶</a></dt>
 <dd><p>Estimate Jacobian matrices <span class="math">\(\frac{\partial f_i}{\partial x_{j,k}}\)</span>
 where <span class="math">\(k\)</span> are independent observations of <span class="math">\(x\)</span>.</p>
 <p>The independent variable, <span class="math">\(x\)</span>, must be a numpy array with exactly 2
@@ -123,8 +123,8 @@ correct dimensions for scalars.</p>
 <div class="section" id="flatten-jacobian">
 <h3>Flatten Jacobian<a class="headerlink" href="#flatten-jacobian" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="uncertainty_wrapper.jflatten">
-<code class="descclassname">uncertainty_wrapper.</code><code class="descname">jflatten</code><span class="sig-paren">(</span><em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.jflatten" title="Permalink to this definition">¶</a></dt>
+<dt id="uncertainty_wrapper.core.jflatten">
+<code class="descclassname">uncertainty_wrapper.core.</code><code class="descname">jflatten</code><span class="sig-paren">(</span><em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.core.jflatten" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flatten Jacobian into 2-D</p>
 </dd></dl>
 
@@ -132,19 +132,20 @@ correct dimensions for scalars.</p>
 <div class="section" id="wrapper">
 <h3>Wrapper<a class="headerlink" href="#wrapper" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="uncertainty_wrapper.unc_wrapper_args">
-<code class="descclassname">uncertainty_wrapper.</code><code class="descname">unc_wrapper_args</code><span class="sig-paren">(</span><em>*covariance_keys</em><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.unc_wrapper_args" title="Permalink to this definition">¶</a></dt>
+<dt id="uncertainty_wrapper.core.unc_wrapper_args">
+<code class="descclassname">uncertainty_wrapper.core.</code><code class="descname">unc_wrapper_args</code><span class="sig-paren">(</span><em>*covariance_keys</em><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.core.unc_wrapper_args" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrap function, pop <code class="docutils literal"><span class="pre">__covariance__</span></code> argument from keyword arguments,
 propagate uncertainty given covariance using Jacobian estimate and append
 calculated covariance and Jacobian matrices to return values. User supplied
-covariance keys can be any of the argument names used in the function. If
-empty then assume the arguments are already grouped. If <code class="docutils literal"><span class="pre">None</span></code> then use
-all of the arguments. See tests for examples.</p>
+covariance keys can be indices of positional arguments or keys of keyword
+argument used in calling the function. If empty then assume the arguments
+are already grouped. If <code class="docutils literal"><span class="pre">None</span></code> then use all of the arguments.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>covariance_keys</strong> &#8211; names of arguments that correspond to covariance</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>covariance_keys</strong> &#8211; indices and names of arguments corresponding to
+covariance</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">function value, covariance and Jacobian</td>
 </tr>
@@ -155,45 +156,55 @@ all of the arguments. See tests for examples.</p>
 <div class="section" id="wrapper-shortcut">
 <h4>Wrapper Shortcut<a class="headerlink" href="#wrapper-shortcut" title="Permalink to this headline">¶</a></h4>
 <dl class="function">
-<dt id="uncertainty_wrapper.unc_wrapper">
-<code class="descclassname">uncertainty_wrapper.</code><code class="descname">unc_wrapper</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.unc_wrapper" title="Permalink to this definition">¶</a></dt>
+<dt id="uncertainty_wrapper.core.unc_wrapper">
+<code class="descclassname">uncertainty_wrapper.core.</code><code class="descname">unc_wrapper</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.core.unc_wrapper" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<p>This is basically <a class="reference internal" href="#uncertainty_wrapper.unc_wrapper_args" title="uncertainty_wrapper.unc_wrapper_args"><code class="xref py py-func docutils literal"><span class="pre">unc_wrapper_args()</span></code></a> with no argument which assumes that
+<p>This is basically <a class="reference internal" href="#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal"><span class="pre">unc_wrapper_args()</span></code></a> with no argument which assumes that
 all independent arguments are already grouped together.</p>
 </div>
 </div>
 </div>
-<div class="section" id="module-uncertainty_wrapper.tests">
-<span id="tests"></span><h2>Tests<a class="headerlink" href="#module-uncertainty_wrapper.tests" title="Permalink to this headline">¶</a></h2>
-<p>Tests</p>
-<p>SunPower Corp. (c) 2016</p>
+<div class="section" id="module-uncertainty_wrapper.tests.test_uncertainty_wrapper">
+<span id="tests"></span><h2>Tests<a class="headerlink" href="#module-uncertainty_wrapper.tests.test_uncertainty_wrapper" title="Permalink to this headline">¶</a></h2>
+<p>Tests for <code class="xref py py-func docutils literal"><span class="pre">unc_wrapper()</span></code> and
+<code class="xref py py-func docutils literal"><span class="pre">unc_wrapper_args()</span></code></p>
 <div class="section" id="test-uncertainty-wrapper">
 <h3>Test Uncertainty Wrapper<a class="headerlink" href="#test-uncertainty-wrapper" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="uncertainty_wrapper.tests.test_unc_wrapper">
-<code class="descclassname">uncertainty_wrapper.tests.</code><code class="descname">test_unc_wrapper</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.tests.test_unc_wrapper" title="Permalink to this definition">¶</a></dt>
+<dt id="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_unc_wrapper">
+<code class="descclassname">uncertainty_wrapper.tests.test_uncertainty_wrapper.</code><code class="descname">test_unc_wrapper</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_unc_wrapper" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test uncertainty wrapper</p>
 </dd></dl>
 
+<p>Test simple exponential function with known derivative. Assert derivative is
+correct and that uncertainty is propagated correctly.</p>
 </div>
 <div class="section" id="test-iv-curve">
 <h3>Test IV curve<a class="headerlink" href="#test-iv-curve" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="uncertainty_wrapper.tests.test_IV">
-<code class="descclassname">uncertainty_wrapper.tests.</code><code class="descname">test_IV</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.tests.test_IV" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test calculation of photovoltaic cell IV curve using 2-diode model.</p>
+<dt id="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV">
+<code class="descclassname">uncertainty_wrapper.tests.test_uncertainty_wrapper.</code><code class="descname">test_IV</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test calculation of photovoltaic cell IV curve using 2-diode model and
+and compare Jacobian estimated by finite central difference to AlgoPy
+automatic differentiation.</p>
 </dd></dl>
 
+<p>Test complex function with several operations, including <span class="math">\(exp\)</span>, <span class="math">\(log\)</span>
+and powers, with several input arguments and with several return values. Check
+Jacobian calculated with central finite difference approximation with automatic
+differentiation using AlgoPy.</p>
 </div>
 <div class="section" id="test-solar-position">
 <h3>Test Solar Position<a class="headerlink" href="#test-solar-position" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
-<dt id="uncertainty_wrapper.tests.test_solpos">
-<code class="descclassname">uncertainty_wrapper.tests.</code><code class="descname">test_solpos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.tests.test_solpos" title="Permalink to this definition">¶</a></dt>
+<dt id="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos">
+<code class="descclassname">uncertainty_wrapper.tests.test_uncertainty_wrapper.</code><code class="descname">test_solpos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test solar position calculation using NREL&#8217;s SOLPOS.</p>
 </dd></dl>
 
+<p>Test function from a Python C/C++ extension. Check calcuated Jacobian with John
+D&#8217;Errico&#8217;s <code class="docutils literal"><span class="pre">numdifftools</span></code> Python package (MATLAB <code class="docutils literal"><span class="pre">derivest</span></code>).</p>
 </div>
 </div>
 </div>
@@ -227,8 +238,8 @@ all independent arguments are already grouped together.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">API</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-uncertainty_wrapper">Uncertainty Wrapper</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-uncertainty_wrapper.tests">Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-uncertainty_wrapper.core">Uncertainty Wrapper</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-uncertainty_wrapper.tests.test_uncertainty_wrapper">Tests</a></li>
 </ul>
 </li>
 </ul>
