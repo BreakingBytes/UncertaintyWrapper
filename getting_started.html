@@ -130,9 +130,9 @@ standard deviation (square root of variance) for all 9 inputs is shown below.</p
 <p>The test compares the derivatives calculated using central finite difference
 approximation with an analytical calculation from 0.3[V] to 0.6[V]. Below 0.3[V]
 the approximations deviate from the analytical for
-<span class="math">\(\\frac{\\partial I_{sc}}{\\partial I_{sat_{1,0}}}\)</span>,
-<span class="math">\(\\frac{\\partial I_{sc}}{\\partial I_{sat_2}}\)</span> and
-<span class="math">\(\\frac{\\partial I_{sc}}{\\partial E_g}\)</span> while all other independent
+<span class="math">\(\frac{\partial I_{sc}}{\partial I_{sat_{1,0}}}\)</span>,
+<span class="math">\(\frac{\partial I_{sc}}{\partial I_{sat_2}}\)</span> and
+<span class="math">\(\frac{\partial I_{sc}}{\partial E_g}\)</span> while all other independent
 variables are consistently below 10e-7. The analytical derivatives are propagated
 using <a class="reference external" href="https://pythonhosted.org/algopy/">AlgoPy</a>, an automatic differentiation
 package, which requires rewriting all NumPy operations like <span class="math">\(exp\)</span> using
