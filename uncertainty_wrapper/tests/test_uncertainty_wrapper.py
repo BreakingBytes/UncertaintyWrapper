@@ -3,10 +3,7 @@ Tests for :func:`~uncertainty_wrapper.unc_wrapper` and
 :func:`~uncertainty_wrapper.unc_wrapper_args`
 """
 
-from uncertainty_wrapper.tests import (
-    unc_wrapper, unc_wrapper_args, np, ok_, datetime, timedelta, solposAM, plt,
-    UREG, LOGGER, PST, KB, QE
-)
+from uncertainty_wrapper.tests import *
 from uncertainty_wrapper.tests.test_algopy import IV_algopy_jac
 
 
@@ -118,7 +115,7 @@ def test_IV():
         rms = np.sqrt(np.sum(reldiff ** 2.0) / 9.0/ 3.0)
         LOGGER.debug('rms at Vd = %g[V]: %r', VD[n], rms)
         ok_(np.allclose(pv_jac_n, pv_jac_algopy_n, rtol=1e-3, atol=1e-3))
-    return pv, pv_cov, pv_jac
+    return pv, pv_cov, pv_jac, pv_jac_algopy
 
 
 def plot_pv(pv, pv_cov):
@@ -131,17 +128,51 @@ def plot_pv(pv, pv_cov):
     p_stdev = np.sqrt(pv_cov.diagonal()[2::3]) 
     fig, ax1 = plt.subplots()
     ax1.errorbar(v_pv, i_pv, i_stdev, v_stdev)
+    ax1.grid()
     ax1.set_xlabel('voltage [V]')
     ax1.set_ylabel('current [A]', color='b')
     ax1.set_ylim([0, 6.0])
     ax2 = ax1.twinx()
     ax2.errorbar(v_pv, p_pv, p_stdev, v_stdev, fmt='r')
+    ax2.grid()
     ax2.set_ylabel('power [W]', color='r')
     ax2.set_ylim([0, 3.0])
-    ax1.grid()
     ax1.set_title('IV and PV curves')
     return fig
 
+
+def plot_pv_jac(pv_jac, pv_jac_algopy, Vd=VD):
+    """
+    Log plot of relative difference between AlgoPy and central finite difference
+    approximations
+
+    :param pv_jac: central finite approximations
+    :param pv_jac_algopy: automatic differentiation
+    :param Vd: voltages
+    :return: fig
+    """
+    fn = ['Cell Current, Ic [A]', 'Cell Voltage, Vc [V]', 'Cell Power, Pc [W]']
+    fig, ax = plt.subplots(3, 1, **{'figsize': (8.0, 18.0)})
+    colorcycle = [
+        'firebrick', 'goldenrod', 'sage', 'lime', 'seagreen', 'turquoise',
+        'royalblue', 'indigo', 'fuchsia'
+    ]
+    for m in xrange(3):
+        for n in xrange(9):
+            pv_jac_n = pv_jac[m::3, n::9].diagonal()
+            pv_jac_algopy_n = pv_jac_algopy[m, :, n * 126:(n + 1) * 126].diagonal()
+            reldiff = np.abs(pv_jac_n / pv_jac_algopy_n - 1.0)
+            ax[m].semilogy(Vd, reldiff, colorcycle[n])
+        ax[m].grid()
+        ax[m].legend(
+            ['Ee', 'Tc', 'Rs', 'Rsh', 'Isat1_0', 'Isat2', 'Isc0', 'alpha_Isc',
+             'Eg'], fancybox=True, framealpha=0.5
+        )
+        ax[m].set_xlabel('Diode Voltage, Vd [V]')
+        ax[m].set_ylabel('Relative Difference')
+        ax[m].set_title(fn[m])
+    plt.tight_layout()
+    return fig
 
 @UREG.wraps(('deg', 'deg', 'dimensionless', 'dimensionless'),
             ('deg', 'deg', 'millibar', 'degC', None, 'second'))
@@ -191,7 +222,10 @@ def test_solpos():
 
 if __name__ == '__main__':
     test_unc_wrapper()
-    pv, pv_cov, pv_jac = test_IV()
+    pv, pv_cov, pv_jac, pv_jac_algopy = test_IV()
     test_solpos()
-    fig = plot_pv(pv, pv_cov)
-    fig.show()
+    fig1 = plot_pv(pv, pv_cov)
+    fig1.show()
+    fig2 = plot_pv_jac(pv_jac, pv_jac_algopy)
+    fig2.savefig('IV-PV-jac-errors.png')
+    fig2.show()

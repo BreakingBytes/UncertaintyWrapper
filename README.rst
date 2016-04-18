@@ -16,8 +16,14 @@ Requirements
 ------------
 
 * `NumPy <http://www.numpy.org/>`_
+
+Optional Requirements
+~~~~~~~~~~~~~~~~~~~~~
+
 * `Nose <https://nose.readthedocs.org/en/latest/index.html>`_ for testing.
 * `Sphinx <http://www.sphinx-doc.org/en/stable/>`_ to build documentation.
+* `NREL SOLPOS <http://rredc.nrel.gov/solar/codesandalgorithms/solpos/>`_ for testing
+* `AlgoPy <https://pythonhosted.org/algopy/>`_ for testing
 
 
 History
@@ -31,6 +37,8 @@ Releases are named after
 * Fixes #1 works with Pint's @ureg.wraps()
 * Use indices for positional arguments. Don't use inspect.argspec since not
   guaranteed to be the same for wrapped or decorated functions
+* Test Jacobian estimate for IV with `AlgoPy <https://pythonhosted.org/algopy/>`_
+* Show Jacobian errors plot in getting started docs.
 
 
 `v0.3 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3>`_ `Proterozoic Eon <https://en.wikipedia.org/wiki/Proterozoic>`_
@@ -41,7 +49,7 @@ Releases are named after
   together so that in the original function they can stay unpacked.
 * return values are grouped correctly so that they can remain unpacked in
   original function. These allow Uncertainty Wrapper to be used with
-  `Pint's wrapper <http://pint.readthedocs.org/en/0.6/wrapping.html>`_
+  `Pint's wrapper <http://pint.readthedocs.org/en/latest/wrapping.html>`_
 * covariance now specified as dimensionaless fraction of square of arguments
 * more complex tests: IV curve and solar position (requires
   `NREL's solpos <http://rredc.nrel.gov/solar/codesandalgorithms/solpos/>`_)
