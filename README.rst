@@ -25,6 +25,14 @@ History
 Releases are named after
 `geological eons, periods and epochs <https://en.wikipedia.org/wiki/Geologic_time_scale>`_.
 
+`v0.3.1 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.1>`_ `Paleoproterozoic Era <https://en.wikipedia.org/wiki/Paleoproterozoic>`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Fixes #1 works with Pint's @ureg.wraps()
+* Use indices for positional arguments. Don't use inspect.argspec since not
+  guaranteed to be the same for wrapped or decorated functions
+
+
 `v0.3 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3>`_ `Proterozoic Eon <https://en.wikipedia.org/wiki/Proterozoic>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

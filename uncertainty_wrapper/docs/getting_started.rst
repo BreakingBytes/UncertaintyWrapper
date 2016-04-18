@@ -12,8 +12,9 @@ or :func:`~uncertainty_wrapper.unc_wrapper_args`, that does the following:
 However you may need to manipulate the input arguments to match the expected
 :ref:`API`.
 
-Example
--------
+Examples
+--------
+
 The following example is from
 `Uncertainty Benchmarks <https://github.com/mikofski/uncertainty_benchmarks>`_::
 
@@ -30,9 +31,7 @@ The following example is from
     AVG = np.random.rand(NARGS) * 10.  # some test input arguments
     # randomly generated symmetrical covariance matrix
     COV = np.random.rand(NARGS, NARGS) / 10.
-    TOL = 1e-6  # make it sparse, set anything less than 1e-6 to zero
-    COV = np.where(COV > TOL, COV, np.zeros((NARGS, NARGS)))
-    COV *= COV.T  # must be symmetrical
+    COV = (COV + COV.T) / 2.0  # must be symmetrical
 
     @unc_wrapper
     def example(avg=AVG, f=F):
@@ -48,10 +47,15 @@ The following example is from
     # unc_wrapper expects there to be multiple observations
     AVG = AVG.reshape((NARGS, 1))
     print AVG
+    # [[ 1.80222955]
+    #  [ 5.62897685]]
 
     # the wrapped example now takes a second argument called
     # __covariance__
     print COV
+    # [[ 0.06798386  0.05971218]
+    #  [ 0.05971218  0.09359305]]
+
     retval = example(AVG, F, __covariance__=COV)
     # and appends covariance and Jacobian matrices to the return values
     avg, cov, jac = retval
@@ -60,15 +64,27 @@ The following example is from
     # observation and display results
     avg = avg.squeeze()
     print avg
-    # [ 11.13976423,   3.27799112]
+    # [ 55.22282851  28.43734901]
+
     print cov
-    # [[ 0.27347267,  0.13844758],
-    #  [ 0.13844758,  0.07171001]])
+    # [[ 1164.60425675   790.5452895 ]
+    #  [  415.45944116   294.07938566]]
+
     print jac
-    # [[ 6.67525707,  6.67525707],
-    #  [-2.35549673,  4.31976033]])
+    # [[ 14.86241279  14.86241279]
+    #  [ -3.6044591   11.2579537 ]]
 
     # compare to analytical derivatives
     print G(AVG).squeeze()
-    # [[ 6.67525707  6.67525707]
-    #  [-2.35549673  4.31976033]]
+    # [[ 14.86241279  14.86241279]
+    #  [ -3.6044591   11.2579537 ]]
+
+
+A more complex example is from the :mod:`~uncertainty_wrapper.tests` module
+called :func:`~uncertainty_wrapper.tests.test_IV`.
+It includes combinations of several exponential and power operations. Here the
+uncertainty in the calculation is shown using matplotlib to plot the errorbars.
+
+.. image:: _static/IV_and_PV_plots_with_uncertainty.png
+
+

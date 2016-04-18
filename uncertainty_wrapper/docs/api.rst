@@ -6,7 +6,7 @@ API
 Uncertainty Wrapper
 -------------------
 
-.. automodule:: uncertainty_wrapper
+.. automodule:: uncertainty_wrapper.core
 
 Step Size
 ~~~~~~~~~
