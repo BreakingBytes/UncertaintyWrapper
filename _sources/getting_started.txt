@@ -2,8 +2,8 @@
 
 Getting Started
 ===============
-You can wrap any Python callable using :func:`~uncertainty_wrapper.unc_wrapper`
-or :func:`~uncertainty_wrapper.unc_wrapper_args`, that does the following:
+You can wrap any Python callable using :func:`~uncertainty_wrapper.core.unc_wrapper`
+or :func:`~uncertainty_wrapper.core.unc_wrapper_args`, that does the following:
 
 * looks for ``__covariance__`` as a keyword argument
 * calculates the Jacobian and covariance matrices
@@ -82,8 +82,8 @@ This simple example using two input arguments and two return values is from
 Complex Example
 ---------------
 
-A more complex example from the :mod:`~uncertainty_wrapper.tests.test_uncertainty`
-module called :func:`~uncertainty_wrapper.tests.test_uncertainty.test_IV`,
+A more complex example from the :mod:`~uncertainty_wrapper.tests.test_uncertainty_wrapper`
+module called :func:`~uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV`,
 includes combinations of several exponential and power operations. It contains
 9 input arguments, there 126 observations of each corresponding to different
 voltages and there are 3 return values. The calculated uncertainty using a 1%

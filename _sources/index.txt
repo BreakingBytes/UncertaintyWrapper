@@ -6,6 +6,8 @@
 Welcome to Uncertainty Wrapper's documentation!
 ===============================================
 
+Version: |version| (|release|)
+
 Contents:
 
 .. toctree::
