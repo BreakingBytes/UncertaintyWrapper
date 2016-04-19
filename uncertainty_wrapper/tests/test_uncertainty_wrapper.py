@@ -4,7 +4,7 @@ Tests for :func:`~uncertainty_wrapper.unc_wrapper` and
 """
 
 from uncertainty_wrapper.tests import *
-from uncertainty_wrapper.tests.test_algopy import IV_algopy_jac
+from uncertainty_wrapper.tests.test_algopy import IV_algopy_jac, solpos_nd_jac
 
 
 def test_unc_wrapper():
@@ -174,8 +174,8 @@ def plot_pv_jac(pv_jac, pv_jac_algopy, Vd=VD):
     plt.tight_layout()
     return fig
 
-@UREG.wraps(('deg', 'deg', 'dimensionless', 'dimensionless'),
-            ('deg', 'deg', 'millibar', 'degC', None, 'second'))
+@UREG.wraps(('deg', 'deg', 'dimensionless', 'dimensionless', None, None),
+            ('deg', 'deg', 'millibar', 'degC', None, 'second', None), strict=False)
 @unc_wrapper_args(0, 1, 2, 3, 5)
 def solar_position(lat, lon, press, tamb, timestamps, seconds=0):
     """
@@ -217,7 +217,12 @@ def test_solpos():
     tamb = 293.15 * UREG.degK
     seconds = 1 * UREG.s
     cov = np.diag([0.0001] * 5)
-    return solar_position(lat, lon, press, tamb, dt, seconds, __covariance__=cov)
+    ze, az, am, ampress, cov, jac = solar_position(lat, lon, press, tamb, dt,
+                                                   seconds, __covariance__=cov)
+    jac_nd = solpos_nd_jac(lat, lon, press.to('millibar'), tamb.to('degC'), dt,
+                           seconds)
+    ok_(np.allclose(jac[:, :4], jac_nd[:, :4], rtol=0.1, atol=0.1, equal_nan=True))
+    return ze, az, am, ampress, cov, jac, jac_nd
 
 
 if __name__ == '__main__':
