@@ -14,6 +14,8 @@ Contents:
    :maxdepth: 2
 
    getting_started
+   more_examples/complex_example
+   more_examples/python_extension_example_with_units
    api
 
 Indices and tables
