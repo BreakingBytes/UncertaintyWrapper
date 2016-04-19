@@ -26,7 +26,7 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="top" title="Uncertainty Wrapper Paleoproterozoic Era documentation" href="index.html" />
-    <link rel="next" title="API" href="api.html" />
+    <link rel="next" title="Complex Example" href="more_examples/complex_example.html" />
     <link rel="prev" title="Welcome to Uncertainty Wrapper’s documentation!" href="index.html" />
    
   
@@ -118,34 +118,17 @@ or <a class="reference internal" href="api.html#uncertainty_wrapper.core.unc_wra
 </pre></div>
 </div>
 </div>
-<div class="section" id="complex-example">
-<h2>Complex Example<a class="headerlink" href="#complex-example" title="Permalink to this headline">¶</a></h2>
-<p>A more complex example from the <a class="reference internal" href="api.html#module-uncertainty_wrapper.tests.test_uncertainty_wrapper" title="uncertainty_wrapper.tests.test_uncertainty_wrapper"><code class="xref py py-mod docutils literal"><span class="pre">test_uncertainty_wrapper</span></code></a>
-module called <a class="reference internal" href="api.html#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV" title="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV"><code class="xref py py-func docutils literal"><span class="pre">test_IV()</span></code></a>,
-includes combinations of several exponential and power operations. It contains
-9 input arguments, there 126 observations of each corresponding to different
-voltages and there are 3 return values. The calculated uncertainty using a 1%
-standard deviation (square root of variance) for all 9 inputs is shown below.</p>
-<img alt="_images/IV_and_PV_plots_with_uncertainty.png" src="_images/IV_and_PV_plots_with_uncertainty.png" />
-<p>The test compares the derivatives calculated using central finite difference
-approximation with an analytical calculation from 0.3[V] to 0.6[V]. Below 0.3[V]
-the approximations deviate from the analytical for
-<span class="math">\(\frac{\partial I_{sc}}{\partial I_{sat_{1,0}}}\)</span>,
-<span class="math">\(\frac{\partial I_{sc}}{\partial I_{sat_2}}\)</span> and
-<span class="math">\(\frac{\partial I_{sc}}{\partial E_g}\)</span> while all other independent
-variables are consistently below 10e-7. The analytical derivatives are propagated
-using <a class="reference external" href="https://pythonhosted.org/algopy/">AlgoPy</a>, an automatic differentiation
-package, which requires rewriting all NumPy operations like <span class="math">\(exp\)</span> using
-AlgoPy. This makes it impractical for use in most models, but still useful for
-testing.</p>
-<img alt="_images/IV-PV-jac-errors.png" src="_images/IV-PV-jac-errors.png" />
-</div>
-<div class="section" id="python-extension-example">
-<h2>Python Extension Example<a class="headerlink" href="#python-extension-example" title="Permalink to this headline">¶</a></h2>
-<p>Often Python packages contain extensions in C/C++ which can&#8217;t be tested using
-automatic differentiation. The Numdidfftools is an alternative package that can
-calculate derivatives more accurately than the central finite difference
-approximation.</p>
+<div class="section" id="more-examples">
+<h2>More Examples<a class="headerlink" href="#more-examples" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference internal" href="more_examples/complex_example.html#complex-example"><span>Complex Example</span></a></li>
+<li><a class="reference internal" href="more_examples/python_extension_example_with_units.html#python-extension-example-with-units"><span>Python Extension Example with Units</span></a></li>
+</ul>
+<p>The next sections contain more examples cover more advanced usage. Uncertanty
+Wrapper can consider multiple inputs arguments and return values. It can also be
+used with Python extensions written in c/c++. Finally
+<a class="reference internal" href="api.html#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal"><span class="pre">unc_wrapper_args()</span></code></a> can be used with Pint&#8217;s
+wrapper to automatically check units.</p>
 </div>
 </div>
 
@@ -178,10 +161,11 @@ approximation.</p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#simple-example">Simple Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#complex-example">Complex Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#python-extension-example">Python Extension Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#more-examples">More Examples</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="more_examples/complex_example.html">Complex Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="more_examples/python_extension_example_with_units.html">Python Extension Example with Units</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
@@ -190,7 +174,7 @@ approximation.</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="index.html" title="previous chapter">Welcome to Uncertainty Wrapper&#8217;s documentation!</a></li>
-      <li>Next: <a href="api.html" title="next chapter">API</a></li>
+      <li>Next: <a href="more_examples/complex_example.html" title="next chapter">Complex Example</a></li>
   </ul></li>
 </ul>
 </div>

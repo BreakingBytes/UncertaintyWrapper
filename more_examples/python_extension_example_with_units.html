@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Python Extension Example with Units &mdash; Uncertainty Wrapper Paleoproterozoic Era documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'Paleoproterozoic Era',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="Uncertainty Wrapper Paleoproterozoic Era documentation" href="../index.html" />
+    <link rel="next" title="API" href="../api.html" />
+    <link rel="prev" title="Complex Example" href="complex_example.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="python-extension-example-with-units">
+<span id="id1"></span><h1>Python Extension Example with Units<a class="headerlink" href="#python-extension-example-with-units" title="Permalink to this headline">¶</a></h1>
+<p>Often Python packages contain extensions in C/C++ which can&#8217;t be tested using
+automatic differentiation. The Numdidfftools is an alternative package that can
+calculate derivatives more accurately than the central finite difference
+approximation.</p>
+<p>An example of using <a class="reference internal" href="../api.html#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal"><span class="pre">unc_wrapper_args()</span></code></a> with a
+Python extension written in C/C++ is in the tests called
+<a class="reference internal" href="../api.html#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos" title="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos"><code class="xref py py-func docutils literal"><span class="pre">test_solpos()</span></code></a>. This
+test using C/C++ code from NREL that is called using Python <code class="docutils literal"><span class="pre">ctypes</span></code> module.</p>
+<p>This example also demonstrates using Pint&#8217;s units wrapper. When using the units
+wrapper, you must use <a class="reference internal" href="../api.html#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal"><span class="pre">unc_wrapper_args()</span></code></a> and
+specify the indices of the positional arguments which corresond to the covariance
+matrix. Also, two additional <code class="docutils literal"><span class="pre">None,</span> <span class="pre">None</span></code> should be appended to the units
+wrapper return values because otherwise Pint uses <code class="docutils literal"><span class="pre">zip(out_units,</span> <span class="pre">retvals)</span></code>
+and therefore the covariance and Jacobian matrices will get dropped.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nd">@UREG.wraps</span><span class="p">((</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="s1">&#39;dimensionless&#39;</span><span class="p">,</span> <span class="s1">&#39;dimensionless&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="s1">&#39;millibar&#39;</span><span class="p">,</span> <span class="s1">&#39;degC&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;second&#39;</span><span class="p">))</span>
+<span class="nd">@unc_wrapper_args</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">solar_position</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">press</span><span class="p">,</span> <span class="n">tamb</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Then test it out.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">dt</span> <span class="o">=</span> <span class="n">PST</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2016</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">lat</span> <span class="o">=</span> <span class="mf">37.405</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">deg</span>
+<span class="n">lon</span> <span class="o">=</span> <span class="o">-</span><span class="mf">121.95</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">deg</span>
+<span class="n">press</span> <span class="o">=</span> <span class="mi">101325</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">Pa</span>
+<span class="n">tamb</span> <span class="o">=</span> <span class="mf">293.15</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">degK</span>
+<span class="n">seconds</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">s</span>
+<span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mf">0.0001</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">ze</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">am</span><span class="p">,</span> <span class="n">ampress</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">jac</span> <span class="o">=</span> <span class="n">solar_position</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">press</span><span class="p">,</span> <span class="n">tamb</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span>
+                                               <span class="n">seconds</span><span class="p">,</span> <span class="n">__covariance__</span><span class="o">=</span><span class="n">cov</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The results are:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span># &lt;Quantity([ 28.39483643], &#39;deg&#39;)&gt;  # zenith
+# &lt;Quantity([ 191.40260315], &#39;deg&#39;)&gt;  # azimuth
+# &lt;Quantity([ 1.1361022], &#39;dimensionless&#39;)&gt;  # air mass
+# &lt;Quantity([ 1.13638258], &#39;dimensionless&#39;)&gt;  # pressure corrected air mass
+# covariance
+# array([[  1.34817971e+00,   1.58771853e+01,   1.44602315e-02,
+            1.44602315e-02],
+         [  1.58771853e+01,   2.09001667e+02,   1.70204117e-01,
+            1.70204117e-01],
+         [  1.44602315e-02,   1.70204117e-01,   1.55097144e-04,
+            1.55097144e-04],
+         [  1.44602315e-02,   1.70204117e-01,   1.55097144e-04,
+            2.85468656e-04]])
+# Jacobian
+# array([[  9.76813540e-01,   1.65303295e-01,   0.00000000e+00,
+            0.00000000e+00,   1.08353210e+02],
+         [ -4.04198706e-01,   2.16960574e+00,   0.00000000e+00,
+            0.00000000e+00,   1.42119094e+03],
+         [  1.05260080e-02,   1.77571899e-03,   0.00000000e+00,
+            0.00000000e+00,   1.16148972e+00],
+         [  1.05260080e-02,   1.77571899e-03,   1.12687239e-03,
+            0.00000000e+00,   1.16148972e+00]]))
+</pre></div>
+</div>
+<p>Note that Pint corrects the ambient temperature from Kelvin to Celsius and also
+converted Pascals to millibar. Finally Pint appends the specified units to the
+return values.</p>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/sp_2014_logo_black_orange_rgb.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SunPower&repo=UncertaintyWrapper&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="complex_example.html">Complex Example</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Python Extension Example with Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="complex_example.html" title="previous chapter">Complex Example</a></li>
+      <li>Next: <a href="../api.html" title="next chapter">API</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, SunPower.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="../_sources/more_examples/python_extension_example_with_units.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
