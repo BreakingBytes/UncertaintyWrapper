@@ -6,10 +6,19 @@ before_install:
 before_script:
   - pip install requests cython
   - export PVLIB_PATH=/home/travis/build/pvlib/pvlib-python
+  - echo $PVLIB_PATH
   - git clone https://github.com/pvlib/pvlib-python.git $PVLIB_PATH
   - python /home/travis/build/SunPower/UncertaintyWrapper/get_spa.py
-  - python $PVLIB_PATH/pvlib/spa_c_files/setup.py build_ext --inplace
-  - python $PVLIB_PATH/setup.py bdist_wheel
-  - pip install -U $PVLIB_PATH/dist/pvlib-*.whl
+  - BUILD_DIR=$PWD
+  - echo leaving $BUILD_DIR
+  - cd $PVLIB_PATH/pvlib/spa_c_files/
+  - echo entered $PWD
+  - python setup.py build_ext --inplace
+  - cd $PVLIB_PATH/
+  - echo entered $PWD
+  - python setup.py bdist_wheel
+  - pip install -U dist/pvlib-*.whl
+  - cd $BUILD_DIR
+  - echo entered $PWD
 # command to run tests
 script: py.test
