@@ -3,7 +3,7 @@ Tests for :func:`~uncertainty_wrapper.unc_wrapper` and
 :func:`~uncertainty_wrapper.unc_wrapper_args`
 """
 
-# import ok_, np, pd,unc_wrapper, unc_wrapper_args, KB, QE, jflatten,
+# import ok_, np, pd,unc_wrapper, unc_wrapper_args, KB, QE,
 # pvlib, plt, UREG, PST and LOGGER from .tests
 from uncertainty_wrapper.tests import *
 from uncertainty_wrapper.tests.test_algopy import IV_algopy_jac, solpos_nd_jac
