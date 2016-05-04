@@ -21,7 +21,10 @@ SunPower Corp. (c) 2016
 
 from functools import wraps
 import numpy as np
+import logging
 
+logging.basicConfig(level=logging.DEBUG)
+LOGGER = logging.getLogger(__name__)
 DELTA = np.finfo(float).eps ** (1.0 / 3.0) / 2.0
 
 
@@ -124,6 +127,7 @@ def unc_wrapper_args(*covariance_keys):
         @wraps(f)
         def wrapped_function(*args, **kwargs):
             cov = kwargs.pop('__covariance__', None)  # pop covariance
+            LOGGER.debug('covariance:\n%r', cov)
             # covariance keys cannot be defaults, they must be in args or kwargs
             cov_keys = covariance_keys
             # convert args to kwargs by index
@@ -141,6 +145,8 @@ def unc_wrapper_args(*covariance_keys):
             else:
                 # arguments already grouped
                 x = kwargs.pop(0)  # use first argument
+            LOGGER.debug('covariance keys:\n%r', cov_keys)
+            LOGGER.debug('independent variables:\n%r', x)
             # remaining args
             args_dict = {}
             

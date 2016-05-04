@@ -1,11 +1,7 @@
 """UncertaintyWrapper"""
 
-import logging
 from uncertainty_wrapper.core import unc_wrapper, unc_wrapper_args
 
-logging.basicConfig()
-LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.DEBUG)
 __VERSION__ = '0.3.2'
 __RELEASE__ = u"Mesoproterozoic Era"
 __URL__ = u'https://github.com/SunPower/UncertaintyWrapper'
