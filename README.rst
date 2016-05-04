@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/SunPower/UncertaintyWrapper.svg?branch=master
+    :target: https://travis-ci.org/SunPower/UncertaintyWrapper
+    
 UncertaintyWrapper
 ==================
 
@@ -30,6 +33,12 @@ History
 -------
 Releases are named after
 `geological eons, periods and epochs <https://en.wikipedia.org/wiki/Geologic_time_scale>`_.
+
+`v0.3.2 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.2>`_ `Mesoproterozoic Era <https://en.wikipedia.org/wiki/Mesoproterozoic>`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* Fixes #2, don't need to tile scalar x for multiple observations
+* uses pvlib example instead of proprietary solar_utils
+
 
 `v0.3.1 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.1>`_ `Paleoproterozoic Era <https://en.wikipedia.org/wiki/Paleoproterozoic>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

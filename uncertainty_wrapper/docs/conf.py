@@ -34,7 +34,9 @@ from uncertainty_wrapper import __VERSION__, __RELEASE__, __AUTHOR__
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
+    'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
+    'sphinx.ext.viewcode',
     'alabaster'
 ]
 
@@ -122,8 +124,12 @@ html_theme = 'alabaster'
 # documentation.
 html_theme_options = {
     'logo': 'sp_2014_logo_black_orange_rgb.png',
+    'logo_name': True,
+    'description': 'Calculate uncertainty and sensitivity of any function',
     'github_user': 'SunPower',
     'github_repo': 'UncertaintyWrapper',
+    'github_banner': True,
+    'travis_button': True,
     'show_related': True
 }
 
@@ -169,8 +175,8 @@ html_sidebars = {
     '**': [
         'about.html',
         'navigation.html',
-        'relations.html',
         'searchbox.html',
+        'relations.html'
     ]
 }
 
