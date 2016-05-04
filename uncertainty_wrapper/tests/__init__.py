@@ -9,15 +9,16 @@ import numpy as np
 from uncertainty_wrapper import unc_wrapper, unc_wrapper_args, logging
 from scipy.constants import Boltzmann as KB, elementary_charge as QE
 from datetime import datetime, timedelta
-from solar_utils import solposAM
 import pytz
 import pint
 from matplotlib import pyplot as plt
+import pandas as pd
+import pvlib
 
 
 UREG = pint.UnitRegistry()
 PST = pytz.timezone('US/Pacific')
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.DEBUG)
-__all__ = ['ok_', 'np', 'unc_wrapper', 'unc_wrapper_args', 'KB', 'QE',
-           'datetime', 'timedelta', 'solposAM', 'plt', 'UREG', 'PST', 'LOGGER']
+__all__ = ['ok_', 'np', 'pd', 'unc_wrapper', 'unc_wrapper_args', 'KB', 'QE',
+           'pvlib', 'datetime', 'timedelta', 'plt', 'UREG', 'PST', 'LOGGER']

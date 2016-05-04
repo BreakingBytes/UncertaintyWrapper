@@ -4,7 +4,7 @@ Test AlgoPy and numdifftools
 
 from algopy import UTPM, exp, log, sqrt, zeros
 import numdifftools as nd
-from uncertainty_wrapper.tests import KB, QE, solposAM, np, timedelta
+from uncertainty_wrapper.tests import KB, QE, np, timedelta, pvlib, pd
 
 
 def IV_algopy(x, Vd, E0=1000, T0=298.15, kB=KB, qe=QE):
@@ -59,49 +59,35 @@ def IV_algopy_jac (Ee, Tc, Rs, Rsh, Isat1_0, Isat2, Isc0, alpha_Isc, Eg, Vd):
     return UTPM.extract_jacobian(IV_algopy(x, Vd))
 
 
-def solar_position(lat, lon, press, tamb, timestamps, seconds=0):
-    """
-    calculate solar position
-    """
-    seconds = np.sign(seconds) * np.ceil(np.abs(seconds))
-    # seconds = np.where(x > 0, np.ceil(seconds), np.floor(seconds))
-    try:
-        ntimestamps = len(timestamps)
-    except TypeError:
-        ntimestamps = 1
-        timestamps = [timestamps]
-    an, am = np.zeros((ntimestamps, 2)), np.zeros((ntimestamps, 2))
-    for n, ts in enumerate(timestamps):
-        utcoffset = ts.utcoffset()
-        dst = ts.dst()
-        if None in (utcoffset, dst):
-            tz = 0.0  # assume UTC if naive
-        else:
-            tz = (utcoffset.total_seconds() - dst.total_seconds()) / 3600.0
-        loc = [lat, lon, tz]
-        dt = ts + timedelta(seconds=seconds.item())
-        dt = dt.timetuple()[:6]
-        an[n], am[n] = solposAM(loc, dt, [press, tamb])
-    return an[:, 0], an[:, 1], am[:, 0], am[:, 1]
+
+def spa(times, latitude, longitude, pressure, altitude, temperature):
+    dataframe = pvlib.solarposition.spa_c(times, latitude, longitude, pressure,
+                                          temperature)
+    retvals = dataframe.to_records()
+    zenith = retvals['apparent_zenith']
+    zenith = np.where(zenith < 90, zenith, np.nan)
+    azimuth = retvals['azimuth']
+    return zenith, azimuth
 
 
-def solpos_nd_jac(lat, lon, press, tamb, dt, seconds):
+def solpos_nd_jac(times, latitude, longitude, pressure, altitude, temperature):
     """
 
-    :param lat: [deg] latitude
-    :param lon: [deg] longitude
-    :param press: [mbar] pressure
-    :param tamb: [C] ambient temperature
-    :param dt: datetime
-    :param seconds: [s] seconds
-    :type seconds: int
+    :param times: timestamps
+    :param latitude: [deg] latitude
+    :param longitude: [deg] longitude
+    :param pressure: [mbar] pressure
+    :param altitude: [m] elevation above sea level
+    :param temperature: [C] ambient temperature
     :return: Jacobian estimated using ``numdifftools``
     """
 
-    def f(x, dt):
-        lat, lon, press, tamb, seconds = x
-        return np.array(solar_position(lat, lon, press, tamb, dt, seconds))
+    def f(x, times):
+        latitude, longitude, pressure, altitude, temperature = x
+        return np.array(spa(times, latitude, longitude, pressure, altitude,
+                            temperature))
 
     j = nd.Jacobian(f)
-    x = np.array([q.magnitude for q in (lat, lon, press, tamb, seconds)])
-    return j(x, dt).squeeze()
+    x = np.array([q.magnitude for q in
+                  (latitude, longitude, pressure, altitude, temperature)])
+    return j(x, times).squeeze()

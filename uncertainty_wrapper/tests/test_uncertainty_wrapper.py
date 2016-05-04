@@ -3,6 +3,8 @@ Tests for :func:`~uncertainty_wrapper.unc_wrapper` and
 :func:`~uncertainty_wrapper.unc_wrapper_args`
 """
 
+# import ok_, np, pd,unc_wrapper, unc_wrapper_args, KB, QE, datetime, timedelta,
+# pvlib, plt, UREG, PST and LOGGER from .tests
 from uncertainty_wrapper.tests import *
 from uncertainty_wrapper.tests.test_algopy import IV_algopy_jac, solpos_nd_jac
 
@@ -86,9 +88,10 @@ assert np.isclose(VOC, 0.62816490891656673)
 LOGGER.debug('Voc = %g[V]', VOC)
 VD = np.arange(0, VOC, 0.005)
 X = np.array([EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG])
+X = X.reshape(-1, 1)
 COV = np.diag([1e-4] * X.size)
-X = X.reshape(-1, 1).repeat(VD.size, axis=1)
-COV = np.tile(COV, (VD.size, 1, 1))
+X_algopy = X.repeat(VD.size, axis=1)
+# COV_algopy = np.tile(COV, (VD.size, 1, 1))
 
 
 def test_IV():
@@ -99,7 +102,7 @@ def test_IV():
     """
     f = unc_wrapper(IV)
     pv, pv_cov, pv_jac = f(X, VD, __covariance__=COV)
-    pv_jac_algopy = IV_algopy_jac(*X, Vd=VD)
+    pv_jac_algopy = IV_algopy_jac(*X_algopy, Vd=VD)
     nVd = pv_jac_algopy.shape[1]
     for n in xrange(nVd // 2, nVd):
         irow, icol = 3 * n, 9 * n
@@ -174,55 +177,35 @@ def plot_pv_jac(pv_jac, pv_jac_algopy, Vd=VD):
     plt.tight_layout()
     return fig
 
-@UREG.wraps(('deg', 'deg', 'dimensionless', 'dimensionless', None, None),
-            ('deg', 'deg', 'millibar', 'degC', None, 'second', None), strict=False)
-@unc_wrapper_args(0, 1, 2, 3, 5)
-def solar_position(lat, lon, press, tamb, timestamps, seconds=0):
-    """
-    calculate solar position
-    """
-    seconds = np.sign(seconds) * np.ceil(np.abs(seconds))
-    # seconds = np.where(x > 0, np.ceil(seconds), np.floor(seconds))
-    try:
-        ntimestamps = len(timestamps)
-    except TypeError:
-        ntimestamps = 1
-        timestamps = [timestamps]
-    an, am = np.zeros((ntimestamps, 2)), np.zeros((ntimestamps, 2))
-    for n, ts in enumerate(timestamps):
-        utcoffset = ts.utcoffset()
-        dst = ts.dst()
-        if None in (utcoffset, dst):
-            tz = 0.0  # assume UTC if naive
-        else:
-            tz = (utcoffset.total_seconds() - dst.total_seconds()) / 3600.0
-        loc = [lat, lon, tz]
-        dt = ts + timedelta(seconds=seconds.item())
-        dt = dt.timetuple()[:6]
-        LOGGER.debug('datetime: %r', datetime(*dt).strftime('%Y/%m/%d-%H:%M:%S'))
-        LOGGER.debug('lat: %f, lon: %f, tz: %d', *loc)
-        LOGGER.debug('p = %f[mbar], T = %f[C]', press, tamb)
-        an[n], am[n] = solposAM(loc, dt, [press, tamb])
-    return an[:, 0], an[:, 1], am[:, 0], am[:, 1]
+
+@UREG.wraps(('deg', 'deg', None, None),
+            (None, 'deg', 'deg', 'Pa', 'm', 'degC'))
+@unc_wrapper_args(1, 2, 3, 4, 5)
+# indices specify positions of independent variables:
+# 1: latitude, 2: longitude, 3: pressure, 4: altitude, 5: temperature
+def spa(times, latitude, longitude, pressure, altitude, temperature):
+    dataframe = pvlib.solarposition.spa_c(times, latitude, longitude, pressure,
+                                          temperature)
+    retvals = dataframe.to_records()
+    zenith = retvals['apparent_zenith']
+    zenith = np.where(zenith < 90, zenith, np.nan)
+    azimuth = retvals['azimuth']
+    return zenith, azimuth
 
 
 def test_solpos():
     """
     Test solar position calculation using NREL's SOLPOS.
     """
-    dt = PST.localize(datetime(2016, 4, 13, 12, 30, 0))
-    lat = 37.405 * UREG.deg
-    lon = -121.95 * UREG.deg
-    press = 101325 * UREG.Pa
-    tamb = 293.15 * UREG.degK
-    seconds = 1 * UREG.s
-    cov = np.diag([0.0001] * 5)
-    ze, az, am, ampress, cov, jac = solar_position(lat, lon, press, tamb, dt,
-                                                   seconds, __covariance__=cov)
-    jac_nd = solpos_nd_jac(lat, lon, press.to('millibar'), tamb.to('degC'), dt,
-                           seconds)
-    ok_(np.allclose(jac[:, :4], jac_nd[:, :4], rtol=0.1, atol=0.1, equal_nan=True))
-    return ze, az, am, ampress, cov, jac, jac_nd
+    times = pd.DatetimeIndex(start='2015/1/1', end='2015/1/2', freq='1h',
+                             tz=PST)
+    latitude, longitude = 37.0 * UREG.deg, -122.0 * UREG.deg
+    pressure, temperature = 101325.0 * UREG.Pa, UREG.Quantity(22.0, UREG.degC)
+    altitude = 0.0 * UREG.m
+    # standard deviation of 1% assuming normal distribution
+    covariance = np.diag([0.0001] * 5)
+    return spa(times, latitude, longitude, pressure, altitude, temperature,
+               __covariance__=covariance)
 
 
 if __name__ == '__main__':

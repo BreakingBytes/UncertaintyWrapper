@@ -4,6 +4,14 @@ central finite difference approximation of the Jacobian matrix.
 
 .. math::
 
+    frac{\partial f_i}{\partial x_{j,k}}
+
+Uncertainty of the output is propagated using 1_{st} order terms of a Taylor
+series expansion around :math:`x`.
+
+
+.. math::
+
     dF_{ij} = J_{ij} * S_{x_i, x_j} * J_{ij}^{T}
 
 Diagonals of :math:`dF_{ij}` are standard deviations squared.
@@ -17,7 +25,7 @@ import numpy as np
 DELTA = np.finfo(float).eps ** (1.0 / 3.0) / 2.0
 
 
-def partial_derivative(f, x, n, nargs, nobs, delta=DELTA):
+def partial_derivative(f, x, n, nargs, delta=DELTA):
     """
     Calculate partial derivative using central finite difference approximation.
 
@@ -25,19 +33,23 @@ def partial_derivative(f, x, n, nargs, nobs, delta=DELTA):
     :param x: sequence of arguments
     :param n: index of argument derivateve is with respect to
     :param nargs: number of arguments
-    :param nobs: number of observations
     :param delta: optional step size, default is :math:`\\epsilon^{1/3}` where
         :math:`\\epsilon` is machine precision
     """
-    dx = np.zeros((nargs, nobs))
+    dx = np.zeros((nargs, 1))
     # scale delta by (|x| + 1.0) to avoid noise from machine precision
     dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
-    return (f(x + dx) - f(x - dx)) / dx[n] / 2.0
+    try:
+        x_dx = x + dx, x - dx
+    except TypeError:
+        # TypeError: can only concatenate list (not "dx type") to list
+        x_dx = [(xi + dxi, xi - dxi) for xi, dxi in zip(xi, dxi)]
+    return (f(x_dx[0]) - f(x_dx[1])) / dx[n] / 2.0
 
 
 # TODO: make this a class, add DELTA as class variable and flatten as method
-def jacobian(func, x, *args, **kwargs):
+def jacobian(func, x, nf, nobs, *args, **kwargs):
     """
     Estimate Jacobian matrices :math:`\\frac{\\partial f_i}{\\partial x_{j,k}}`
     where :math:`k` are independent observations of :math:`x`.
@@ -60,18 +72,16 @@ def jacobian(func, x, *args, **kwargs):
 
     :param func: function
     :param x: independent variables grouped by observation
+    :param nf: number of return in output (1st dimension)
+    :param nobs: number of observations in output (2nd dimension)
     :return: Jacobian matrices for each observation
     """
-    nargs = x.shape[0]  # degrees of freedom
-    nobs = x.size / nargs  # number of observations
+    nargs = len(x)  # degrees of freedom
     f = lambda x_: func(x_, *args, **kwargs)
-    j = None  # matrix of zeros
+    j = np.zeros((nargs, nf, nobs))  # matrix of zeros            
     for n in xrange(nargs):
-        df = partial_derivative(f, x, n, nargs, nobs)
-        if j is None:
-            j = np.zeros((nargs, df.shape[0], nobs))
-        j[n] = df
-        # better to transpose J once than to transpose df each time
+        j[n] = partial_derivative(f, x, n, nargs)
+        # better to transpose J once than transpose partial derivative each time
         # j[:,:,n] = df.T
     return j.T
 
@@ -161,15 +171,18 @@ def unc_wrapper_args(*covariance_keys):
 
             # evaluate function and Jacobian
             avg = f_(x, *args, **kwargs)
-            jac = jacobian(f_, x, *args, **kwargs)
-            # covariance must account for all observations
-            if cov is not None and cov.ndim == 3:
-                # if covariance is an array of covariances, flatten it.
-                cov = jflatten(cov)
+            nf, nobs = avg.shape
+            jac = jacobian(f_, x, nf, nobs, *args, **kwargs)
             jac = jflatten(jac)  # flatten Jacobian
             # calculate covariance
             if cov is not None:
-                cov *= x.T.flatten() ** 2  # scale covariances by x squared
+                cov *= x ** 2  # scale covariances by x squared
+                if jac.shape[1] == cov.shape[1] * nobs:
+                    cov = np.tile(cov, (nobs, 1, 1))
+                # covariance must account for all observations
+                if cov.ndim == 3:
+                    # if covariance is an array of covariances, flatten it.
+                    cov = jflatten(cov)
                 cov = np.dot(np.dot(jac, cov), jac.T)
             # unpack returns for original function with ungrouped arguments
             if cov_keys is None or len(cov_keys) > 0:
