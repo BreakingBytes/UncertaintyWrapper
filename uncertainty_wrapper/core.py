@@ -41,10 +41,10 @@ def partial_derivative(f, x, n, nargs, delta=DELTA):
     dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
     try:
-        x_dx = x + dx, x - dx
+        x_dx = x + [dx, -dx]
     except TypeError:
         # TypeError: can only concatenate list (not "dx type") to list
-        x_dx = [(xi + dxi, xi - dxi) for xi, dxi in zip(xi, dxi)]
+        x_dx = zip(*[xi + (dxi, -dxi) for xi, dxi in zip(x, dx)])
     return (f(x_dx[0]) - f(x_dx[1])) / dx[n] / 2.0
 
 
@@ -176,7 +176,7 @@ def unc_wrapper_args(*covariance_keys):
             jac = jflatten(jac)  # flatten Jacobian
             # calculate covariance
             if cov is not None:
-                cov *= x ** 2  # scale covariances by x squared
+                cov *= x.T.flatten() ** 2  # scale covariances by x squared
                 if jac.shape[1] == cov.shape[1] * nobs:
                     cov = np.tile(cov, (nobs, 1, 1))
                 # covariance must account for all observations

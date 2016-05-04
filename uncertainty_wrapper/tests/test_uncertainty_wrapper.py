@@ -3,7 +3,7 @@ Tests for :func:`~uncertainty_wrapper.unc_wrapper` and
 :func:`~uncertainty_wrapper.unc_wrapper_args`
 """
 
-# import ok_, np, pd,unc_wrapper, unc_wrapper_args, KB, QE, datetime, timedelta,
+# import ok_, np, pd,unc_wrapper, unc_wrapper_args, KB, QE, jflatten,
 # pvlib, plt, UREG, PST and LOGGER from .tests
 from uncertainty_wrapper.tests import *
 from uncertainty_wrapper.tests.test_algopy import IV_algopy_jac, solpos_nd_jac
@@ -163,7 +163,9 @@ def plot_pv_jac(pv_jac, pv_jac_algopy, Vd=VD):
     for m in xrange(3):
         for n in xrange(9):
             pv_jac_n = pv_jac[m::3, n::9].diagonal()
-            pv_jac_algopy_n = pv_jac_algopy[m, :, n * 126:(n + 1) * 126].diagonal()
+            pv_jac_algopy_n = pv_jac_algopy[
+                m, :, n * 126:(n + 1) * 126
+            ].diagonal()
             reldiff = np.abs(pv_jac_n / pv_jac_algopy_n - 1.0)
             ax[m].semilogy(Vd, reldiff, colorcycle[n])
         ax[m].grid()
@@ -198,14 +200,23 @@ def test_solpos():
     Test solar position calculation using NREL's SOLPOS.
     """
     times = pd.DatetimeIndex(start='2015/1/1', end='2015/1/2', freq='1h',
-                             tz=PST)
+                             tz=PST).tz_convert(UTC)
     latitude, longitude = 37.0 * UREG.deg, -122.0 * UREG.deg
     pressure, temperature = 101325.0 * UREG.Pa, UREG.Quantity(22.0, UREG.degC)
     altitude = 0.0 * UREG.m
     # standard deviation of 1% assuming normal distribution
     covariance = np.diag([0.0001] * 5)
-    return spa(times, latitude, longitude, pressure, altitude, temperature,
-               __covariance__=covariance)
+    ze, az, cov, jac = spa(times, latitude, longitude, pressure, altitude,
+                           temperature, __covariance__=covariance)
+    jac_nd = solpos_nd_jac(times, latitude, longitude, pressure, altitude,
+                           temperature)
+    for n in xrange(times.size):
+        r, c = 2 * n, 5 * n
+        # some rows which numdifftools returned nan
+        if n in [0,  8, 17, 24]:
+            continue
+        ok_(np.allclose(jac[r:(r + 2), c:(c + 5)], jac_nd[n], equal_nan=True))
+    return ze, az, cov, jac, jac_nd
 
 
 if __name__ == '__main__':

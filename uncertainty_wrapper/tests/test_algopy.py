@@ -4,7 +4,7 @@ Test AlgoPy and numdifftools
 
 from algopy import UTPM, exp, log, sqrt, zeros
 import numdifftools as nd
-from uncertainty_wrapper.tests import KB, QE, np, timedelta, pvlib, pd
+from uncertainty_wrapper.tests import KB, QE, np, pvlib
 
 
 def IV_algopy(x, Vd, E0=1000, T0=298.15, kB=KB, qe=QE):
