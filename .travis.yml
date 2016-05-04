@@ -4,7 +4,7 @@ before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libatlas-dev liblapack-dev libblas-dev gfortran
 before_script:
-  - pip install requests
+  - pip install requests cython
   - export PVLIB_PATH=/home/travis/build/pvlib/pvlib-python
   - git clone https://github.com/pvlib/pvlib-python.git $PVLIB_PATH
   - python /home/travis/build/SunPower/UncertaintyWrapper/get_spa.py
