@@ -11,7 +11,7 @@ try:
 except ImportError:
     from distutils.core import setup
 from uncertainty_wrapper import (
-    __name__, __VERSION__, __AUTHOR__, __EMAIL__, __URL__
+    __VERSION__, __AUTHOR__, __EMAIL__, __URL__
 )
 
 import os
@@ -23,9 +23,9 @@ try:
 except IOError:
     pass
 
-setup(name=__name__,
+setup(name='UncertaintyWrapper',
       version=__VERSION__,
-      description='Uncertainty wrapper using estimate Jacobian',
+      description='Uncertainty wrapper using estimated Jacobian',
       long_description=README,
       author=__AUTHOR__,
       author_email=__EMAIL__,

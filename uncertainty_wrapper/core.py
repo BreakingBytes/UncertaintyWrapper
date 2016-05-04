@@ -4,7 +4,7 @@ central finite difference approximation of the Jacobian matrix.
 
 .. math::
 
-    frac{\partial f_i}{\partial x_{j,k}}
+    \frac{\partial f_i}{\partial x_{j,k}}
 
 Uncertainty of the output is propagated using 1_{st} order terms of a Taylor
 series expansion around :math:`x`.

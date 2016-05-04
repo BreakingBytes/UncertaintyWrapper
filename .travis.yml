@@ -3,5 +3,13 @@ sudo: required
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get install -y libatlas-dev liblapack-dev libblas-dev gfortran
+before_script:
+  - pip install requests
+  - export PVLIB_PATH=/home/travis/build/pvlib/pvlib-python
+  - git clone https://github.com/pvlib/pvlib-python.git $PVLIB_PATH
+  - python /home/travis/build/SunPower/UncertaintyWrapper/get_spa.py
+  - python $PVLIB_PATH/pvlib/spa_c_files/setup.py build_ext --inplace
+  - python $PVLIB_PATH/setup.py bdist_wheel
+  - pip install -U $PVLIB_PATH/dist/pvlib-*.whl
 # command to run tests
 script: py.test

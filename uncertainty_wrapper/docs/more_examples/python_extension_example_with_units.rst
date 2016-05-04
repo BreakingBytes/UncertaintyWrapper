@@ -20,49 +20,82 @@ matrix. Also, two additional ``None, None`` should be appended to the units
 wrapper return values because otherwise Pint uses ``zip(out_units, retvals)``
 and therefore the covariance and Jacobian matrices will get dropped. ::
 
-    @UREG.wraps(('deg', 'deg', 'dimensionless', 'dimensionless', None, None),
-                ('deg', 'deg', 'millibar', 'degC', None, 'second'))
-    @unc_wrapper_args(0, 1, 2, 3, 5)
-    def solar_position(lat, lon, press, tamb, timestamps, seconds=0):
-        pass
+    @UREG.wraps(('deg', 'deg', None, None),
+                (None, 'deg', 'deg', 'Pa', 'm', 'degC'))
+    @unc_wrapper_args(1, 2, 3, 4, 5)
+    # indices specify positions of independent variables:
+    # 1: latitude, 2: longitude, 3: pressure, 4: altitude, 5: temperature
+    def spa(times, latitude, longitude, pressure, altitude, temperature):
+        dataframe = pvlib.solarposition.spa_c(times, latitude, longitude, pressure,
+                                              temperature)
+        retvals = dataframe.to_records()
+        zenith = retvals['apparent_zenith']
+        zenith = np.where(zenith < 90, zenith, np.nan)
+        azimuth = retvals['azimuth']
+        return zenith, azimuth
 
 Then test it out. ::
 
-    dt = PST.localize(datetime(2016, 4, 13, 12, 30, 0))
-    lat = 37.405 * UREG.deg
-    lon = -121.95 * UREG.deg
-    press = 101325 * UREG.Pa
-    tamb = 293.15 * UREG.degK
-    seconds = 1 * UREG.s
-    cov = np.diag([0.0001] * 5)
-    ze, az, am, ampress, cov, jac = solar_position(lat, lon, press, tamb, dt,
-                                                   seconds, __covariance__=cov)
+    times = pd.DatetimeIndex(start='2015/1/1', end='2015/1/2', freq='1h',
+                             tz=PST).tz_convert(UTC)
+    latitude, longitude = 37.0 * UREG.deg, -122.0 * UREG.deg
+    pressure, temperature = 101325.0 * UREG.Pa, UREG.Quantity(22.0, UREG.degC)
+    altitude = 0.0 * UREG.m
+    # standard deviation of 1% assuming normal distribution
+    covariance = np.diag([0.0001] * 5)
+    ze, az, cov, jac = spa(times, latitude, longitude, pressure, altitude,
+                           temperature, __covariance__=covariance)
 
 The results are::
 
-    # <Quantity([ 28.39483643], 'deg')>  # zenith
-    # <Quantity([ 191.40260315], 'deg')>  # azimuth
-    # <Quantity([ 1.1361022], 'dimensionless')>  # air mass
-    # <Quantity([ 1.13638258], 'dimensionless')>  # pressure corrected air mass
-    # covariance
-    # array([[  1.34817971e+00,   1.58771853e+01,   1.44602315e-02,
-                1.44602315e-02],
-             [  1.58771853e+01,   2.09001667e+02,   1.70204117e-01,
-                1.70204117e-01],
-             [  1.44602315e-02,   1.70204117e-01,   1.55097144e-04,
-                1.55097144e-04],
-             [  1.44602315e-02,   1.70204117e-01,   1.55097144e-04,
-                2.85468656e-04]])
-    # Jacobian
-    # array([[  9.76813540e-01,   1.65303295e-01,   0.00000000e+00,
-                0.00000000e+00,   1.08353210e+02],
-             [ -4.04198706e-01,   2.16960574e+00,   0.00000000e+00,
-                0.00000000e+00,   1.42119094e+03],
-             [  1.05260080e-02,   1.77571899e-03,   0.00000000e+00,
-                0.00000000e+00,   1.16148972e+00],
-             [  1.05260080e-02,   1.77571899e-03,   1.12687239e-03,
-                0.00000000e+00,   1.16148972e+00]]))
+    >>> ze
+    <Quantity([         nan          nan          nan          nan          nan
+              nan          nan          nan  84.10855021  74.98258957
+      67.47442104  62.27279883  60.00799371  61.01651321  65.14311785
+      71.83729124  80.41979434  89.92923993          nan          nan
+              nan          nan          nan          nan          nan], 'deg')>
+
+    >>> az
+    <Quantity([ 349.29771499   40.21062767   66.71930375   80.93018543   90.85288686
+       99.21242575  107.18121735  115.45045069  124.56418347  135.02313717
+      147.24740279  161.37157806  176.92280365  192.74232655  207.51976817
+      220.49410796  231.60091006  241.18407504  249.7263611   257.75154961
+      265.87317048  275.01453439  287.07887655  307.28364551  348.92138471], 'deg')>
 
 Note that Pint corrects the ambient temperature from Kelvin to Celsius and also
 converted Pascals to millibar. Finally Pint appends the specified units to the
 return values.
+
+    >>> idx = 8  # covariance at 8AM
+    >>> print times[idx]
+    Timestamp('2015-01-01 08:00:00-0800', tz='US/Pacific', offset='H')
+    
+    >>> nf = 2  # number of dependent variables: [ze, az]
+    >>> print cov[(nf * idx):(nf * (idx + 1)), (nf * idx):(nf * (idx + 1))]
+    [[ 0.66082282, -0.61487518],
+     [-0.61487518,  0.62483904]]
+
+    >>> print np.sqrt(cov[(nf * idx), (nf * idx)]) / ze[idx]  # standard deviation
+    0.0096710802029002577
+
+This tells us that the standard deviation of the zenith is 1% if the input has a standard deviation
+of 1%. That's reasonable.
+
+    >>> nargs = 5  # number of independent args
+    >>> print jac[nf*(idx-1):nf*idx, nargs*(idx-1):nargs*idx]  # Jacobian at 8AM
+    [[  5.56075143e-01,  -6.44623321e-01,  -1.42364184e-06, 0.00000000e+00,   1.06672083e-10],
+     [  8.29163154e-02,   6.47436098e-01,   0.00000000e+00, 0.00000000e+00,   0.00000000e+00]]
+
+This also tells that zenith is more sensitive to latitude and longitude than pressure or temperature
+and more sensitive to latitude than azimuth is.
+
+Perhaps the most interesting outcome is the negative covariance between Zenith and Azimuth. From
+`Wikipedia <https://en.wikipedia.org/wiki/Covariance>`_
+
+    ... when the greater values of one variable mainly correspond to the lesser values of the other,
+    the covariance is negative.
+
+In other words when the error in Zenith increases, the error in Azimuth decreases. This is not
+uncommon but it's not always intuitively obvious; we generally think that to get the largest error
+we should choose the largest errors for all independent variables.
+
