@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to Uncertainty Wrapper’s documentation! &mdash; Uncertainty Wrapper Paleoproterozoic Era documentation</title>
+    <title>Welcome to Uncertainty Wrapper’s documentation! &mdash; Uncertainty Wrapper Mesoproterozoic Era documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     'Paleoproterozoic Era',
+        VERSION:     'Mesoproterozoic Era',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="Uncertainty Wrapper Paleoproterozoic Era documentation" href="#" />
+    <link rel="top" title="Uncertainty Wrapper Mesoproterozoic Era documentation" href="#" />
     <link rel="next" title="Getting Started" href="getting_started.html" />
    
   
@@ -41,7 +41,7 @@
             
   <div class="section" id="welcome-to-uncertainty-wrapper-s-documentation">
 <h1>Welcome to Uncertainty Wrapper&#8217;s documentation!<a class="headerlink" href="#welcome-to-uncertainty-wrapper-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Version: 0.3.1 (Paleoproterozoic Era)</p>
+<p>Version: 0.3.2 (Mesoproterozoic Era)</p>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -67,6 +67,7 @@
 <li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
 <li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
 </ul>
+<a class="reference external image-reference" href="https://travis-ci.org/SunPower/UncertaintyWrapper"><img alt="https://travis-ci.org/SunPower/UncertaintyWrapper.svg?branch=master" src="https://travis-ci.org/SunPower/UncertaintyWrapper.svg?branch=master" /></a>
 </div>
 <div class="section" id="uncertaintywrapper">
 <h1>UncertaintyWrapper<a class="headerlink" href="#uncertaintywrapper" title="Permalink to this headline">¶</a></h1>
@@ -98,6 +99,13 @@ distribution, extract and use <code class="docutils literal"><span class="pre">p
 <h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
 <p>Releases are named after
 <a class="reference external" href="https://en.wikipedia.org/wiki/Geologic_time_scale">geological eons, periods and epochs</a>.</p>
+<div class="section" id="v0-3-2-mesoproterozoic-era">
+<h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.2">v0.3.2</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Mesoproterozoic">Mesoproterozoic Era</a><a class="headerlink" href="#v0-3-2-mesoproterozoic-era" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixes #2, don&#8217;t need to tile scalar x for multiple observations</li>
+<li>uses pvlib example instead of proprietary solar_utils</li>
+</ul>
+</div>
 <div class="section" id="v0-3-1-paleoproterozoic-era">
 <h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.1">v0.3.1</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Paleoproterozoic">Paleoproterozoic Era</a><a class="headerlink" href="#v0-3-1-paleoproterozoic-era" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -159,10 +167,14 @@ original function. These allow Uncertainty Wrapper to be used with
   <a href="#">
     <img class="logo" src="_static/sp_2014_logo_black_orange_rgb.png" alt="Logo"/>
     
+    <h1 class="logo logo-name">Uncertainty Wrapper</h1>
+    
   </a>
 </p>
 
 
+
+<p class="blurb">Calculate uncertainty and sensitivity of any function</p>
 
 
 
@@ -174,6 +186,18 @@ original function. These allow Uncertainty Wrapper to be used with
 
 
 
+    
+
+<p>
+<a href="https://travis-ci.org/SunPower/UncertaintyWrapper">
+    <img
+        alt="https://secure.travis-ci.org/SunPower/UncertaintyWrapper.png?branch=master"
+        src="https://secure.travis-ci.org/SunPower/UncertaintyWrapper.png?branch=master"
+    />
+</a>
+</p>
+
+
 <h3>Navigation</h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
@@ -182,14 +206,7 @@ original function. These allow Uncertainty Wrapper to be used with
 <li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
 </ul>
 
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="getting_started.html" title="next chapter">Getting Started</a></li>
-  </ul></li>
-</ul>
-</div>
+
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -202,7 +219,14 @@ original function. These allow Uncertainty Wrapper to be used with
     Enter search terms or a module, class or function name.
     </p>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="getting_started.html" title="next chapter">Getting Started</a></li>
+  </ul></li>
+</ul>
+</div>
         </div>
       </div>
       <div class="clearer"></div>
@@ -219,6 +243,10 @@ original function. These allow Uncertainty Wrapper to be used with
           rel="nofollow">Page source</a>
     </div>
 
+    
+    <a href="https://github.com/SunPower/UncertaintyWrapper" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
     
 
     

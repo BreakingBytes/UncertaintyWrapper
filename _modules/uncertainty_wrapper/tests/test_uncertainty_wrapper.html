@@ -1,0 +1,366 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>uncertainty_wrapper.tests.test_uncertainty_wrapper &mdash; Uncertainty Wrapper Mesoproterozoic Era documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     'Mesoproterozoic Era',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="top" title="Uncertainty Wrapper Mesoproterozoic Era documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for uncertainty_wrapper.tests.test_uncertainty_wrapper</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Tests for :func:`~uncertainty_wrapper.unc_wrapper` and</span>
+<span class="sd">:func:`~uncertainty_wrapper.unc_wrapper_args`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># import ok_, np, pd,unc_wrapper, unc_wrapper_args, KB, QE,</span>
+<span class="c1"># pvlib, plt, UREG, PST and LOGGER from .tests</span>
+<span class="kn">from</span> <span class="nn">uncertainty_wrapper.tests</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">uncertainty_wrapper.tests.test_algopy</span> <span class="kn">import</span> <span class="n">IV_algopy_jac</span><span class="p">,</span> <span class="n">solpos_nd_jac</span>
+
+
+<div class="viewcode-block" id="test_unc_wrapper"><a class="viewcode-back" href="../../../api.html#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_unc_wrapper">[docs]</a><span class="k">def</span> <span class="nf">test_unc_wrapper</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test uncertainty wrapper</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">]]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.1</span><span class="p">]])</span>
+    
+    <span class="nd">@unc_wrapper</span>
+    <span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    
+    <span class="n">avg</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">jac</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">__covariance__</span><span class="o">=</span><span class="n">cov</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;average = </span><span class="si">%g</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">avg</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;variance = </span><span class="si">%g</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
+    <span class="n">ok_</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">avg</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+    <span class="n">ok_</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">cov</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">ok_</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">jac</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">avg</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">jac</span></div>
+
+
+<span class="k">def</span> <span class="nf">IV</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Vd</span><span class="p">,</span> <span class="n">E0</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">T0</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">kB</span><span class="o">=</span><span class="n">KB</span><span class="p">,</span> <span class="n">qe</span><span class="o">=</span><span class="n">QE</span><span class="p">):</span>
+    <span class="n">Ee</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Rs</span><span class="p">,</span> <span class="n">Rsh</span><span class="p">,</span> <span class="n">Isat1_0</span><span class="p">,</span> <span class="n">Isat2</span><span class="p">,</span> <span class="n">Isc0</span><span class="p">,</span> <span class="n">alpha_Isc</span><span class="p">,</span> <span class="n">Eg</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">Vt</span> <span class="o">=</span> <span class="n">Tc</span> <span class="o">*</span> <span class="n">kB</span> <span class="o">/</span> <span class="n">qe</span>
+    <span class="n">Isc</span> <span class="o">=</span> <span class="n">Ee</span> <span class="o">*</span> <span class="n">Isc0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">Tc</span> <span class="o">-</span> <span class="n">T0</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha_Isc</span><span class="p">)</span>
+    <span class="n">Isat1</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">Isat1_0</span> <span class="o">*</span> <span class="p">(</span><span class="n">Tc</span> <span class="o">**</span> <span class="mf">3.0</span> <span class="o">/</span> <span class="n">T0</span> <span class="o">**</span> <span class="mf">3.0</span><span class="p">)</span> <span class="o">*</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Eg</span> <span class="o">*</span> <span class="n">qe</span> <span class="o">/</span> <span class="n">kB</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">T0</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">Tc</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">Vd_sc</span> <span class="o">=</span> <span class="n">Isc</span> <span class="o">*</span> <span class="n">Rs</span>  <span class="c1"># at short circuit Vc = 0 </span>
+    <span class="n">Id1_sc</span> <span class="o">=</span> <span class="n">Isat1</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Vd_sc</span> <span class="o">/</span> <span class="n">Vt</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">Id2_sc</span> <span class="o">=</span> <span class="n">Isat2</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Vd_sc</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="n">Vt</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">Ish_sc</span> <span class="o">=</span> <span class="n">Vd_sc</span> <span class="o">/</span> <span class="n">Rsh</span>
+    <span class="n">Iph</span> <span class="o">=</span> <span class="n">Isc</span> <span class="o">+</span> <span class="n">Id1_sc</span> <span class="o">+</span> <span class="n">Id2_sc</span> <span class="o">+</span> <span class="n">Ish_sc</span>
+    <span class="n">Id1</span> <span class="o">=</span> <span class="n">Isat1</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Vd</span> <span class="o">/</span> <span class="n">Vt</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">Id2</span> <span class="o">=</span> <span class="n">Isat2</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Vd</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="n">Vt</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">Ish</span> <span class="o">=</span> <span class="n">Vd</span> <span class="o">/</span> <span class="n">Rsh</span>
+    <span class="n">Ic</span> <span class="o">=</span> <span class="n">Iph</span> <span class="o">-</span> <span class="n">Id1</span> <span class="o">-</span> <span class="n">Id2</span> <span class="o">-</span> <span class="n">Ish</span>
+    <span class="n">Vc</span> <span class="o">=</span> <span class="n">Vd</span> <span class="o">-</span> <span class="n">Ic</span> <span class="o">*</span> <span class="n">Rs</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">Ic</span><span class="p">,</span> <span class="n">Vc</span><span class="p">,</span> <span class="n">Ic</span> <span class="o">*</span> <span class="n">Vc</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">Voc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">E0</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">T0</span><span class="o">=</span><span class="mf">298.15</span><span class="p">,</span> <span class="n">kB</span><span class="o">=</span><span class="n">KB</span><span class="p">,</span> <span class="n">qe</span><span class="o">=</span><span class="n">QE</span><span class="p">):</span>
+    <span class="n">Ee</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Rs</span><span class="p">,</span> <span class="n">Rsh</span><span class="p">,</span> <span class="n">Isat1_0</span><span class="p">,</span> <span class="n">Isat2</span><span class="p">,</span> <span class="n">Isc0</span><span class="p">,</span> <span class="n">alpha_Isc</span><span class="p">,</span> <span class="n">Eg</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Ee=</span><span class="si">%g</span><span class="s1">[suns]&#39;</span><span class="p">,</span><span class="s1">&#39;Tc=</span><span class="si">%g</span><span class="s1">[K]&#39;</span><span class="p">,</span><span class="s1">&#39;Rs=</span><span class="si">%g</span><span class="s1">[ohms]&#39;</span><span class="p">,</span><span class="s1">&#39;Rsh=</span><span class="si">%g</span><span class="s1">[ohms]&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Isat1_0=</span><span class="si">%g</span><span class="s1">[A]&#39;</span><span class="p">,</span><span class="s1">&#39;Isat2=</span><span class="si">%g</span><span class="s1">[A]&#39;</span><span class="p">,</span><span class="s1">&#39;Isc0=</span><span class="si">%g</span><span class="s1">[A]&#39;</span><span class="p">,</span><span class="s1">&#39;alpha_Isc=</span><span class="si">%g</span><span class="s1">[]&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Eg=</span><span class="si">%g</span><span class="s1">[eV]&#39;</span><span class="p">]</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="o">*</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">Vt</span> <span class="o">=</span> <span class="n">Tc</span> <span class="o">*</span> <span class="n">kB</span> <span class="o">/</span> <span class="n">qe</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Vt=</span><span class="si">%g</span><span class="s1">[V]&#39;</span><span class="p">,</span> <span class="n">Vt</span><span class="p">)</span>
+    <span class="n">Isc</span> <span class="o">=</span> <span class="n">Ee</span> <span class="o">*</span> <span class="n">Isc0</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">Tc</span> <span class="o">-</span> <span class="n">T0</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha_Isc</span><span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Isc=</span><span class="si">%g</span><span class="s1">[A]&#39;</span><span class="p">,</span> <span class="n">Isc</span><span class="p">)</span>
+    <span class="n">Isat1</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">Isat1_0</span> <span class="o">*</span> <span class="p">(</span><span class="n">Tc</span> <span class="o">**</span> <span class="mf">3.0</span> <span class="o">/</span> <span class="n">T0</span> <span class="o">**</span> <span class="mf">3.0</span><span class="p">)</span> <span class="o">*</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Eg</span> <span class="o">*</span> <span class="n">qe</span> <span class="o">/</span> <span class="n">kB</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">T0</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">Tc</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Isat1=</span><span class="si">%g</span><span class="s1">[A]&#39;</span><span class="p">,</span> <span class="n">Isat1</span><span class="p">)</span>
+    <span class="n">Vd_sc</span> <span class="o">=</span> <span class="n">Isc</span> <span class="o">*</span> <span class="n">Rs</span>  <span class="c1"># at short circuit Vc = 0 </span>
+    <span class="n">Id1_sc</span> <span class="o">=</span> <span class="n">Isat1</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Vd_sc</span> <span class="o">/</span> <span class="n">Vt</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">Id2_sc</span> <span class="o">=</span> <span class="n">Isat2</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">Vd_sc</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="n">Vt</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">Ish_sc</span> <span class="o">=</span> <span class="n">Vd_sc</span> <span class="o">/</span> <span class="n">Rsh</span>
+    <span class="n">Iph</span> <span class="o">=</span> <span class="n">Isc</span> <span class="o">+</span> <span class="n">Id1_sc</span> <span class="o">+</span> <span class="n">Id2_sc</span> <span class="o">+</span> <span class="n">Ish_sc</span>
+    <span class="c1"># estimate Voc</span>
+    <span class="n">delta</span> <span class="o">=</span> <span class="n">Isat2</span> <span class="o">**</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">Isat1</span> <span class="o">*</span> <span class="p">(</span><span class="n">Iph</span> <span class="o">+</span> <span class="n">Isat1</span> <span class="o">+</span> <span class="n">Isat2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Vt</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(((</span><span class="o">-</span><span class="n">Isat2</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">delta</span><span class="p">))</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="n">Isat1</span><span class="p">)</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span>
+
+
+<span class="n">RS</span> <span class="o">=</span> <span class="mf">0.004267236774264931</span>  <span class="c1"># [ohm] series resistance</span>
+<span class="n">RSH</span> <span class="o">=</span> <span class="mf">10.01226369025448</span>  <span class="c1"># [ohm] shunt resistance</span>
+<span class="n">ISAT1_0</span> <span class="o">=</span> <span class="mf">2.286188161253440E-11</span>  <span class="c1"># [A] diode one saturation current</span>
+<span class="n">ISAT2</span> <span class="o">=</span> <span class="mf">1.117455042372326E-6</span>  <span class="c1"># [A] diode two saturation current</span>
+<span class="n">ISC0</span> <span class="o">=</span> <span class="mf">6.3056</span>  <span class="c1"># [A] reference short circuit current</span>
+<span class="n">EE</span> <span class="o">=</span> <span class="mf">0.8</span>
+<span class="n">TC</span> <span class="o">=</span> <span class="mf">323.15</span>
+<span class="n">EG</span> <span class="o">=</span> <span class="mf">1.1</span>
+<span class="n">ALPHA_ISC</span> <span class="o">=</span> <span class="mf">0.0003551</span>
+<span class="n">VOC</span> <span class="o">=</span> <span class="n">Voc</span><span class="p">((</span><span class="n">EE</span><span class="p">,</span> <span class="n">TC</span><span class="p">,</span> <span class="n">RS</span><span class="p">,</span> <span class="n">RSH</span><span class="p">,</span> <span class="n">ISAT1_0</span><span class="p">,</span> <span class="n">ISAT2</span><span class="p">,</span> <span class="n">ISC0</span><span class="p">,</span> <span class="n">ALPHA_ISC</span><span class="p">,</span> <span class="n">EG</span><span class="p">))</span>
+<span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">VOC</span><span class="p">,</span> <span class="mf">0.62816490891656673</span><span class="p">)</span>
+<span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Voc = </span><span class="si">%g</span><span class="s1">[V]&#39;</span><span class="p">,</span> <span class="n">VOC</span><span class="p">)</span>
+<span class="n">VD</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">VOC</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">EE</span><span class="p">,</span> <span class="n">TC</span><span class="p">,</span> <span class="n">RS</span><span class="p">,</span> <span class="n">RSH</span><span class="p">,</span> <span class="n">ISAT1_0</span><span class="p">,</span> <span class="n">ISAT2</span><span class="p">,</span> <span class="n">ISC0</span><span class="p">,</span> <span class="n">ALPHA_ISC</span><span class="p">,</span> <span class="n">EG</span><span class="p">])</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">COV</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mf">1e-4</span><span class="p">]</span> <span class="o">*</span> <span class="n">X</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+<span class="n">X_algopy</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">VD</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># COV_algopy = np.tile(COV, (VD.size, 1, 1))</span>
+
+
+<div class="viewcode-block" id="test_IV"><a class="viewcode-back" href="../../../api.html#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV">[docs]</a><span class="k">def</span> <span class="nf">test_IV</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test calculation of photovoltaic cell IV curve using 2-diode model and</span>
+<span class="sd">    and compare Jacobian estimated by finite central difference to AlgoPy</span>
+<span class="sd">    automatic differentiation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">unc_wrapper</span><span class="p">(</span><span class="n">IV</span><span class="p">)</span>
+    <span class="n">pv</span><span class="p">,</span> <span class="n">pv_cov</span><span class="p">,</span> <span class="n">pv_jac</span> <span class="o">=</span> <span class="n">f</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">VD</span><span class="p">,</span> <span class="n">__covariance__</span><span class="o">=</span><span class="n">COV</span><span class="p">)</span>
+    <span class="n">pv_jac_algopy</span> <span class="o">=</span> <span class="n">IV_algopy_jac</span><span class="p">(</span><span class="o">*</span><span class="n">X_algopy</span><span class="p">,</span> <span class="n">Vd</span><span class="o">=</span><span class="n">VD</span><span class="p">)</span>
+    <span class="n">nVd</span> <span class="o">=</span> <span class="n">pv_jac_algopy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">nVd</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">nVd</span><span class="p">):</span>
+        <span class="n">irow</span><span class="p">,</span> <span class="n">icol</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="mi">9</span> <span class="o">*</span> <span class="n">n</span>
+        <span class="n">jrow</span><span class="p">,</span> <span class="n">jcol</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">+</span> <span class="n">irow</span><span class="p">,</span> <span class="mi">9</span> <span class="o">+</span><span class="n">icol</span>
+        <span class="n">pv_jac_n</span> <span class="o">=</span> <span class="n">pv_jac</span><span class="p">[</span><span class="n">irow</span><span class="p">:</span><span class="n">jrow</span><span class="p">,</span> <span class="n">icol</span><span class="p">:</span><span class="n">jcol</span><span class="p">]</span>
+        <span class="n">pv_jac_algopy_n</span> <span class="o">=</span> <span class="n">pv_jac_algopy</span><span class="p">[:,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">::</span><span class="n">VD</span><span class="o">.</span><span class="n">size</span><span class="p">]</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;pv jac at Vd = </span><span class="si">%g</span><span class="s1">[V]:</span><span class="se">\n</span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">VD</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">pv_jac_n</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;pv jac AlgoPy at Vd = </span><span class="si">%g</span><span class="s1">[V]:</span><span class="se">\n</span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">VD</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">pv_jac_algopy_n</span><span class="p">)</span>
+        <span class="n">reldiff</span> <span class="o">=</span> <span class="n">pv_jac_n</span> <span class="o">/</span> <span class="n">pv_jac_algopy_n</span> <span class="o">-</span> <span class="mf">1.0</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;reldiff at Vd = </span><span class="si">%g</span><span class="s1">[V]:</span><span class="se">\n</span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">VD</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">reldiff</span><span class="p">)</span>
+        <span class="n">resnorm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">reldiff</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;resnorm at Vd = </span><span class="si">%g</span><span class="s1">[V]: </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">VD</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">resnorm</span><span class="p">)</span>
+        <span class="n">rms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">reldiff</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">9.0</span><span class="o">/</span> <span class="mf">3.0</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;rms at Vd = </span><span class="si">%g</span><span class="s1">[V]: </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">VD</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">rms</span><span class="p">)</span>
+        <span class="n">ok_</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">pv_jac_n</span><span class="p">,</span> <span class="n">pv_jac_algopy_n</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">pv</span><span class="p">,</span> <span class="n">pv_cov</span><span class="p">,</span> <span class="n">pv_jac</span><span class="p">,</span> <span class="n">pv_jac_algopy</span></div>
+
+
+<span class="k">def</span> <span class="nf">plot_pv</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">pv_cov</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    IV and PV 2-axis plot with errorbars </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">i_pv</span><span class="p">,</span> <span class="n">v_pv</span><span class="p">,</span> <span class="n">p_pv</span> <span class="o">=</span> <span class="n">pv</span>
+    <span class="n">i_stdev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pv_cov</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()[::</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">v_stdev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pv_cov</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()[</span><span class="mi">1</span><span class="p">::</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">p_stdev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">pv_cov</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()[</span><span class="mi">2</span><span class="p">::</span><span class="mi">3</span><span class="p">])</span> 
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">v_pv</span><span class="p">,</span> <span class="n">i_pv</span><span class="p">,</span> <span class="n">i_stdev</span><span class="p">,</span> <span class="n">v_stdev</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;voltage [V]&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;current [A]&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">6.0</span><span class="p">])</span>
+    <span class="n">ax2</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><span class="n">v_pv</span><span class="p">,</span> <span class="n">p_pv</span><span class="p">,</span> <span class="n">p_stdev</span><span class="p">,</span> <span class="n">v_stdev</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;power [W]&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+    <span class="n">ax2</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;IV and PV curves&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span>
+
+
+<span class="k">def</span> <span class="nf">plot_pv_jac</span><span class="p">(</span><span class="n">pv_jac</span><span class="p">,</span> <span class="n">pv_jac_algopy</span><span class="p">,</span> <span class="n">Vd</span><span class="o">=</span><span class="n">VD</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log plot of relative difference between AlgoPy and central finite difference</span>
+<span class="sd">    approximations</span>
+
+<span class="sd">    :param pv_jac: central finite approximations</span>
+<span class="sd">    :param pv_jac_algopy: automatic differentiation</span>
+<span class="sd">    :param Vd: voltages</span>
+<span class="sd">    :return: fig</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Cell Current, Ic [A]&#39;</span><span class="p">,</span> <span class="s1">&#39;Cell Voltage, Vc [V]&#39;</span><span class="p">,</span> <span class="s1">&#39;Cell Power, Pc [W]&#39;</span><span class="p">]</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="p">{</span><span class="s1">&#39;figsize&#39;</span><span class="p">:</span> <span class="p">(</span><span class="mf">8.0</span><span class="p">,</span> <span class="mf">18.0</span><span class="p">)})</span>
+    <span class="n">colorcycle</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;firebrick&#39;</span><span class="p">,</span> <span class="s1">&#39;goldenrod&#39;</span><span class="p">,</span> <span class="s1">&#39;sage&#39;</span><span class="p">,</span> <span class="s1">&#39;lime&#39;</span><span class="p">,</span> <span class="s1">&#39;seagreen&#39;</span><span class="p">,</span> <span class="s1">&#39;turquoise&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="s1">&#39;indigo&#39;</span><span class="p">,</span> <span class="s1">&#39;fuchsia&#39;</span>
+    <span class="p">]</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">9</span><span class="p">):</span>
+            <span class="n">pv_jac_n</span> <span class="o">=</span> <span class="n">pv_jac</span><span class="p">[</span><span class="n">m</span><span class="p">::</span><span class="mi">3</span><span class="p">,</span> <span class="n">n</span><span class="p">::</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span>
+            <span class="n">pv_jac_algopy_n</span> <span class="o">=</span> <span class="n">pv_jac_algopy</span><span class="p">[</span>
+                <span class="n">m</span><span class="p">,</span> <span class="p">:,</span> <span class="n">n</span> <span class="o">*</span> <span class="mi">126</span><span class="p">:(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">126</span>
+            <span class="p">]</span><span class="o">.</span><span class="n">diagonal</span><span class="p">()</span>
+            <span class="n">reldiff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pv_jac_n</span> <span class="o">/</span> <span class="n">pv_jac_algopy_n</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">Vd</span><span class="p">,</span> <span class="n">reldiff</span><span class="p">,</span> <span class="n">colorcycle</span><span class="p">[</span><span class="n">n</span><span class="p">])</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span>
+            <span class="p">[</span><span class="s1">&#39;Ee&#39;</span><span class="p">,</span> <span class="s1">&#39;Tc&#39;</span><span class="p">,</span> <span class="s1">&#39;Rs&#39;</span><span class="p">,</span> <span class="s1">&#39;Rsh&#39;</span><span class="p">,</span> <span class="s1">&#39;Isat1_0&#39;</span><span class="p">,</span> <span class="s1">&#39;Isat2&#39;</span><span class="p">,</span> <span class="s1">&#39;Isc0&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha_Isc&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;Eg&#39;</span><span class="p">],</span> <span class="n">fancybox</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">framealpha</span><span class="o">=</span><span class="mf">0.5</span>
+        <span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Diode Voltage, Vd [V]&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Relative Difference&#39;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="n">m</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">fn</span><span class="p">[</span><span class="n">m</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fig</span>
+
+
+<span class="nd">@UREG.wraps</span><span class="p">((</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="s1">&#39;Pa&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;degC&#39;</span><span class="p">))</span>
+<span class="nd">@unc_wrapper_args</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="c1"># indices specify positions of independent variables:</span>
+<span class="c1"># 1: latitude, 2: longitude, 3: pressure, 4: altitude, 5: temperature</span>
+<span class="k">def</span> <span class="nf">spa</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">altitude</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
+    <span class="n">dataframe</span> <span class="o">=</span> <span class="n">pvlib</span><span class="o">.</span><span class="n">solarposition</span><span class="o">.</span><span class="n">spa_c</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span>
+                                          <span class="n">temperature</span><span class="p">)</span>
+    <span class="n">retvals</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">to_records</span><span class="p">()</span>
+    <span class="n">zenith</span> <span class="o">=</span> <span class="n">retvals</span><span class="p">[</span><span class="s1">&#39;apparent_zenith&#39;</span><span class="p">]</span>
+    <span class="n">zenith</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">zenith</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="p">,</span> <span class="n">zenith</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+    <span class="n">azimuth</span> <span class="o">=</span> <span class="n">retvals</span><span class="p">[</span><span class="s1">&#39;azimuth&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">zenith</span><span class="p">,</span> <span class="n">azimuth</span>
+
+
+<div class="viewcode-block" id="test_solpos"><a class="viewcode-back" href="../../../api.html#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos">[docs]</a><span class="k">def</span> <span class="nf">test_solpos</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Test solar position calculation using NREL&#39;s SOLPOS.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s1">&#39;2015/1/1&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2015/1/2&#39;</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;1h&#39;</span><span class="p">,</span>
+                             <span class="n">tz</span><span class="o">=</span><span class="n">PST</span><span class="p">)</span><span class="o">.</span><span class="n">tz_convert</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span>
+    <span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span> <span class="o">=</span> <span class="mf">37.0</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.0</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">deg</span>
+    <span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span> <span class="o">=</span> <span class="mf">101325.0</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">Pa</span><span class="p">,</span> <span class="n">UREG</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mf">22.0</span><span class="p">,</span> <span class="n">UREG</span><span class="o">.</span><span class="n">degC</span><span class="p">)</span>
+    <span class="n">altitude</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">m</span>
+    <span class="c1"># standard deviation of 1% assuming normal distribution</span>
+    <span class="n">covariance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mf">0.0001</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">ze</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">jac</span> <span class="o">=</span> <span class="n">spa</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">altitude</span><span class="p">,</span>
+                           <span class="n">temperature</span><span class="p">,</span> <span class="n">__covariance__</span><span class="o">=</span><span class="n">covariance</span><span class="p">)</span>
+    <span class="n">jac_nd</span> <span class="o">=</span> <span class="n">solpos_nd_jac</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">altitude</span><span class="p">,</span>
+                           <span class="n">temperature</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">times</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+        <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="mi">5</span> <span class="o">*</span> <span class="n">n</span>
+        <span class="c1"># some rows which numdifftools returned nan</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span>  <span class="mi">8</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">24</span><span class="p">]:</span>
+            <span class="k">continue</span>
+        <span class="n">ok_</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">jac</span><span class="p">[</span><span class="n">r</span><span class="p">:(</span><span class="n">r</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span> <span class="n">c</span><span class="p">:(</span><span class="n">c</span> <span class="o">+</span> <span class="mi">5</span><span class="p">)],</span> <span class="n">jac_nd</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">equal_nan</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ze</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">jac</span><span class="p">,</span> <span class="n">jac_nd</span></div>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">test_unc_wrapper</span><span class="p">()</span>
+    <span class="n">pv</span><span class="p">,</span> <span class="n">pv_cov</span><span class="p">,</span> <span class="n">pv_jac</span><span class="p">,</span> <span class="n">pv_jac_algopy</span> <span class="o">=</span> <span class="n">test_IV</span><span class="p">()</span>
+    <span class="n">test_solpos</span><span class="p">()</span>
+    <span class="n">fig1</span> <span class="o">=</span> <span class="n">plot_pv</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">pv_cov</span><span class="p">)</span>
+    <span class="n">fig1</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">fig2</span> <span class="o">=</span> <span class="n">plot_pv_jac</span><span class="p">(</span><span class="n">pv_jac</span><span class="p">,</span> <span class="n">pv_jac_algopy</span><span class="p">)</span>
+    <span class="n">fig2</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;IV-PV-jac-errors.png&#39;</span><span class="p">)</span>
+    <span class="n">fig2</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/sp_2014_logo_black_orange_rgb.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">Uncertainty Wrapper</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">Calculate uncertainty and sensitivity of any function</p>
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=SunPower&repo=UncertaintyWrapper&type=watch&count=true&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/SunPower/UncertaintyWrapper">
+    <img
+        alt="https://secure.travis-ci.org/SunPower/UncertaintyWrapper.png?branch=master"
+        src="https://secure.travis-ci.org/SunPower/UncertaintyWrapper.png?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../more_examples/complex_example.html">Complex Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../more_examples/python_extension_example_with_units.html">Python Extension Example with Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">API</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, SunPower.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/SunPower/UncertaintyWrapper" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

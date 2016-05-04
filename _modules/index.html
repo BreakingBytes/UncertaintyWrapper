@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Complex Example &mdash; Uncertainty Wrapper Mesoproterozoic Era documentation</title>
+    <title>Overview: module code &mdash; Uncertainty Wrapper Mesoproterozoic Era documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +26,6 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
     <link rel="top" title="Uncertainty Wrapper Mesoproterozoic Era documentation" href="../index.html" />
-    <link rel="next" title="Python Extension Example with Units" href="python_extension_example_with_units.html" />
-    <link rel="prev" title="Getting Started" href="../getting_started.html" />
    
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
@@ -40,29 +38,10 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="complex-example">
-<span id="id1"></span><h1>Complex Example<a class="headerlink" href="#complex-example" title="Permalink to this headline">¶</a></h1>
-<p>A more complex example from the <a class="reference internal" href="../api.html#module-uncertainty_wrapper.tests.test_uncertainty_wrapper" title="uncertainty_wrapper.tests.test_uncertainty_wrapper"><code class="xref py py-mod docutils literal"><span class="pre">test_uncertainty_wrapper</span></code></a>
-module called <a class="reference internal" href="../api.html#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV" title="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV"><code class="xref py py-func docutils literal"><span class="pre">test_IV()</span></code></a>,
-includes combinations of several exponential and power operations. It contains
-9 input arguments, there 126 observations of each corresponding to different
-voltages and there are 3 return values. The calculated uncertainty using a 1%
-standard deviation (square root of variance) for all 9 inputs is shown below.</p>
-<img alt="../_images/IV_and_PV_plots_with_uncertainty.png" src="../_images/IV_and_PV_plots_with_uncertainty.png" />
-<p>The test compares the derivatives calculated using central finite difference
-approximation with an analytical calculation from 0.3[V] to 0.6[V]. Below 0.3[V]
-the approximations deviate from the analytical for
-<span class="math">\(\frac{\partial I_{sc}}{\partial I_{sat_{1,0}}}\)</span>,
-<span class="math">\(\frac{\partial I_{sc}}{\partial I_{sat_2}}\)</span> and
-<span class="math">\(\frac{\partial I_{sc}}{\partial E_g}\)</span> while all other independent
-variables are consistently below 10e-7. The analytical derivatives are propagated
-using <a class="reference external" href="https://pythonhosted.org/algopy/">AlgoPy</a>, an automatic differentiation
-package, which requires rewriting all NumPy operations like <span class="math">\(exp\)</span> using
-AlgoPy. This makes it impractical for use in most models, but still useful for
-testing.</p>
-<img alt="../_images/IV-PV-jac-errors.png" src="../_images/IV-PV-jac-errors.png" />
-</div>
-
+  <h1>All modules for which code is available</h1>
+<ul><li><a href="uncertainty_wrapper/core.html">uncertainty_wrapper.core</a></li>
+<li><a href="uncertainty_wrapper/tests/test_uncertainty_wrapper.html">uncertainty_wrapper.tests.test_uncertainty_wrapper</a></li>
+</ul>
 
           </div>
         </div>
@@ -105,10 +84,10 @@ testing.</p>
 
 
 <h3>Navigation</h3>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Complex Example</a></li>
-<li class="toctree-l1"><a class="reference internal" href="python_extension_example_with_units.html">Python Extension Example with Units</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../more_examples/complex_example.html">Complex Example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../more_examples/python_extension_example_with_units.html">Python Extension Example with Units</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 </ul>
 
@@ -129,8 +108,6 @@ testing.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="../getting_started.html" title="previous chapter">Getting Started</a></li>
-      <li>Next: <a href="python_extension_example_with_units.html" title="next chapter">Python Extension Example with Units</a></li>
   </ul></li>
 </ul>
 </div>
@@ -145,9 +122,6 @@ testing.</p>
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
       
-      |
-      <a href="../_sources/more_examples/complex_example.txt"
-          rel="nofollow">Page source</a>
     </div>
 
     
