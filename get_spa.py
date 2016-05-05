@@ -22,7 +22,7 @@ PAYLOAD = {
 }
 SPAH_URL = r'http://midcdmz.nrel.gov/spa/spa.h'  # spa.h source url
 PVLIB_PATH = os.environ['PVLIB_PATH']  # path to PVLIB on travis
-SPA_C_FILES = os.path.join(PVLIB_PATH, 'spa_c_files')
+SPA_C_FILES = os.path.join(PVLIB_PATH, 'pvlib', 'spa_c_files')
 
 if __name__ == "__main__":
     # get spa.c source

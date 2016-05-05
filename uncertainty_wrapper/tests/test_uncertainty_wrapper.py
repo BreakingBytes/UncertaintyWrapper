@@ -8,10 +8,13 @@ Tests for :func:`~uncertainty_wrapper.unc_wrapper` and
 from uncertainty_wrapper.tests import *
 from uncertainty_wrapper.tests.test_algopy import IV_algopy_jac, solpos_nd_jac
 
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.DEBUG)
+
 
 def test_unc_wrapper():
     """
-    Test uncertainty wrapper
+    Test uncertainty wrapper.
     """
     x, cov = np.array([[1.0]]), np.array([[0.1]])
     
@@ -19,7 +22,7 @@ def test_unc_wrapper():
     def f(y):
         return np.exp(y)
     
-    avg, var, jac = f(x, __covariance__=cov)
+    avg, var, jac = f(x, __covariance__=cov, __method__='dense')
     LOGGER.debug("average = %g", avg)
     LOGGER.debug("variance = %g", var)
     ok_(np.isclose(avg, np.exp(x)))
@@ -28,13 +31,31 @@ def test_unc_wrapper():
     return avg, var, jac
 
 
-def IV(x, Vd, E0=1000, T0=298.15, kB=KB, qe=QE):
+def IV(x, Vd):
+    """
+    Calculate IV curve using 2-diode model.
+
+    :param x: independent variables:
+    :type x: sequence
+    :param Vd: diode voltages
+    :type Vd: :class:`numpy.ndarray`
+    :returns: current [A], voltage [V] and power [W] 
+    :rtype: :class:`numpy.ndarray` 
+
+    The sequence of independent variables must contain the following in the
+    specified order::
+
+        [Ee, Tc, Rs, Rsh, Isat1_0, Isat2, Isc0, alpha_Isc, Eg]
+
+    This function is an example of grouping the independent variables together
+    so that :class:~`uncertianty_wrapper.core.unc_wrapper` can be used.
+    """
     Ee, Tc, Rs, Rsh, Isat1_0, Isat2, Isc0, alpha_Isc, Eg = x
-    Vt = Tc * kB / qe
+    Vt = Tc * KB / QE
     Isc = Ee * Isc0 * (1.0 + (Tc - T0) * alpha_Isc)
     Isat1 = (
         Isat1_0 * (Tc ** 3.0 / T0 ** 3.0) *
-        np.exp(Eg * qe / kB * (1.0 / T0 - 1.0 / Tc))
+        np.exp(Eg * QE / KB * (1.0 / T0 - 1.0 / Tc))
     )
     Vd_sc = Isc * Rs  # at short circuit Vc = 0 
     Id1_sc = Isat1 * (np.exp(Vd_sc / Vt) - 1.0)
@@ -49,19 +70,22 @@ def IV(x, Vd, E0=1000, T0=298.15, kB=KB, qe=QE):
     return np.array([Ic, Vc, Ic * Vc])
 
 
-def Voc(x, E0=1000, T0=298.15, kB=KB, qe=QE):
+def Voc(x):
+    """
+    Estimate open circuit voltage (Voc).
+    """
     Ee, Tc, Rs, Rsh, Isat1_0, Isat2, Isc0, alpha_Isc, Eg = x
     msg = ['Ee=%g[suns]','Tc=%g[K]','Rs=%g[ohms]','Rsh=%g[ohms]',
            'Isat1_0=%g[A]','Isat2=%g[A]','Isc0=%g[A]','alpha_Isc=%g[]',
            'Eg=%g[eV]']
     LOGGER.debug('\n' + '\n'.join(msg) + '\n', *x)
-    Vt = Tc * kB / qe
+    Vt = Tc * KB / QE
     LOGGER.debug('Vt=%g[V]', Vt)
     Isc = Ee * Isc0 * (1.0 + (Tc - T0) * alpha_Isc)
     LOGGER.debug('Isc=%g[A]', Isc)
     Isat1 = (
         Isat1_0 * (Tc ** 3.0 / T0 ** 3.0) *
-        np.exp(Eg * qe / kB * (1.0 / T0 - 1.0 / Tc))
+        np.exp(Eg * QE / KB * (1.0 / T0 - 1.0 / Tc))
     )
     LOGGER.debug('Isat1=%g[A]', Isat1)
     Vd_sc = Isc * Rs  # at short circuit Vc = 0 
@@ -74,34 +98,38 @@ def Voc(x, E0=1000, T0=298.15, kB=KB, qe=QE):
     return Vt * np.log(((-Isat2 + np.sqrt(delta)) / 2.0 / Isat1) ** 2.0)
 
 
+# constants for IV test
 RS = 0.004267236774264931  # [ohm] series resistance
 RSH = 10.01226369025448  # [ohm] shunt resistance
 ISAT1_0 = 2.286188161253440E-11  # [A] diode one saturation current
 ISAT2 = 1.117455042372326E-6  # [A] diode two saturation current
 ISC0 = 6.3056  # [A] reference short circuit current
-EE = 0.8
-TC = 323.15
-EG = 1.1
-ALPHA_ISC = 0.0003551
+EE = 0.8  # [suns] effective irradiance
+TC = 323.15  # [K] cell temperature
+EG = 1.1  # [eV] c-Si band gap
+ALPHA_ISC = 0.0003551  # [1/degC] short circuit current temp co 
+# [V] open circuit voltage
 VOC = Voc((EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG))
 assert np.isclose(VOC, 0.62816490891656673)
 LOGGER.debug('Voc = %g[V]', VOC)
-VD = np.arange(0, VOC, 0.005)
+VD = np.arange(0, VOC, 0.005)  # [V] diode voltages
 X = np.array([EE, TC, RS, RSH, ISAT1_0, ISAT2, ISC0, ALPHA_ISC, EG])
 X = X.reshape(-1, 1)
+# covariance equivalent to standard deviation of 1.0 [%]
 COV = np.diag([1e-4] * X.size)
 X_algopy = X.repeat(VD.size, axis=1)
-# COV_algopy = np.tile(COV, (VD.size, 1, 1))
 
 
-def test_IV():
+def test_IV(method='sparse'):
     """
     Test calculation of photovoltaic cell IV curve using 2-diode model and
     and compare Jacobian estimated by finite central difference to AlgoPy
     automatic differentiation.
     """
     f = unc_wrapper(IV)
-    pv, pv_cov, pv_jac = f(X, VD, __covariance__=COV)
+    pv, pv_cov, pv_jac = f(X, VD, __covariance__=COV, __method__=method)
+    pv_cov = jflatten(pv_cov)
+    pv_jac = jflatten(pv_jac)
     pv_jac_algopy = IV_algopy_jac(*X_algopy, Vd=VD)
     nVd = pv_jac_algopy.shape[1]
     for n in xrange(nVd // 2, nVd):
@@ -186,6 +214,18 @@ def plot_pv_jac(pv_jac, pv_jac_algopy, Vd=VD):
 # indices specify positions of independent variables:
 # 1: latitude, 2: longitude, 3: pressure, 4: altitude, 5: temperature
 def spa(times, latitude, longitude, pressure, altitude, temperature):
+    """
+    Calculate solar position using PVLIB Cython wrapper around NREL SPA.
+
+    :param times: list of times, must be localized as UTC
+    :type times: :class:`pandas.DatetimeIndex`
+    :param latitude: latitude [deg]
+    :param latitude: longitude [deg]
+    :param pressure: pressure [Pa]
+    :param latitude: altitude [m]
+    :param temperature: temperature [degC]
+    :returns: zenith, azimuth
+    """
     dataframe = pvlib.solarposition.spa_c(times, latitude, longitude, pressure,
                                           temperature)
     retvals = dataframe.to_records()
@@ -195,7 +235,7 @@ def spa(times, latitude, longitude, pressure, altitude, temperature):
     return zenith, azimuth
 
 
-def test_solpos():
+def test_solpos(method='loop'):
     """
     Test solar position calculation using NREL's SOLPOS.
     """
@@ -207,7 +247,10 @@ def test_solpos():
     # standard deviation of 1% assuming normal distribution
     covariance = np.diag([0.0001] * 5)
     ze, az, cov, jac = spa(times, latitude, longitude, pressure, altitude,
-                           temperature, __covariance__=covariance)
+                           temperature, __covariance__=covariance,
+                           __method__=method)
+    cov = jflatten(cov)
+    jac = jflatten(jac)
     jac_nd = solpos_nd_jac(times, latitude, longitude, pressure, altitude,
                            temperature)
     for n in xrange(times.size):

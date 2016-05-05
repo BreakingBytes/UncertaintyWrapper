@@ -22,10 +22,26 @@ SunPower Corp. (c) 2016
 from functools import wraps
 import numpy as np
 import logging
+from multiprocessing import Pool
+from scipy.sparse import csr_matrix
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig()
 LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.ERROR)
 DELTA = np.finfo(float).eps ** (1.0 / 3.0) / 2.0
+
+
+def prop_unc(jc):
+    """
+    Propagate uncertainty.
+
+    :param jc: the Jacobian and covariance matrix
+    :type jc: sequence
+
+    This method is mainly designed to be used as the target for a multithreading pool
+    """
+    j, c = jc
+    return np.dot(np.dot(j, c), j.T)
 
 
 def partial_derivative(f, x, n, nargs, delta=DELTA):
@@ -41,6 +57,7 @@ def partial_derivative(f, x, n, nargs, delta=DELTA):
     """
     dx = np.zeros((nargs, 1))
     # scale delta by (|x| + 1.0) to avoid noise from machine precision
+    # XXX: in-place addition changes values of reference to dx, OK since only used in this scope!
     dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
     try:
@@ -91,7 +108,7 @@ def jacobian(func, x, nf, nobs, *args, **kwargs):
 
 def jflatten(j):
     """
-    Flatten Jacobian into 2-D
+    Flatten 3_D Jacobian into 2-D.
     """
     nobs, nf, nargs = j.shape
     nrows, ncols = nf * nobs, nargs * nobs
@@ -102,39 +119,89 @@ def jflatten(j):
     return jflat
 
 
+def jtosparse(j):
+    """
+    Generate sparse matrix coordinates from 3-D Jacobian.
+    """
+    data = j.flatten().tolist()
+    nobs, nf, nargs = j.shape
+    indices = zip(*[(r, c) for n in xrange(nobs)
+                    for r in xrange(n * nf, (n + 1) * nf)
+                    for c in xrange(n * nargs, (n + 1) * nargs)])
+    return csr_matrix((data, indices), shape=(nobs * nf, nobs * nargs))
+
+
 # TODO: allow user to supply analytical Jacobian, only fall back on Jacob
 # estimate if jac is None
-# TODO: check for negative covariance, what do we do?
-# TODO: what is the expected format for COV if some have multiple
-# observations, is it necessary to flatten J first??
-# group args as specified
 
 
 def unc_wrapper_args(*covariance_keys):
     """
-    Wrap function, pop ``__covariance__`` argument from keyword arguments,
-    propagate uncertainty given covariance using Jacobian estimate and append
-    calculated covariance and Jacobian matrices to return values. User supplied
-    covariance keys can be indices of positional arguments or keys of keyword
-    argument used in calling the function. If empty then assume the arguments
-    are already grouped. If ``None`` then use all of the arguments.
+    Wrap function, calculate its Jacobian and calculate the covariance of the
+    outputs given the covariance of the specified inputs.
 
     :param covariance_keys: indices and names of arguments corresponding to
         covariance
-    :return: function value, covariance and Jacobian
+    :return: wrapped function bound to specified covariance keys
+
+    This is the outer uncertainty wrapper that allows you to specify the
+    arguments in the original function that correspond to the covariance. The
+    inner wrapper takes the original function to be wrapped. ::
+
+        def f(a, b, c, d, kw1='foo', *args, **kwargs):
+            pass
+
+        # arguments a, c, d and kw1 correspond to the covariance matrix
+        f_wrapped = unc_wrapper_args(0, 2, 3, 'kw1')(f)
+
+        cov = np.array([[0.0001, 0., 0., 0.], [0., 0.0001, 0., 0.],
+                        [0., 0., 0.0001, 0.], [0., 0., 0., 0.0001])
+        y, cov, jac = f_wrapped(a, b, c, d, kw1='bar', __covariance__=cov)
+
+    The covariance keys can be indices of positional arguments or the names of
+    keywords argument used in calling the function. If no covariance keys are
+    specified then the arguments that correspond to the covariance shoud be
+    grouped into a sequence. If ``None`` is anywhere in ``covariance_keys`` then
+    all of the arguments will be used to calculate the Jacobian.
+
+    The covariance matrix must be a symmetrical matrix with positive numbers on
+    the diagonal that correspond to the square of the standard deviation, second
+    moment around the mean or root-mean-square(RMS) of the function with respect
+    to the arguments specified as covariance keys. The other elements are the
+    covariances corresponding to the arguments intersecting at that element.
+    Pass the covariance matrix with the keyword ``__covariance__`` and it will
+    be popped from the dictionary of keyword arguments provided to the wrapped
+    function.
+
+    The wrapped function will return the evaluation of the original function,
+    its Jacobian, which is the sensitivity of the return output to each
+    argument specified as a covariance key and the covariance propagated using
+    the first order terms of a Taylor series expansion around the arguments.
+
+    An optional keyword argument ``__method__`` can also be passed to the
+    wrapped function (not the wrapper) that specifies the method used to
+    calculate the dot product. The default method is ``'loop'``. The other
+    methods are ``'dense'``, ``'sparse'`` and ``'pool'``.
+
+    If the arguments specified as covariance keys are arrays, they should all be
+    the same size. These dimensions will be considered as separate observations.
+    Another argument, not in the covariance keys, may also create observations.
+    The resulting Jacobian will have dimensions of number of observations (nobs)
+    by number of return output (nf) by number of covariance keys (nargs). The
+    resulting covariance will be nobs x nf x nf.
     """
     def wrapper(f):
         @wraps(f)
         def wrapped_function(*args, **kwargs):
             cov = kwargs.pop('__covariance__', None)  # pop covariance
-            LOGGER.debug('covariance:\n%r', cov)
+            method = kwargs.pop('__method__', 'loop')  # pop covariance
             # covariance keys cannot be defaults, they must be in args or kwargs
             cov_keys = covariance_keys
             # convert args to kwargs by index
             kwargs.update({n: v for n, v in enumerate(args)})
             args = ()  # empty args
             # group covariance keys
-            if cov_keys is None:
+            if None in cov_keys:
                 # use all keys
                 cov_keys = kwargs.keys()
                 x = np.reshape(kwargs.values(), (len(cov_keys), -1))
@@ -145,8 +212,6 @@ def unc_wrapper_args(*covariance_keys):
             else:
                 # arguments already grouped
                 x = kwargs.pop(0)  # use first argument
-            LOGGER.debug('covariance keys:\n%r', cov_keys)
-            LOGGER.debug('independent variables:\n%r', x)
             # remaining args
             args_dict = {}
             
@@ -179,21 +244,48 @@ def unc_wrapper_args(*covariance_keys):
             avg = f_(x, *args, **kwargs)
             nf, nobs = avg.shape
             jac = jacobian(f_, x, nf, nobs, *args, **kwargs)
-            jac = jflatten(jac)  # flatten Jacobian
             # calculate covariance
             if cov is not None:
-                cov *= x.T.flatten() ** 2  # scale covariances by x squared
-                if jac.shape[1] == cov.shape[1] * nobs:
-                    cov = np.tile(cov, (nobs, 1, 1))
+                # XXX: do not use in-place multiplication here if reference is
+                # from outside scope!
+                # XXX: use numpy.multiply to copy cov creating a new reference
+                # in this scope 
+                cov = cov * x.T.flatten() ** 2  # scale covariances by x squared
                 # covariance must account for all observations
-                if cov.ndim == 3:
-                    # if covariance is an array of covariances, flatten it.
-                    cov = jflatten(cov)
-                cov = np.dot(np.dot(jac, cov), jac.T)
+                if cov.ndim != 3:
+                    assert jac.size / nf / nobs == cov.size / len(x)
+                    cov = np.tile(cov, (nobs, 1, 1))
+                # propagate uncertainty using different methods
+                if method.lower() == 'dense':
+                    j, c = jflatten(jac), jflatten(cov)
+                    cov = prop_unc((j, c))
+                # sparse
+                elif method.lower() == 'sparse':
+                    j, c = jtosparse(jac), jtosparse(cov)
+                    cov = j.dot(c).dot(j.transpose())
+                    cov = cov.todense()
+                # pool
+                elif method.lower() == 'pool':
+                    try:
+                        p = Pool()
+                        cov = np.array(p.map(prop_unc, zip(jac, cov)))
+                    finally:
+                        p.terminate()
+                # loop is the default
+                else:
+                    cov = np.array([prop_unc((jac[o], cov[o]))
+                                    for o in xrange(nobs)])
+                # dense and spares are flattened, unravel them into 3-D list of
+                # observations
+                if method.lower() in ['dense', 'sparse']:
+                    cov = np.array([
+                        cov[(nf * o):(nf * (o + 1)), (nf * o):(nf * (o + 1))]
+                        for o in xrange(nobs)
+                    ])
             # unpack returns for original function with ungrouped arguments
-            if cov_keys is None or len(cov_keys) > 0:
+            if None in cov_keys or len(cov_keys) > 0:
                 return tuple(avg.tolist() + [cov, jac])
-            # assume grouped return if independent variables were already grouped
+            # independent variables were already grouped
             return avg, cov, jac
         return wrapped_function
     return wrapper

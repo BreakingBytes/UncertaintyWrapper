@@ -4,21 +4,21 @@ Test AlgoPy and numdifftools
 
 from algopy import UTPM, exp, log, sqrt, zeros
 import numdifftools as nd
-from uncertainty_wrapper.tests import KB, QE, np, pvlib
+from uncertainty_wrapper.tests import KB, QE, np, pvlib, T0
 
 
-def IV_algopy(x, Vd, E0=1000, T0=298.15, kB=KB, qe=QE):
+def IV_algopy(x, Vd):
     """
     IV curve implemented using algopy instead of numpy
     """
     nobs = x.shape[1]
     out = zeros((3, nobs), dtype=x)
     Ee, Tc, Rs, Rsh, Isat1_0, Isat2, Isc0, alpha_Isc, Eg = x
-    Vt = Tc * kB / qe
+    Vt = Tc * KB / QE
     Isc = Ee * Isc0 * (1.0 + (Tc - T0) * alpha_Isc)
     Isat1 = (
         Isat1_0 * (Tc ** 3.0 / T0 ** 3.0) *
-        exp(Eg * qe / kB * (1.0 / T0 - 1.0 / Tc))
+        exp(Eg * QE / KB * (1.0 / T0 - 1.0 / Tc))
     )
     Vd_sc = Isc * Rs  # at short circuit Vc = 0 
     Id1_sc = Isat1 * (exp(Vd_sc / Vt) - 1.0)
