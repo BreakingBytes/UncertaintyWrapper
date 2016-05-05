@@ -4,9 +4,9 @@ central finite difference approximation of the Jacobian matrix.
 
 .. math::
 
-    \frac{\partial f_i}{\partial x_{j,k}}
+    \\frac{\\partial f_i}{\\partial x_{j,k}}
 
-Uncertainty of the output is propagated using 1_{st} order terms of a Taylor
+Uncertainty of the output is propagated using first order terms of a Taylor
 series expansion around :math:`x`.
 
 
@@ -38,7 +38,8 @@ def prop_unc(jc):
     :param jc: the Jacobian and covariance matrix
     :type jc: sequence
 
-    This method is mainly designed to be used as the target for a multithreading pool
+    This method is mainly designed to be used as the target for a
+    multiprocessing pool.
     """
     j, c = jc
     return np.dot(np.dot(j, c), j.T)
@@ -57,7 +58,8 @@ def partial_derivative(f, x, n, nargs, delta=DELTA):
     """
     dx = np.zeros((nargs, 1))
     # scale delta by (|x| + 1.0) to avoid noise from machine precision
-    # XXX: in-place addition changes values of reference to dx, OK since only used in this scope!
+    # XXX: in-place addition changes values of reference to dx, OK since only
+    # used in this scope!
     dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
     try:
