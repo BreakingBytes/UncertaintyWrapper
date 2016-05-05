@@ -46,9 +46,8 @@
 <p>Uncertainty wrapper calculates uncertainties of wrapped functions using
 central finite difference approximation of the Jacobian matrix.</p>
 <div class="math">
-</div>
-<p>rac{partial f_i}{partial x_{j,k}}</p>
-<p>Uncertainty of the output is propagated using 1_{st} order terms of a Taylor
+\[\frac{\partial f_i}{\partial x_{j,k}}\]</div>
+<p>Uncertainty of the output is propagated using first order terms of a Taylor
 series expansion around <span class="math">\(x\)</span>.</p>
 <div class="math">
 \[dF_{ij} = J_{ij} * S_{x_i, x_j} * J_{ij}^{T}\]</div>
