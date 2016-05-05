@@ -46,7 +46,7 @@
 
 <span class="sd">.. math::</span>
 
-<span class="sd">    frac{\partial f_i}{\partial x_{j,k}}</span>
+<span class="sd">    \frac{\partial f_i}{\partial x_{j,k}}</span>
 
 <span class="sd">Uncertainty of the output is propagated using 1_{st} order terms of a Taylor</span>
 <span class="sd">series expansion around :math:`x`.</span>
@@ -63,8 +63,27 @@
 
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Pool</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">csr_matrix</span>
 
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">()</span>
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">LOGGER</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 <span class="n">DELTA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+
+<span class="k">def</span> <span class="nf">prop_unc</span><span class="p">(</span><span class="n">jc</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Propagate uncertainty.</span>
+
+<span class="sd">    :param jc: the Jacobian and covariance matrix</span>
+<span class="sd">    :type jc: sequence</span>
+
+<span class="sd">    This method is mainly designed to be used as the target for a multithreading pool</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">j</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">jc</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">c</span><span class="p">),</span> <span class="n">j</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="partial_derivative"><a class="viewcode-back" href="../../api.html#uncertainty_wrapper.core.partial_derivative">[docs]</a><span class="k">def</span> <span class="nf">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">nargs</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="n">DELTA</span><span class="p">):</span>
@@ -80,6 +99,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nargs</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
     <span class="c1"># scale delta by (|x| + 1.0) to avoid noise from machine precision</span>
+    <span class="c1"># XXX: in-place addition changes values of reference to dx, OK since only used in this scope!</span>
     <span class="n">dx</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">delta</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
     <span class="c1"># apply central difference approximation</span>
     <span class="k">try</span><span class="p">:</span>
@@ -130,7 +150,7 @@
 
 <div class="viewcode-block" id="jflatten"><a class="viewcode-back" href="../../api.html#uncertainty_wrapper.core.jflatten">[docs]</a><span class="k">def</span> <span class="nf">jflatten</span><span class="p">(</span><span class="n">j</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Flatten Jacobian into 2-D</span>
+<span class="sd">    Flatten 3_D Jacobian into 2-D.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nobs</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">nargs</span> <span class="o">=</span> <span class="n">j</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">=</span> <span class="n">nf</span> <span class="o">*</span> <span class="n">nobs</span><span class="p">,</span> <span class="n">nargs</span> <span class="o">*</span> <span class="n">nobs</span>
@@ -141,38 +161,89 @@
     <span class="k">return</span> <span class="n">jflat</span></div>
 
 
+<span class="k">def</span> <span class="nf">jtosparse</span><span class="p">(</span><span class="n">j</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate sparse matrix coordinates from 3-D Jacobian.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">j</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">nobs</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">nargs</span> <span class="o">=</span> <span class="n">j</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">nobs</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">nf</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nf</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">nargs</span><span class="p">,</span> <span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nargs</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="n">csr_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">nobs</span> <span class="o">*</span> <span class="n">nf</span><span class="p">,</span> <span class="n">nobs</span> <span class="o">*</span> <span class="n">nargs</span><span class="p">))</span>
+
+
 <span class="c1"># TODO: allow user to supply analytical Jacobian, only fall back on Jacob</span>
 <span class="c1"># estimate if jac is None</span>
-<span class="c1"># TODO: check for negative covariance, what do we do?</span>
-<span class="c1"># TODO: what is the expected format for COV if some have multiple</span>
-<span class="c1"># observations, is it necessary to flatten J first??</span>
-<span class="c1"># group args as specified</span>
 
 
 <div class="viewcode-block" id="unc_wrapper_args"><a class="viewcode-back" href="../../api.html#uncertainty_wrapper.core.unc_wrapper_args">[docs]</a><span class="k">def</span> <span class="nf">unc_wrapper_args</span><span class="p">(</span><span class="o">*</span><span class="n">covariance_keys</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Wrap function, pop ``__covariance__`` argument from keyword arguments,</span>
-<span class="sd">    propagate uncertainty given covariance using Jacobian estimate and append</span>
-<span class="sd">    calculated covariance and Jacobian matrices to return values. User supplied</span>
-<span class="sd">    covariance keys can be indices of positional arguments or keys of keyword</span>
-<span class="sd">    argument used in calling the function. If empty then assume the arguments</span>
-<span class="sd">    are already grouped. If ``None`` then use all of the arguments.</span>
+<span class="sd">    Wrap function, calculate its Jacobian and calculate the covariance of the</span>
+<span class="sd">    outputs given the covariance of the specified inputs.</span>
 
 <span class="sd">    :param covariance_keys: indices and names of arguments corresponding to</span>
 <span class="sd">        covariance</span>
-<span class="sd">    :return: function value, covariance and Jacobian</span>
+<span class="sd">    :return: wrapped function bound to specified covariance keys</span>
+
+<span class="sd">    This is the outer uncertainty wrapper that allows you to specify the</span>
+<span class="sd">    arguments in the original function that correspond to the covariance. The</span>
+<span class="sd">    inner wrapper takes the original function to be wrapped. ::</span>
+
+<span class="sd">        def f(a, b, c, d, kw1=&#39;foo&#39;, *args, **kwargs):</span>
+<span class="sd">            pass</span>
+
+<span class="sd">        # arguments a, c, d and kw1 correspond to the covariance matrix</span>
+<span class="sd">        f_wrapped = unc_wrapper_args(0, 2, 3, &#39;kw1&#39;)(f)</span>
+
+<span class="sd">        cov = np.array([[0.0001, 0., 0., 0.], [0., 0.0001, 0., 0.],</span>
+<span class="sd">                        [0., 0., 0.0001, 0.], [0., 0., 0., 0.0001])</span>
+<span class="sd">        y, cov, jac = f_wrapped(a, b, c, d, kw1=&#39;bar&#39;, __covariance__=cov)</span>
+
+<span class="sd">    The covariance keys can be indices of positional arguments or the names of</span>
+<span class="sd">    keywords argument used in calling the function. If no covariance keys are</span>
+<span class="sd">    specified then the arguments that correspond to the covariance shoud be</span>
+<span class="sd">    grouped into a sequence. If ``None`` is anywhere in ``covariance_keys`` then</span>
+<span class="sd">    all of the arguments will be used to calculate the Jacobian.</span>
+
+<span class="sd">    The covariance matrix must be a symmetrical matrix with positive numbers on</span>
+<span class="sd">    the diagonal that correspond to the square of the standard deviation, second</span>
+<span class="sd">    moment around the mean or root-mean-square(RMS) of the function with respect</span>
+<span class="sd">    to the arguments specified as covariance keys. The other elements are the</span>
+<span class="sd">    covariances corresponding to the arguments intersecting at that element.</span>
+<span class="sd">    Pass the covariance matrix with the keyword ``__covariance__`` and it will</span>
+<span class="sd">    be popped from the dictionary of keyword arguments provided to the wrapped</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    The wrapped function will return the evaluation of the original function,</span>
+<span class="sd">    its Jacobian, which is the sensitivity of the return output to each</span>
+<span class="sd">    argument specified as a covariance key and the covariance propagated using</span>
+<span class="sd">    the first order terms of a Taylor series expansion around the arguments.</span>
+
+<span class="sd">    An optional keyword argument ``__method__`` can also be passed to the</span>
+<span class="sd">    wrapped function (not the wrapper) that specifies the method used to</span>
+<span class="sd">    calculate the dot product. The default method is ``&#39;loop&#39;``. The other</span>
+<span class="sd">    methods are ``&#39;dense&#39;``, ``&#39;sparse&#39;`` and ``&#39;pool&#39;``.</span>
+
+<span class="sd">    If the arguments specified as covariance keys are arrays, they should all be</span>
+<span class="sd">    the same size. These dimensions will be considered as separate observations.</span>
+<span class="sd">    Another argument, not in the covariance keys, may also create observations.</span>
+<span class="sd">    The resulting Jacobian will have dimensions of number of observations (nobs)</span>
+<span class="sd">    by number of return output (nf) by number of covariance keys (nargs). The</span>
+<span class="sd">    resulting covariance will be nobs x nf x nf.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
         <span class="nd">@wraps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="k">def</span> <span class="nf">wrapped_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
             <span class="n">cov</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;__covariance__&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>  <span class="c1"># pop covariance</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;__method__&#39;</span><span class="p">,</span> <span class="s1">&#39;loop&#39;</span><span class="p">)</span>  <span class="c1"># pop covariance</span>
             <span class="c1"># covariance keys cannot be defaults, they must be in args or kwargs</span>
             <span class="n">cov_keys</span> <span class="o">=</span> <span class="n">covariance_keys</span>
             <span class="c1"># convert args to kwargs by index</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">n</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">)})</span>
             <span class="n">args</span> <span class="o">=</span> <span class="p">()</span>  <span class="c1"># empty args</span>
             <span class="c1"># group covariance keys</span>
-            <span class="k">if</span> <span class="n">cov_keys</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">cov_keys</span><span class="p">:</span>
                 <span class="c1"># use all keys</span>
                 <span class="n">cov_keys</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
                 <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cov_keys</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
@@ -215,21 +286,48 @@
             <span class="n">avg</span> <span class="o">=</span> <span class="n">f_</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="n">nf</span><span class="p">,</span> <span class="n">nobs</span> <span class="o">=</span> <span class="n">avg</span><span class="o">.</span><span class="n">shape</span>
             <span class="n">jac</span> <span class="o">=</span> <span class="n">jacobian</span><span class="p">(</span><span class="n">f_</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">nobs</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-            <span class="n">jac</span> <span class="o">=</span> <span class="n">jflatten</span><span class="p">(</span><span class="n">jac</span><span class="p">)</span>  <span class="c1"># flatten Jacobian</span>
             <span class="c1"># calculate covariance</span>
             <span class="k">if</span> <span class="n">cov</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-                <span class="n">cov</span> <span class="o">*=</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">**</span> <span class="mi">2</span>  <span class="c1"># scale covariances by x squared</span>
-                <span class="k">if</span> <span class="n">jac</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">cov</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">nobs</span><span class="p">:</span>
-                    <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span> <span class="p">(</span><span class="n">nobs</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="c1"># XXX: do not use in-place multiplication here if reference is</span>
+                <span class="c1"># from outside scope!</span>
+                <span class="c1"># XXX: use numpy.multiply to copy cov creating a new reference</span>
+                <span class="c1"># in this scope </span>
+                <span class="n">cov</span> <span class="o">=</span> <span class="n">cov</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span> <span class="o">**</span> <span class="mi">2</span>  <span class="c1"># scale covariances by x squared</span>
                 <span class="c1"># covariance must account for all observations</span>
-                <span class="k">if</span> <span class="n">cov</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-                    <span class="c1"># if covariance is an array of covariances, flatten it.</span>
-                    <span class="n">cov</span> <span class="o">=</span> <span class="n">jflatten</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
-                <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">jac</span><span class="p">,</span> <span class="n">cov</span><span class="p">),</span> <span class="n">jac</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">cov</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">jac</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="n">nf</span> <span class="o">/</span> <span class="n">nobs</span> <span class="o">==</span> <span class="n">cov</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                    <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span> <span class="p">(</span><span class="n">nobs</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                <span class="c1"># propagate uncertainty using different methods</span>
+                <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;dense&#39;</span><span class="p">:</span>
+                    <span class="n">j</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">jflatten</span><span class="p">(</span><span class="n">jac</span><span class="p">),</span> <span class="n">jflatten</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
+                    <span class="n">cov</span> <span class="o">=</span> <span class="n">prop_unc</span><span class="p">((</span><span class="n">j</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
+                <span class="c1"># sparse</span>
+                <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;sparse&#39;</span><span class="p">:</span>
+                    <span class="n">j</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">jtosparse</span><span class="p">(</span><span class="n">jac</span><span class="p">),</span> <span class="n">jtosparse</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
+                    <span class="n">cov</span> <span class="o">=</span> <span class="n">j</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">j</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
+                    <span class="n">cov</span> <span class="o">=</span> <span class="n">cov</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+                <span class="c1"># pool</span>
+                <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;pool&#39;</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">p</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">()</span>
+                        <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">prop_unc</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">jac</span><span class="p">,</span> <span class="n">cov</span><span class="p">)))</span>
+                    <span class="k">finally</span><span class="p">:</span>
+                        <span class="n">p</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                <span class="c1"># loop is the default</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">prop_unc</span><span class="p">((</span><span class="n">jac</span><span class="p">[</span><span class="n">o</span><span class="p">],</span> <span class="n">cov</span><span class="p">[</span><span class="n">o</span><span class="p">]))</span>
+                                    <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">nobs</span><span class="p">)])</span>
+                <span class="c1"># dense and spares are flattened, unravel them into 3-D list of</span>
+                <span class="c1"># observations</span>
+                <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dense&#39;</span><span class="p">,</span> <span class="s1">&#39;sparse&#39;</span><span class="p">]:</span>
+                    <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+                        <span class="n">cov</span><span class="p">[(</span><span class="n">nf</span> <span class="o">*</span> <span class="n">o</span><span class="p">):(</span><span class="n">nf</span> <span class="o">*</span> <span class="p">(</span><span class="n">o</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="n">nf</span> <span class="o">*</span> <span class="n">o</span><span class="p">):(</span><span class="n">nf</span> <span class="o">*</span> <span class="p">(</span><span class="n">o</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))]</span>
+                        <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">nobs</span><span class="p">)</span>
+                    <span class="p">])</span>
             <span class="c1"># unpack returns for original function with ungrouped arguments</span>
-            <span class="k">if</span> <span class="n">cov_keys</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">cov_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">cov_keys</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">cov_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">avg</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="p">[</span><span class="n">cov</span><span class="p">,</span> <span class="n">jac</span><span class="p">])</span>
-            <span class="c1"># assume grouped return if independent variables were already grouped</span>
+            <span class="c1"># independent variables were already grouped</span>
             <span class="k">return</span> <span class="n">avg</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">jac</span>
         <span class="k">return</span> <span class="n">wrapped_function</span>
     <span class="k">return</span> <span class="n">wrapper</span></div>

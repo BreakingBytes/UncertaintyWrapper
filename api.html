@@ -46,7 +46,8 @@
 <p>Uncertainty wrapper calculates uncertainties of wrapped functions using
 central finite difference approximation of the Jacobian matrix.</p>
 <div class="math">
-\[frac{\partial f_i}{\partial x_{j,k}}\]</div>
+</div>
+<p>rac{partial f_i}{partial x_{j,k}}</p>
 <p>Uncertainty of the output is propagated using 1_{st} order terms of a Taylor
 series expansion around <span class="math">\(x\)</span>.</p>
 <div class="math">
@@ -130,7 +131,7 @@ correct dimensions for scalars.</p>
 <dl class="function">
 <dt id="uncertainty_wrapper.core.jflatten">
 <code class="descclassname">uncertainty_wrapper.core.</code><code class="descname">jflatten</code><span class="sig-paren">(</span><em>j</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uncertainty_wrapper/core.html#jflatten"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uncertainty_wrapper.core.jflatten" title="Permalink to this definition">¶</a></dt>
-<dd><p>Flatten Jacobian into 2-D</p>
+<dd><p>Flatten 3_D Jacobian into 2-D.</p>
 </dd></dl>
 
 </div>
@@ -139,12 +140,8 @@ correct dimensions for scalars.</p>
 <dl class="function">
 <dt id="uncertainty_wrapper.core.unc_wrapper_args">
 <code class="descclassname">uncertainty_wrapper.core.</code><code class="descname">unc_wrapper_args</code><span class="sig-paren">(</span><em>*covariance_keys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uncertainty_wrapper/core.html#unc_wrapper_args"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uncertainty_wrapper.core.unc_wrapper_args" title="Permalink to this definition">¶</a></dt>
-<dd><p>Wrap function, pop <code class="docutils literal"><span class="pre">__covariance__</span></code> argument from keyword arguments,
-propagate uncertainty given covariance using Jacobian estimate and append
-calculated covariance and Jacobian matrices to return values. User supplied
-covariance keys can be indices of positional arguments or keys of keyword
-argument used in calling the function. If empty then assume the arguments
-are already grouped. If <code class="docutils literal"><span class="pre">None</span></code> then use all of the arguments.</p>
+<dd><p>Wrap function, calculate its Jacobian and calculate the covariance of the
+outputs given the covariance of the specified inputs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -152,10 +149,51 @@ are already grouped. If <code class="docutils literal"><span class="pre">None</s
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>covariance_keys</strong> &#8211; indices and names of arguments corresponding to
 covariance</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">function value, covariance and Jacobian</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">wrapped function bound to specified covariance keys</td>
 </tr>
 </tbody>
 </table>
+<p>This is the outer uncertainty wrapper that allows you to specify the
+arguments in the original function that correspond to the covariance. The
+inner wrapper takes the original function to be wrapped.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>def f(a, b, c, d, kw1=&#39;foo&#39;, *args, **kwargs):
+    pass
+
+# arguments a, c, d and kw1 correspond to the covariance matrix
+f_wrapped = unc_wrapper_args(0, 2, 3, &#39;kw1&#39;)(f)
+
+cov = np.array([[0.0001, 0., 0., 0.], [0., 0.0001, 0., 0.],
+                [0., 0., 0.0001, 0.], [0., 0., 0., 0.0001])
+y, cov, jac = f_wrapped(a, b, c, d, kw1=&#39;bar&#39;, __covariance__=cov)
+</pre></div>
+</div>
+<p>The covariance keys can be indices of positional arguments or the names of
+keywords argument used in calling the function. If no covariance keys are
+specified then the arguments that correspond to the covariance shoud be
+grouped into a sequence. If <code class="docutils literal"><span class="pre">None</span></code> is anywhere in <code class="docutils literal"><span class="pre">covariance_keys</span></code> then
+all of the arguments will be used to calculate the Jacobian.</p>
+<p>The covariance matrix must be a symmetrical matrix with positive numbers on
+the diagonal that correspond to the square of the standard deviation, second
+moment around the mean or root-mean-square(RMS) of the function with respect
+to the arguments specified as covariance keys. The other elements are the
+covariances corresponding to the arguments intersecting at that element.
+Pass the covariance matrix with the keyword <code class="docutils literal"><span class="pre">__covariance__</span></code> and it will
+be popped from the dictionary of keyword arguments provided to the wrapped
+function.</p>
+<p>The wrapped function will return the evaluation of the original function,
+its Jacobian, which is the sensitivity of the return output to each
+argument specified as a covariance key and the covariance propagated using
+the first order terms of a Taylor series expansion around the arguments.</p>
+<p>An optional keyword argument <code class="docutils literal"><span class="pre">__method__</span></code> can also be passed to the
+wrapped function (not the wrapper) that specifies the method used to
+calculate the dot product. The default method is <code class="docutils literal"><span class="pre">'loop'</span></code>. The other
+methods are <code class="docutils literal"><span class="pre">'dense'</span></code>, <code class="docutils literal"><span class="pre">'sparse'</span></code> and <code class="docutils literal"><span class="pre">'pool'</span></code>.</p>
+<p>If the arguments specified as covariance keys are arrays, they should all be
+the same size. These dimensions will be considered as separate observations.
+Another argument, not in the covariance keys, may also create observations.
+The resulting Jacobian will have dimensions of number of observations (nobs)
+by number of return output (nf) by number of covariance keys (nargs). The
+resulting covariance will be nobs x nf x nf.</p>
 </dd></dl>
 
 <div class="section" id="wrapper-shortcut">
@@ -179,7 +217,7 @@ all independent arguments are already grouped together.</p>
 <dl class="function">
 <dt id="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_unc_wrapper">
 <code class="descclassname">uncertainty_wrapper.tests.test_uncertainty_wrapper.</code><code class="descname">test_unc_wrapper</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uncertainty_wrapper/tests/test_uncertainty_wrapper.html#test_unc_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_unc_wrapper" title="Permalink to this definition">¶</a></dt>
-<dd><p>Test uncertainty wrapper</p>
+<dd><p>Test uncertainty wrapper.</p>
 </dd></dl>
 
 <p>Test simple exponential function with known derivative. Assert derivative is
@@ -189,7 +227,7 @@ correct and that uncertainty is propagated correctly.</p>
 <h3>Test IV curve<a class="headerlink" href="#test-iv-curve" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV">
-<code class="descclassname">uncertainty_wrapper.tests.test_uncertainty_wrapper.</code><code class="descname">test_IV</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uncertainty_wrapper/tests/test_uncertainty_wrapper.html#test_IV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">uncertainty_wrapper.tests.test_uncertainty_wrapper.</code><code class="descname">test_IV</code><span class="sig-paren">(</span><em>method='sparse'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uncertainty_wrapper/tests/test_uncertainty_wrapper.html#test_IV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test calculation of photovoltaic cell IV curve using 2-diode model and
 and compare Jacobian estimated by finite central difference to AlgoPy
 automatic differentiation.</p>
@@ -204,7 +242,7 @@ differentiation using AlgoPy.</p>
 <h3>Test Solar Position<a class="headerlink" href="#test-solar-position" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos">
-<code class="descclassname">uncertainty_wrapper.tests.test_uncertainty_wrapper.</code><code class="descname">test_solpos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/uncertainty_wrapper/tests/test_uncertainty_wrapper.html#test_solpos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">uncertainty_wrapper.tests.test_uncertainty_wrapper.</code><code class="descname">test_solpos</code><span class="sig-paren">(</span><em>method='loop'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/uncertainty_wrapper/tests/test_uncertainty_wrapper.html#test_solpos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test solar position calculation using NREL&#8217;s SOLPOS.</p>
 </dd></dl>
 
