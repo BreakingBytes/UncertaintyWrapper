@@ -12,7 +12,7 @@ Installation
 ------------
 
 Use ``pip install uncertainty_wrapper`` to install from
-`PyPI <https://pypi.python.org/pypi/uncertainty_wrapper>`_ or download a source
+`PyPI <https://pypi.python.org/pypi/UncertaintyWrapper>`_ or download a source
 distribution, extract and use ``python setup.py install``.
 
 Requirements
