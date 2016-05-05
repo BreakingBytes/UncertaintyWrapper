@@ -11,7 +11,7 @@ tests for usage and examples.
 Installation
 ------------
 
-Use ``pip install uncertainty_wrapper`` to install from
+Use ``pip install UncertaintyWrapper`` to install from
 `PyPI <https://pypi.python.org/pypi/UncertaintyWrapper>`_ or download a source
 distribution, extract and use ``python setup.py install``.
 
