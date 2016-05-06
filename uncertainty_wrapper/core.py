@@ -244,7 +244,11 @@ def unc_wrapper_args(*covariance_keys):
 
             # evaluate function and Jacobian
             avg = f_(x, *args, **kwargs)
-            nf, nobs = avg.shape
+            # number of returns and observations
+            if avg.ndim > 1:
+                nf, nobs = avg.shape
+            else:
+                nf, nobs = avg.size, 1
             jac = jacobian(f_, x, nf, nobs, *args, **kwargs)
             # calculate covariance
             if cov is not None:

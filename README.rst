@@ -28,15 +28,41 @@ Optional Requirements
 * `NREL SOLPOS <http://rredc.nrel.gov/solar/codesandalgorithms/solpos/>`_ for testing
 * `AlgoPy <https://pythonhosted.org/algopy/>`_ for testing
 
+Usage
+-----
+
+Example::
+
+    from uncertainty_wrapper import unc_wraper
+    import numpy as np
+
+    @unc_wrapper
+    def f(x):
+        return np.exp(x)
+
+    x, cov = np.array([[1.0]]), np.array([[0.1]])
+    f(x, __covariance__=cov)
+
+Returns::
+
+    (array([[ 2.71828183]]),      # exp(1.0)
+     array([[[ 0.73890561]]]),    # (delta-f)^2 = (df/dx)^2 * (delta-x)^2
+     array([[[ 2.71828183]]]))    # df/dx = exp(x)
+
 
 History
 -------
 Releases are named after
 `geological eons, periods and epochs <https://en.wikipedia.org/wiki/Geologic_time_scale>`_.
 
+`v0.3.3 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.2>`_ `Neoproterozoic Era <https://en.wikipedia.org/wiki/Neoproterozoic>`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* Fixes #4, ``ValueError`` if just one observation
+
 `v0.3.2 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.2>`_ `Mesoproterozoic Era <https://en.wikipedia.org/wiki/Mesoproterozoic>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * Fixes #2, don't need to tile scalar x for multiple observations
+* Fixes #3, use sparse matrices for dot product instead of dense
 * uses pvlib example instead of proprietary solar_utils
 
 
