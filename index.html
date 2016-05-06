@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to Uncertainty Wrapper’s documentation! &mdash; Uncertainty Wrapper Mesoproterozoic Era documentation</title>
+    <title>Welcome to Uncertainty Wrapper’s documentation! &mdash; Uncertainty Wrapper Phanerozoic Eon documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     'Mesoproterozoic Era',
+        VERSION:     'Phanerozoic Eon',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="Uncertainty Wrapper Mesoproterozoic Era documentation" href="#" />
+    <link rel="top" title="Uncertainty Wrapper Phanerozoic Eon documentation" href="#" />
     <link rel="next" title="Getting Started" href="getting_started.html" />
    
   
@@ -41,7 +41,7 @@
             
   <div class="section" id="welcome-to-uncertainty-wrapper-s-documentation">
 <h1>Welcome to Uncertainty Wrapper&#8217;s documentation!<a class="headerlink" href="#welcome-to-uncertainty-wrapper-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Version: 0.3.2 (Mesoproterozoic Era)</p>
+<p>Version: 0.4 (Phanerozoic Eon)</p>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -95,14 +95,49 @@ distribution, extract and use <code class="docutils literal"><span class="pre">p
 </ul>
 </div>
 </div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uncertainty_wrapper</span> <span class="kn">import</span> <span class="n">unc_wraper</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="nd">@unc_wrapper</span>
+<span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">x</span><span class="p">,</span> <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.0</span><span class="p">]]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.1</span><span class="p">]])</span>
+<span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">__covariance__</span><span class="o">=</span><span class="n">cov</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Returns:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">array</span><span class="p">([[</span> <span class="mf">2.71828183</span><span class="p">]]),</span>      <span class="c1"># exp(1.0)</span>
+ <span class="n">array</span><span class="p">([[[</span> <span class="mf">0.73890561</span><span class="p">]]]),</span>    <span class="c1"># (delta-f)^2 = (df/dx)^2 * (delta-x)^2</span>
+ <span class="n">array</span><span class="p">([[[</span> <span class="mf">2.71828183</span><span class="p">]]]))</span>    <span class="c1"># df/dx = exp(x)</span>
+</pre></div>
+</div>
+</div>
 <div class="section" id="history">
 <h2>History<a class="headerlink" href="#history" title="Permalink to this headline">¶</a></h2>
 <p>Releases are named after
 <a class="reference external" href="https://en.wikipedia.org/wiki/Geologic_time_scale">geological eons, periods and epochs</a>.</p>
+<div class="section" id="v0-4-phanerozoic-era">
+<h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.2">v0.4</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Phanerozoic">Phanerozoic Era</a><a class="headerlink" href="#v0-4-phanerozoic-era" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixes #5, <code class="docutils literal"><span class="pre">ValueError</span></code> if covariance keys have multiple observations</li>
+<li>fix covariance cross terms not scaled correctly</li>
+</ul>
+</div>
+<div class="section" id="v0-3-3-neoproterozoic-era">
+<h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.2">v0.3.3</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Neoproterozoic">Neoproterozoic Era</a><a class="headerlink" href="#v0-3-3-neoproterozoic-era" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Fixes #4, <code class="docutils literal"><span class="pre">ValueError</span></code> if just one observation</li>
+</ul>
+</div>
 <div class="section" id="v0-3-2-mesoproterozoic-era">
 <h3><a class="reference external" href="https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.2">v0.3.2</a> <a class="reference external" href="https://en.wikipedia.org/wiki/Mesoproterozoic">Mesoproterozoic Era</a><a class="headerlink" href="#v0-3-2-mesoproterozoic-era" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Fixes #2, don&#8217;t need to tile scalar x for multiple observations</li>
+<li>Fixes #3, use sparse matrices for dot product instead of dense</li>
 <li>uses pvlib example instead of proprietary solar_utils</li>
 </ul>
 </div>
