@@ -59,10 +59,7 @@ def partial_derivative(f, x, n, nargs, delta=DELTA):
     # scale delta by (|x| + 1.0) to avoid noise from machine precision
     dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
-    if isinstance(x, np.ndarray) and x.dtype.name != 'object':
-        x_dx = x + [dx, -dx]
-    else:
-        x_dx = zip(*[xi + (dxi, -dxi) for xi, dxi in zip(x, dx)])
+    x_dx = zip(*[xi + (dxi, -dxi) for xi, dxi in zip(x, dx)])
     return (f(x_dx[0]) - f(x_dx[1])) / dx[n] / 2.0
 
 
@@ -198,26 +195,19 @@ def unc_wrapper_args(*covariance_keys):
             # convert args to kwargs by index
             kwargs.update({n: v for n, v in enumerate(args)})
             args = ()  # empty args
-            # group covariance keys
             if None in cov_keys:
                 # use all keys
                 cov_keys = kwargs.keys()
-                try:
-                    x = np.reshape(kwargs.values(), (len(cov_keys), -1))
-                except (ValueError, TypeError):
-                    x = [np.atleast_1d(kwargs.pop(k)) for k in cov_keys]
-                kwargs = {}  # empty kwargs
-            elif len(cov_keys) > 0:
+            # group covariance keys
+            if len(cov_keys) > 0:
                 # uses specified keys
-                x = np.array([np.atleast_1d(kwargs.pop(k)) for k in cov_keys])
+                x = [np.atleast_1d(kwargs.pop(k)) for k in cov_keys]
             else:
                 # arguments already grouped
-                x = np.asarray(kwargs.pop(0))  # use first argument
-            if isinstance(x, np.ndarray) and x.dtype.name == 'object':
-                x = x.tolist()  # use lists for jagged arrays
+                x = kwargs.pop(0)  # use first argument
             # remaining args
             args_dict = {}
-            
+
             def args_from_kwargs(kwargs_):
                 """unpack positional arguments from keyword arguments"""
                 # create mapping of positional arguments by index
@@ -228,7 +218,7 @@ def unc_wrapper_args(*covariance_keys):
                 # remove args_ and their indices from kwargs_
                 args_dict_ = {n: kwargs_.pop(n) for n in idx}
                 return args_, args_dict_
-            
+
             if kwargs:
                 args, args_dict = args_from_kwargs(kwargs)
 
@@ -256,13 +246,13 @@ def unc_wrapper_args(*covariance_keys):
                 # covariance must account for all observations
                 # scale covariances by x squared in each direction
                 if cov.ndim == 3:
-                    if isinstance(x, (list, tuple)):
-                        x = np.array([np.repeat(y, nobs) if len(y)==1
-                                      else y for y in x])
-                        LOGGER.debug('x:\n%r', x)
+                    x = np.array([np.repeat(y, nobs) if len(y)==1
+                                  else y for y in x])
+                    LOGGER.debug('x:\n%r', x)
                     cov = np.array([c * y * np.row_stack(y)
                                     for c, y in zip(cov, x.T)])
                 else: # x are all only one dimension
+                    x = np.asarray(x)
                     cov = cov * x * x.T
                     assert jac.size / nf / nobs == cov.size / len(x)
                     cov = np.tile(cov, (nobs, 1, 1))

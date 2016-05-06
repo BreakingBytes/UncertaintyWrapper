@@ -17,11 +17,11 @@ def test_unc_wrapper():
     Test uncertainty wrapper.
     """
     x, cov = np.array([[1.0]]), np.array([[0.1]])
-    
+
     @unc_wrapper
     def f(y):
         return np.exp(y)
-    
+
     avg, var, jac = f(x, __covariance__=cov, __method__='dense')
     LOGGER.debug("average = %g", avg)
     LOGGER.debug("variance = %g", var)
@@ -36,11 +36,11 @@ def test_unc_wrapper_args():
     Test uncertainty wrapper.
     """
     x, cov = np.array(1.0), np.array([[0.1]])
-    
+
     @unc_wrapper_args(None)
     def f(y):
         return np.exp(y)
-    
+
     avg, var, jac = f(x, __covariance__=cov, __method__='dense')
     LOGGER.debug("average = %g", avg)
     LOGGER.debug("variance = %g", var)
@@ -54,12 +54,12 @@ def test_multiple_observations():
     """
     Test uncertainty wrapper.
     """
-    x, cov = np.array([1.0, 1.0]), np.array([[[0.1]], [[0.1]]])  
-    
+    x, cov = np.array([1.0, 1.0]), np.array([[[0.1]], [[0.1]]])
+
     @unc_wrapper_args(None)
     def f(y):
         return np.exp(y).reshape(1, -1)
-  
+
     avg, var, jac = f(x, __covariance__=cov, __method__='dense')
     LOGGER.debug("average = %g", avg)
     LOGGER.debug("variance = %g", var)
@@ -77,8 +77,8 @@ def IV(x, Vd):
     :type x: sequence
     :param Vd: diode voltages
     :type Vd: :class:`numpy.ndarray`
-    :returns: current [A], voltage [V] and power [W] 
-    :rtype: :class:`numpy.ndarray` 
+    :returns: current [A], voltage [V] and power [W]
+    :rtype: :class:`numpy.ndarray`
 
     The sequence of independent variables must contain the following in the
     specified order::
