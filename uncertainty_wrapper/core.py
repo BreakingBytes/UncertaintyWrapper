@@ -27,7 +27,6 @@ from scipy.sparse import csr_matrix
 
 logging.basicConfig()
 LOGGER = logging.getLogger(__name__)
-LOGGER.setLevel(logging.ERROR)
 DELTA = np.finfo(float).eps ** (1.0 / 3.0) / 2.0
 
 
@@ -60,10 +59,9 @@ def partial_derivative(f, x, n, nargs, delta=DELTA):
     # scale delta by (|x| + 1.0) to avoid noise from machine precision
     dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
-    try:
+    if isinstance(x, np.ndarray) and x.dtype.name != 'object':
         x_dx = x + [dx, -dx]
-    except TypeError:
-        # TypeError: can only concatenate list (not "dx type") to list
+    else:
         x_dx = zip(*[xi + (dxi, -dxi) for xi, dxi in zip(x, dx)])
     return (f(x_dx[0]) - f(x_dx[1])) / dx[n] / 2.0
 
@@ -98,7 +96,7 @@ def jacobian(func, x, nf, nobs, *args, **kwargs):
     """
     nargs = len(x)  # degrees of freedom
     f = lambda x_: func(x_, *args, **kwargs)
-    j = np.zeros((nargs, nf, nobs))  # matrix of zeros            
+    j = np.zeros((nargs, nf, nobs))  # matrix of zeros
     for n in xrange(nargs):
         j[n] = partial_derivative(f, x, n, nargs)
         # better to transpose J once than transpose partial derivative each time
@@ -204,14 +202,19 @@ def unc_wrapper_args(*covariance_keys):
             if None in cov_keys:
                 # use all keys
                 cov_keys = kwargs.keys()
-                x = np.reshape(kwargs.values(), (len(cov_keys), -1))
+                try:
+                    x = np.reshape(kwargs.values(), (len(cov_keys), -1))
+                except (ValueError, TypeError):
+                    x = [np.atleast_1d(kwargs.pop(k)) for k in cov_keys]
                 kwargs = {}  # empty kwargs
             elif len(cov_keys) > 0:
                 # uses specified keys
                 x = np.array([np.atleast_1d(kwargs.pop(k)) for k in cov_keys])
             else:
                 # arguments already grouped
-                x = kwargs.pop(0)  # use first argument
+                x = np.asarray(kwargs.pop(0))  # use first argument
+            if isinstance(x, np.ndarray) and x.dtype.name == 'object':
+                x = x.tolist()  # use lists for jagged arrays
             # remaining args
             args_dict = {}
             
@@ -253,6 +256,10 @@ def unc_wrapper_args(*covariance_keys):
                 # covariance must account for all observations
                 # scale covariances by x squared in each direction
                 if cov.ndim == 3:
+                    if isinstance(x, (list, tuple)):
+                        x = np.array([np.repeat(y, nobs) if len(y)==1
+                                      else y for y in x])
+                        LOGGER.debug('x:\n%r', x)
                     cov = np.array([c * y * np.row_stack(y)
                                     for c, y in zip(cov, x.T)])
                 else: # x are all only one dimension
