@@ -56,10 +56,8 @@ def partial_derivative(f, x, n, nargs, delta=DELTA):
     :param delta: optional step size, default is :math:`\\epsilon^{1/3}` where
         :math:`\\epsilon` is machine precision
     """
-    dx = np.zeros((nargs, 1))
+    dx = np.zeros((nargs, len(x[n])))
     # scale delta by (|x| + 1.0) to avoid noise from machine precision
-    # XXX: in-place addition changes values of reference to dx, OK since only
-    # used in this scope!
     dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
     try:
@@ -252,13 +250,13 @@ def unc_wrapper_args(*covariance_keys):
             jac = jacobian(f_, x, nf, nobs, *args, **kwargs)
             # calculate covariance
             if cov is not None:
-                # XXX: do not use in-place multiplication here if reference is
-                # from outside scope!
-                # XXX: use numpy.multiply to copy cov creating a new reference
-                # in this scope 
-                cov = cov * x.T.flatten() ** 2  # scale covariances by x squared
                 # covariance must account for all observations
-                if cov.ndim != 3:
+                # scale covariances by x squared in each direction
+                if cov.ndim == 3:
+                    cov = np.array([c * y * np.row_stack(y)
+                                    for c, y in zip(cov, x.T)])
+                else: # x are all only one dimension
+                    cov = cov * x * x.T
                     assert jac.size / nf / nobs == cov.size / len(x)
                     cov = np.tile(cov, (nobs, 1, 1))
                 # propagate uncertainty using different methods
