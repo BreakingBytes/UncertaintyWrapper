@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>uncertainty_wrapper.core &mdash; Uncertainty Wrapper Phanerozoic Eon documentation</title>
+    <title>uncertainty_wrapper.core &mdash; Uncertainty Wrapper Paleozoic Era documentation</title>
     
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     'Phanerozoic Eon',
+        VERSION:     'Paleozoic Era',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
-    <link rel="top" title="Uncertainty Wrapper Phanerozoic Eon documentation" href="../../index.html" />
+    <link rel="top" title="Uncertainty Wrapper Paleozoic Era documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" />
    
   
@@ -69,7 +69,6 @@
 
 <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">()</span>
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
-<span class="n">LOGGER</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">)</span>
 <span class="n">DELTA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
 
 
@@ -102,11 +101,7 @@
     <span class="c1"># scale delta by (|x| + 1.0) to avoid noise from machine precision</span>
     <span class="n">dx</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">delta</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
     <span class="c1"># apply central difference approximation</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">x_dx</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="p">[</span><span class="n">dx</span><span class="p">,</span> <span class="o">-</span><span class="n">dx</span><span class="p">]</span>
-    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-        <span class="c1"># TypeError: can only concatenate list (not &quot;dx type&quot;) to list</span>
-        <span class="n">x_dx</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">xi</span> <span class="o">+</span> <span class="p">(</span><span class="n">dxi</span><span class="p">,</span> <span class="o">-</span><span class="n">dxi</span><span class="p">)</span> <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">dxi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dx</span><span class="p">)])</span>
+    <span class="n">x_dx</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">xi</span> <span class="o">+</span> <span class="p">(</span><span class="n">dxi</span><span class="p">,</span> <span class="o">-</span><span class="n">dxi</span><span class="p">)</span> <span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">dxi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dx</span><span class="p">)])</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x_dx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="n">f</span><span class="p">(</span><span class="n">x_dx</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="o">/</span> <span class="n">dx</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">/</span> <span class="mf">2.0</span></div>
 
 
@@ -140,7 +135,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">nargs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># degrees of freedom</span>
     <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x_</span><span class="p">:</span> <span class="n">func</span><span class="p">(</span><span class="n">x_</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nargs</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">nobs</span><span class="p">))</span>  <span class="c1"># matrix of zeros            </span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nargs</span><span class="p">,</span> <span class="n">nf</span><span class="p">,</span> <span class="n">nobs</span><span class="p">))</span>  <span class="c1"># matrix of zeros</span>
     <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">nargs</span><span class="p">):</span>
         <span class="n">j</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">partial_derivative</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">nargs</span><span class="p">)</span>
         <span class="c1"># better to transpose J once than transpose partial derivative each time</span>
@@ -242,21 +237,19 @@
             <span class="c1"># convert args to kwargs by index</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">n</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">)})</span>
             <span class="n">args</span> <span class="o">=</span> <span class="p">()</span>  <span class="c1"># empty args</span>
-            <span class="c1"># group covariance keys</span>
             <span class="k">if</span> <span class="bp">None</span> <span class="ow">in</span> <span class="n">cov_keys</span><span class="p">:</span>
                 <span class="c1"># use all keys</span>
                 <span class="n">cov_keys</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cov_keys</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-                <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># empty kwargs</span>
-            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">cov_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># group covariance keys</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cov_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="c1"># uses specified keys</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">cov_keys</span><span class="p">])</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">cov_keys</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># arguments already grouped</span>
                 <span class="n">x</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># use first argument</span>
             <span class="c1"># remaining args</span>
             <span class="n">args_dict</span> <span class="o">=</span> <span class="p">{}</span>
-            
+
             <span class="k">def</span> <span class="nf">args_from_kwargs</span><span class="p">(</span><span class="n">kwargs_</span><span class="p">):</span>
                 <span class="sd">&quot;&quot;&quot;unpack positional arguments from keyword arguments&quot;&quot;&quot;</span>
                 <span class="c1"># create mapping of positional arguments by index</span>
@@ -267,7 +260,7 @@
                 <span class="c1"># remove args_ and their indices from kwargs_</span>
                 <span class="n">args_dict_</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">kwargs_</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">}</span>
                 <span class="k">return</span> <span class="n">args_</span><span class="p">,</span> <span class="n">args_dict_</span>
-            
+
             <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="n">args</span><span class="p">,</span> <span class="n">args_dict</span> <span class="o">=</span> <span class="n">args_from_kwargs</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
 
@@ -295,9 +288,13 @@
                 <span class="c1"># covariance must account for all observations</span>
                 <span class="c1"># scale covariances by x squared in each direction</span>
                 <span class="k">if</span> <span class="n">cov</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">nobs</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span>
+                                  <span class="k">else</span> <span class="n">y</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span>
+                    <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;x:</span><span class="se">\n</span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
                     <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">c</span> <span class="o">*</span> <span class="n">y</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">row_stack</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
                                     <span class="k">for</span> <span class="n">c</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)])</span>
                 <span class="k">else</span><span class="p">:</span> <span class="c1"># x are all only one dimension</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
                     <span class="n">cov</span> <span class="o">=</span> <span class="n">cov</span> <span class="o">*</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span>
                     <span class="k">assert</span> <span class="n">jac</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="n">nf</span> <span class="o">/</span> <span class="n">nobs</span> <span class="o">==</span> <span class="n">cov</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
                     <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">cov</span><span class="p">,</span> <span class="p">(</span><span class="n">nobs</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
