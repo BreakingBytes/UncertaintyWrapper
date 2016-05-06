@@ -31,6 +31,25 @@ def test_unc_wrapper():
     return avg, var, jac
 
 
+def test_unc_wrapper_args():
+    """
+    Test uncertainty wrapper.
+    """
+    x, cov = np.array(1.0), np.array([[0.1]])
+    
+    @unc_wrapper_args(None)
+    def f(y):
+        return np.exp(y)
+    
+    avg, var, jac = f(x, __covariance__=cov, __method__='dense')
+    LOGGER.debug("average = %g", avg)
+    LOGGER.debug("variance = %g", var)
+    ok_(np.isclose(avg, np.exp(x)))
+    ok_(np.isclose(var, cov * np.exp(x) ** 2))
+    ok_(np.isclose(jac, np.exp(x)))
+    return avg, var, jac
+
+
 def IV(x, Vd):
     """
     Calculate IV curve using 2-diode model.
