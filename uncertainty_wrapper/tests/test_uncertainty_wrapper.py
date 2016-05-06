@@ -14,7 +14,7 @@ LOGGER.setLevel(logging.DEBUG)
 
 def test_unc_wrapper():
     """
-    Test uncertainty wrapper.
+    Test uncertainty wrapper with grouped arguments.
     """
     x, cov = np.array([[1.0]]), np.array([[0.1]])
 
@@ -33,9 +33,9 @@ def test_unc_wrapper():
 
 def test_unc_wrapper_args():
     """
-    Test uncertainty wrapper.
+    Test uncertainty wrapper with ungrouped arguments.
     """
-    x, cov = np.array(1.0), np.array([[0.1]])
+    x, cov = 1.0, np.array([[0.1]])
 
     @unc_wrapper_args(None)
     def f(y):
@@ -52,20 +52,47 @@ def test_unc_wrapper_args():
 
 def test_multiple_observations():
     """
-    Test uncertainty wrapper.
+    Test multiple observations.
     """
-    x, cov = np.array([1.0, 1.0]), np.array([[[0.1]], [[0.1]]])
+    x, cov = [1.0, 1.0], np.array([[[0.1]], [[0.1]]])
 
     @unc_wrapper_args(None)
     def f(y):
         return np.exp(y).reshape(1, -1)
 
     avg, var, jac = f(x, __covariance__=cov, __method__='dense')
-    LOGGER.debug("average = %g", avg)
-    LOGGER.debug("variance = %g", var)
+    LOGGER.debug("average = %r", avg)
+    LOGGER.debug("variance = %r", var)
     ok_(np.allclose(avg, np.exp(x)))
     ok_(np.allclose(var, cov * np.exp(x) ** 2))
     ok_(np.allclose(jac, np.exp(x)))
+    return avg, var, jac
+
+
+def test_jagged():
+    """
+    Test jagged array.
+    """
+    w, x = 1.0, [1.0, 1.0]
+    cov = np.array([[[0.1, 0.], [0., 0.1]],
+                    [[0.1, 0.], [0., 0.1]]])
+
+    @unc_wrapper_args(None)
+    def f(y, z):
+        return (y * np.exp(z)).reshape(1, -1)
+
+    avg, var, jac = f(w, x, __covariance__=cov, __method__='dense')
+    LOGGER.debug("average = %r", avg)
+    LOGGER.debug("jacobian = %r", jac)
+    LOGGER.debug("variance = %r", var)
+    ok_(np.allclose(avg, w * np.exp(x)))
+    ok_(np.allclose(jac, [np.exp(x), np.exp(x)]))
+    var_calc = np.concatenate(
+        [[np.exp(x) * cov[:, 0, 0] + np.exp(x) * cov[:, 1, 0]],
+         [np.exp(x) * cov[:, 0, 1] + np.exp(x) * cov[:, 1, 1]]], 0
+    ).reshape(2, 1, 2)
+    var_calc = var_calc[:, 0, 0] * np.exp(x) + var_calc[:, 0, 1] * np.exp(x)
+    ok_(np.allclose(var, var_calc))
     return avg, var, jac
 
 
