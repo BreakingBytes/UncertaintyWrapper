@@ -55,12 +55,17 @@ History
 Releases are named after
 `geological eons, periods and epochs <https://en.wikipedia.org/wiki/Geologic_time_scale>`_.
 
-`v0.4 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.2>`_ `Phanerozoic Era <https://en.wikipedia.org/wiki/Phanerozoic>`_
+`v0.4.1 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.4.1>`_ `Paleozoic Era <https://en.wikipedia.org/wiki/Paleozoic>`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* Jagged arrays of covariance keys work now.
+* simplify
+
+`v0.4 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.4>`_ `Phanerozoic Era <https://en.wikipedia.org/wiki/Phanerozoic>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * Fixes #5, ``ValueError`` if covariance keys have multiple observations
 * fix covariance cross terms not scaled correctly
 
-`v0.3.3 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.2>`_ `Neoproterozoic Era <https://en.wikipedia.org/wiki/Neoproterozoic>`_
+`v0.3.3 <https://github.com/SunPower/UncertaintyWrapper/releases/tag/v0.3.3>`_ `Neoproterozoic Era <https://en.wikipedia.org/wiki/Neoproterozoic>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * Fixes #4, ``ValueError`` if just one observation
 
