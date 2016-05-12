@@ -22,8 +22,10 @@ SunPower Corp. (c) 2016
 from functools import wraps
 import numpy as np
 import logging
+from six import string_types
 from multiprocessing import Pool
 from scipy.sparse import csr_matrix
+import sys
 
 logging.basicConfig()
 LOGGER = logging.getLogger(__name__)
@@ -59,7 +61,8 @@ def partial_derivative(f, x, n, nargs, delta=DELTA):
     # scale delta by (|x| + 1.0) to avoid noise from machine precision
     dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
-    x_dx = zip(*[xi + (dxi, -dxi) for xi, dxi in zip(x, dx)])
+    x_dx = list(zip(*[xi + (dxi, -dxi) for xi, dxi in zip(x, dx)]))
+    print(x_dx)
     return (f(x_dx[0]) - f(x_dx[1])) / dx[n] / 2.0
 
 
@@ -94,7 +97,7 @@ def jacobian(func, x, nf, nobs, *args, **kwargs):
     nargs = len(x)  # degrees of freedom
     f = lambda x_: func(x_, *args, **kwargs)
     j = np.zeros((nargs, nf, nobs))  # matrix of zeros
-    for n in xrange(nargs):
+    for n in range(nargs):
         j[n] = partial_derivative(f, x, n, nargs)
         # better to transpose J once than transpose partial derivative each time
         # j[:,:,n] = df.T
@@ -191,8 +194,9 @@ def unc_wrapper_args(*covariance_keys):
             cov = kwargs.pop('__covariance__', None)  # pop covariance
             method = kwargs.pop('__method__', 'loop')  # pop covariance
             # covariance keys cannot be defaults, they must be in args or kwargs
-            cov_keys = covariance_keys
-            # convert args to kwargs by index
+            cov_keys = [str(k) for k in covariance_keys]
+            #cov_keys = map(str, covariance_keys)
+            #convert args to kwargs by index
             kwargs.update({n: v for n, v in enumerate(args)})
             args = ()  # empty args
             if None in cov_keys:
@@ -201,7 +205,7 @@ def unc_wrapper_args(*covariance_keys):
             # group covariance keys
             if len(cov_keys) > 0:
                 # uses specified keys
-                x = [np.atleast_1d(kwargs.pop(k)) for k in cov_keys]
+                x = [np.atleast_1d(kwargs.pop(int(k))) for k in cov_keys]
             else:
                 # arguments already grouped
                 x = kwargs.pop(0)  # use first argument
@@ -210,13 +214,18 @@ def unc_wrapper_args(*covariance_keys):
 
             def args_from_kwargs(kwargs_):
                 """unpack positional arguments from keyword arguments"""
+
+
                 # create mapping of positional arguments by index
-                args_ = [(n, v) for n, v in kwargs_.iteritems()
-                         if not isinstance(n, basestring)]
+                args_ = []
+                for n, v in kwargs_.items():
+                    args_.append((n, v))
+                args_ = tuple(args_)
+
                 # sort positional arguments by index
-                idx, args_ = zip(*sorted(args_, key=lambda m: m[0]))
+                idx, args_ = zip(*sorted(args_, key=lambda m:int(m[0])))
                 # remove args_ and their indices from kwargs_
-                args_dict_ = {n: kwargs_.pop(n) for n in idx}
+                args_dict_ = {str(n): kwargs_.pop(n) for n in idx}
                 return args_, args_dict_
 
             if kwargs:
@@ -229,6 +238,8 @@ def unc_wrapper_args(*covariance_keys):
                     kwargs_.update(zip(cov_keys, x_), **args_dict_)
                 if kwargs_:
                     args_, _ = args_from_kwargs(kwargs_)
+                    print('***', args_)
+                    print('$$$', kwargs_)
                     return np.array(f(*args_, **kwargs_))
                 # assumes independent variables already grouped
                 return f(x_, *args_, **kwargs_)
