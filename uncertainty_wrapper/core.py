@@ -61,7 +61,7 @@ def partial_derivative(f, x, n, nargs, delta=DELTA):
     # scale delta by (|x| + 1.0) to avoid noise from machine precision
     dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
-    x_dx = list(zip(*[xi + (dxi, -dxi) for xi, dxi in zip(x, dx)]))
+    x_dx = list(zip(*[xi + (dxi, -dxi) for xi, dxi in list(zip(x, dx))]))
     return (f(x_dx[0]) - f(x_dx[1])) / dx[n] / 2.0
 
 
@@ -122,9 +122,9 @@ def jtosparse(j):
     """
     data = j.flatten().tolist()
     nobs, nf, nargs = j.shape
-    indices = zip(*[(r, c) for n in range(nobs)
+    indices = list(zip(*[(r, c) for n in range(nobs)
                     for r in range(n * nf, (n + 1) * nf)
-                    for c in range(n * nargs, (n + 1) * nargs)])
+                    for c in range(n * nargs, (n + 1) * nargs)]))
     return csr_matrix((data, indices), shape=(nobs * nf, nobs * nargs))
 
 
@@ -193,7 +193,13 @@ def unc_wrapper_args(*covariance_keys):
             cov = kwargs.pop('__covariance__', None)  # pop covariance
             method = kwargs.pop('__method__', 'loop')  # pop covariance
             # covariance keys cannot be defaults, they must be in args or kwargs
-            cov_keys = [str(k) for k in covariance_keys]
+            #cov_keys = [str(k) for k in covariance_keys]
+            cov_keys = []
+            for k in covariance_keys:
+                if(k!= None):
+                    cov_keys.append(str(k))
+                else:
+                    cov_keys.append(k)
             #cov_keys = map(str, covariance_keys)
             #convert args to kwargs by index
             kwargs.update({n: v for n, v in enumerate(args)})
@@ -204,8 +210,7 @@ def unc_wrapper_args(*covariance_keys):
             # group covariance keys
             if len(cov_keys) > 0:
                 # uses specified keys
-                x = [np.atleast_1d(kwargs.pop(int(k))) for k in cov_keys]
-                #x = [kwargs.pop(int(k)) for k in cov_keys]
+                x = [np.atleast_1d(kwargs.pop(int(k))) for k in list(cov_keys)]
             else:
                 # arguments already grouped
                 x = kwargs.pop(0)  # use first argument
@@ -240,7 +245,7 @@ def unc_wrapper_args(*covariance_keys):
                 if kwargs_:
                     args_, _ = args_from_kwargs(kwargs_)
                     #print('***', args_)
-                    #print('$$$', kwargs_)
+                    print('$$$', kwargs_)
                     return np.array(f(*args_, **kwargs_))
                 # assumes independent variables already grouped
                 return f(x_, *args_, **kwargs_)
