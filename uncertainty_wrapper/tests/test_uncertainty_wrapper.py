@@ -197,7 +197,7 @@ def test_IV(method='sparse'):
     pv_jac = jflatten(pv_jac)
     pv_jac_algopy = IV_algopy_jac(*X_algopy, Vd=VD)
     nVd = pv_jac_algopy.shape[1]
-    for n in xrange(nVd // 2, nVd):
+    for n in range(nVd // 2, nVd):
         irow, icol = 3 * n, 9 * n
         jrow, jcol = 3 + irow, 9 +icol
         pv_jac_n = pv_jac[irow:jrow, icol:jcol]
@@ -253,8 +253,8 @@ def plot_pv_jac(pv_jac, pv_jac_algopy, Vd=VD):
         'firebrick', 'goldenrod', 'sage', 'lime', 'seagreen', 'turquoise',
         'royalblue', 'indigo', 'fuchsia'
     ]
-    for m in xrange(3):
-        for n in xrange(9):
+    for m in range(3):
+        for n in range(9):
             pv_jac_n = pv_jac[m::3, n::9].diagonal()
             pv_jac_algopy_n = pv_jac_algopy[
                 m, :, n * 126:(n + 1) * 126
@@ -318,7 +318,7 @@ def test_solpos(method='loop'):
     jac = jflatten(jac)
     jac_nd = solpos_nd_jac(times, latitude, longitude, pressure, altitude,
                            temperature)
-    for n in xrange(times.size):
+    for n in range(times.size):
         r, c = 2 * n, 5 * n
         # some rows which numdifftools returned nan
         if n in [0,  8, 17, 24]:

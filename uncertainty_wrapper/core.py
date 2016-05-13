@@ -62,7 +62,6 @@ def partial_derivative(f, x, n, nargs, delta=DELTA):
     dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
     x_dx = list(zip(*[xi + (dxi, -dxi) for xi, dxi in zip(x, dx)]))
-    print(x_dx)
     return (f(x_dx[0]) - f(x_dx[1])) / dx[n] / 2.0
 
 
@@ -206,6 +205,7 @@ def unc_wrapper_args(*covariance_keys):
             if len(cov_keys) > 0:
                 # uses specified keys
                 x = [np.atleast_1d(kwargs.pop(int(k))) for k in cov_keys]
+                #x = [kwargs.pop(int(k)) for k in cov_keys]
             else:
                 # arguments already grouped
                 x = kwargs.pop(0)  # use first argument
@@ -218,6 +218,7 @@ def unc_wrapper_args(*covariance_keys):
 
                 # create mapping of positional arguments by index
                 args_ = []
+                #print(kwargs_)
                 for n, v in kwargs_.items():
                     args_.append((n, v))
                 args_ = tuple(args_)
@@ -238,8 +239,8 @@ def unc_wrapper_args(*covariance_keys):
                     kwargs_.update(zip(cov_keys, x_), **args_dict_)
                 if kwargs_:
                     args_, _ = args_from_kwargs(kwargs_)
-                    print('***', args_)
-                    print('$$$', kwargs_)
+                    #print('***', args_)
+                    #print('$$$', kwargs_)
                     return np.array(f(*args_, **kwargs_))
                 # assumes independent variables already grouped
                 return f(x_, *args_, **kwargs_)

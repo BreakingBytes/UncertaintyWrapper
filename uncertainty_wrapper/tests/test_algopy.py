@@ -90,4 +90,6 @@ def solpos_nd_jac(times, latitude, longitude, pressure, altitude, temperature):
     j = nd.Jacobian(f)
     x = np.array([q.magnitude for q in
                   (latitude, longitude, pressure, altitude, temperature)])
+    print(x)
+    print(times)
     return j(x, times).squeeze()
