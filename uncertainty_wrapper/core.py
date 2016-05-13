@@ -111,7 +111,7 @@ def jflatten(j):
     nobs, nf, nargs = j.shape
     nrows, ncols = nf * nobs, nargs * nobs
     jflat = np.zeros((nrows, ncols))
-    for n in xrange(nobs):
+    for n in range(nobs):
         r, c = n * nf, n * nargs
         jflat[r:(r + nf), c:(c + nargs)] = j[n]
     return jflat
@@ -123,9 +123,9 @@ def jtosparse(j):
     """
     data = j.flatten().tolist()
     nobs, nf, nargs = j.shape
-    indices = zip(*[(r, c) for n in xrange(nobs)
-                    for r in xrange(n * nf, (n + 1) * nf)
-                    for c in xrange(n * nargs, (n + 1) * nargs)])
+    indices = zip(*[(r, c) for n in range(nobs)
+                    for r in range(n * nf, (n + 1) * nf)
+                    for c in range(n * nargs, (n + 1) * nargs)])
     return csr_matrix((data, indices), shape=(nobs * nf, nobs * nargs))
 
 
@@ -286,13 +286,13 @@ def unc_wrapper_args(*covariance_keys):
                 # loop is the default
                 else:
                     cov = np.array([prop_unc((jac[o], cov[o]))
-                                    for o in xrange(nobs)])
+                                    for o in range(nobs)])
                 # dense and spares are flattened, unravel them into 3-D list of
                 # observations
                 if method.lower() in ['dense', 'sparse']:
                     cov = np.array([
                         cov[(nf * o):(nf * (o + 1)), (nf * o):(nf * (o + 1))]
-                        for o in xrange(nobs)
+                        for o in range(nobs)
                     ])
             # unpack returns for original function with ungrouped arguments
             if None in cov_keys or len(cov_keys) > 0:
