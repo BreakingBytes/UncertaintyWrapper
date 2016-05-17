@@ -94,13 +94,8 @@ def jacobian(func, x, nf, nobs, *args, **kwargs):
     :return: Jacobian matrices for each observation
     """
 
-    #nargs = len(x)  # degrees of freedom
-
-    if(isinstance(x, float)):
-        nargs = 0
-    else:
-        nargs = len(x)
-
+    nargs = len(x)  # degrees of freedom
+    
     f = lambda x_: func(x_, *args, **kwargs)
     j = np.zeros((nargs, nf, nobs))  # matrix of zeros
     for n in range(nargs):
