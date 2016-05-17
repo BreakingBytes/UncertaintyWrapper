@@ -93,7 +93,14 @@ def jacobian(func, x, nf, nobs, *args, **kwargs):
     :param nobs: number of observations in output (2nd dimension)
     :return: Jacobian matrices for each observation
     """
-    nargs = len(x)  # degrees of freedom
+
+    #nargs = len(x)  # degrees of freedom
+
+    if(isinstance(x, float)):
+        nargs = 0
+    else:
+        nargs = len(x)
+
     f = lambda x_: func(x_, *args, **kwargs)
     j = np.zeros((nargs, nf, nobs))  # matrix of zeros
     for n in range(nargs):
@@ -193,20 +200,18 @@ def unc_wrapper_args(*covariance_keys):
             cov = kwargs.pop('__covariance__', None)  # pop covariance
             method = kwargs.pop('__method__', 'loop')  # pop covariance
             # covariance keys cannot be defaults, they must be in args or kwargs
-            #cov_keys = [str(k) for k in covariance_keys]
             cov_keys = []
             for k in covariance_keys:
                 if(k!= None):
                     cov_keys.append(str(k))
                 else:
                     cov_keys.append(k)
-            #cov_keys = map(str, covariance_keys)
             #convert args to kwargs by index
             kwargs.update({n: v for n, v in enumerate(args)})
             args = ()  # empty args
             if None in cov_keys:
                 # use all keys
-                cov_keys = kwargs.keys()
+                cov_keys = list(kwargs.keys())
             # group covariance keys
             if len(cov_keys) > 0:
                 # uses specified keys
@@ -216,20 +221,17 @@ def unc_wrapper_args(*covariance_keys):
                 x = kwargs.pop(0)  # use first argument
             # remaining args
             args_dict = {}
-
             def args_from_kwargs(kwargs_):
                 """unpack positional arguments from keyword arguments"""
 
 
                 # create mapping of positional arguments by index
                 args_ = []
-                #print(kwargs_)
                 for n, v in kwargs_.items():
                     args_.append((n, v))
                 args_ = tuple(args_)
-
                 # sort positional arguments by index
-                idx, args_ = zip(*sorted(args_, key=lambda m:int(m[0])))
+                idx, args_ = list(zip(*sorted(args_, key=lambda m:int(m[0]))))
                 # remove args_ and their indices from kwargs_
                 args_dict_ = {str(n): kwargs_.pop(n) for n in idx}
                 return args_, args_dict_
@@ -244,8 +246,6 @@ def unc_wrapper_args(*covariance_keys):
                     kwargs_.update(zip(cov_keys, x_), **args_dict_)
                 if kwargs_:
                     args_, _ = args_from_kwargs(kwargs_)
-                    #print('***', args_)
-                    print('$$$', kwargs_)
                     return np.array(f(*args_, **kwargs_))
                 # assumes independent variables already grouped
                 return f(x_, *args_, **kwargs_)
@@ -262,12 +262,14 @@ def unc_wrapper_args(*covariance_keys):
             if cov is not None:
                 # covariance must account for all observations
                 # scale covariances by x squared in each direction
+
+
                 if cov.ndim == 3:
                     x = np.array([np.repeat(y, nobs) if len(y)==1
                                   else y for y in x])
                     LOGGER.debug('x:\n%r', x)
                     cov = np.array([c * y * np.row_stack(y)
-                                    for c, y in zip(cov, x.T)])
+                                    for c, y in list(zip(cov, x.T))])
                 else: # x are all only one dimension
                     x = np.asarray(x)
                     cov = cov * x * x.T
@@ -286,7 +288,7 @@ def unc_wrapper_args(*covariance_keys):
                 elif method.lower() == 'pool':
                     try:
                         p = Pool()
-                        cov = np.array(p.map(prop_unc, zip(jac, cov)))
+                        cov = np.array(p.map(prop_unc, list(zip(jac, cov))))
                     finally:
                         p.terminate()
                 # loop is the default
