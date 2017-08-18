@@ -31,7 +31,8 @@ setup(name='UncertaintyWrapper',
       author_email=__EMAIL__,
       url=__URL__,
       packages=['uncertainty_wrapper', 'uncertainty_wrapper.tests'],
-      requires=['numpy (>=1.8)', 'nose', 'sphinx'],
+      requires=['numpy (>=1.8)'],
+      install_requires=['numpy>=1.8'],
       package_data={'uncertainty_wrapper': [
           'docs/conf.py', 'docs/*.rst', 'docs/Makefile', 'docs/make.bat'
       ]})
