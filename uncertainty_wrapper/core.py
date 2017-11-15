@@ -22,8 +22,10 @@ SunPower Corp. (c) 2016
 from functools import wraps
 import numpy as np
 import logging
+from six import string_types
 from multiprocessing import Pool
 from scipy.sparse import csr_matrix
+import sys
 
 logging.basicConfig()
 LOGGER = logging.getLogger(__name__)
@@ -59,7 +61,7 @@ def partial_derivative(f, x, n, nargs, delta=DELTA):
     # scale delta by (|x| + 1.0) to avoid noise from machine precision
     dx[n] += np.where(x[n], x[n] * delta, delta)
     # apply central difference approximation
-    x_dx = zip(*[xi + (dxi, -dxi) for xi, dxi in zip(x, dx)])
+    x_dx = list(zip(*[xi + (dxi, -dxi) for xi, dxi in list(zip(x, dx))]))
     return (f(x_dx[0]) - f(x_dx[1])) / dx[n] / 2.0
 
 
@@ -91,10 +93,12 @@ def jacobian(func, x, nf, nobs, *args, **kwargs):
     :param nobs: number of observations in output (2nd dimension)
     :return: Jacobian matrices for each observation
     """
+
     nargs = len(x)  # degrees of freedom
+    
     f = lambda x_: func(x_, *args, **kwargs)
     j = np.zeros((nargs, nf, nobs))  # matrix of zeros
-    for n in xrange(nargs):
+    for n in range(nargs):
         j[n] = partial_derivative(f, x, n, nargs)
         # better to transpose J once than transpose partial derivative each time
         # j[:,:,n] = df.T
@@ -108,7 +112,7 @@ def jflatten(j):
     nobs, nf, nargs = j.shape
     nrows, ncols = nf * nobs, nargs * nobs
     jflat = np.zeros((nrows, ncols))
-    for n in xrange(nobs):
+    for n in range(nobs):
         r, c = n * nf, n * nargs
         jflat[r:(r + nf), c:(c + nargs)] = j[n]
     return jflat
@@ -120,9 +124,9 @@ def jtosparse(j):
     """
     data = j.flatten().tolist()
     nobs, nf, nargs = j.shape
-    indices = zip(*[(r, c) for n in xrange(nobs)
-                    for r in xrange(n * nf, (n + 1) * nf)
-                    for c in xrange(n * nargs, (n + 1) * nargs)])
+    indices = list(zip(*[(r, c) for n in range(nobs)
+                    for r in range(n * nf, (n + 1) * nf)
+                    for c in range(n * nargs, (n + 1) * nargs)]))
     return csr_matrix((data, indices), shape=(nobs * nf, nobs * nargs))
 
 
@@ -191,32 +195,40 @@ def unc_wrapper_args(*covariance_keys):
             cov = kwargs.pop('__covariance__', None)  # pop covariance
             method = kwargs.pop('__method__', 'loop')  # pop covariance
             # covariance keys cannot be defaults, they must be in args or kwargs
-            cov_keys = covariance_keys
-            # convert args to kwargs by index
+            cov_keys = []
+            for k in covariance_keys:
+                if(k!= None):
+                    cov_keys.append(str(k))
+                else:
+                    cov_keys.append(k)
+            #convert args to kwargs by index
             kwargs.update({n: v for n, v in enumerate(args)})
             args = ()  # empty args
             if None in cov_keys:
                 # use all keys
-                cov_keys = kwargs.keys()
+                cov_keys = list(kwargs.keys())
             # group covariance keys
             if len(cov_keys) > 0:
                 # uses specified keys
-                x = [np.atleast_1d(kwargs.pop(k)) for k in cov_keys]
+                x = [np.atleast_1d(kwargs.pop(int(k))) for k in list(cov_keys)]
             else:
                 # arguments already grouped
                 x = kwargs.pop(0)  # use first argument
             # remaining args
             args_dict = {}
-
             def args_from_kwargs(kwargs_):
                 """unpack positional arguments from keyword arguments"""
+
+
                 # create mapping of positional arguments by index
-                args_ = [(n, v) for n, v in kwargs_.iteritems()
-                         if not isinstance(n, basestring)]
+                args_ = []
+                for n, v in kwargs_.items():
+                    args_.append((n, v))
+                args_ = tuple(args_)
                 # sort positional arguments by index
-                idx, args_ = zip(*sorted(args_, key=lambda m: m[0]))
+                idx, args_ = list(zip(*sorted(args_, key=lambda m:int(m[0]))))
                 # remove args_ and their indices from kwargs_
-                args_dict_ = {n: kwargs_.pop(n) for n in idx}
+                args_dict_ = {str(n): kwargs_.pop(n) for n in idx}
                 return args_, args_dict_
 
             if kwargs:
@@ -245,12 +257,14 @@ def unc_wrapper_args(*covariance_keys):
             if cov is not None:
                 # covariance must account for all observations
                 # scale covariances by x squared in each direction
+
+
                 if cov.ndim == 3:
                     x = np.array([np.repeat(y, nobs) if len(y)==1
                                   else y for y in x])
                     LOGGER.debug('x:\n%r', x)
                     cov = np.array([c * y * np.row_stack(y)
-                                    for c, y in zip(cov, x.T)])
+                                    for c, y in list(zip(cov, x.T))])
                 else: # x are all only one dimension
                     x = np.asarray(x)
                     cov = cov * x * x.T
@@ -269,19 +283,19 @@ def unc_wrapper_args(*covariance_keys):
                 elif method.lower() == 'pool':
                     try:
                         p = Pool()
-                        cov = np.array(p.map(prop_unc, zip(jac, cov)))
+                        cov = np.array(p.map(prop_unc, list(zip(jac, cov))))
                     finally:
                         p.terminate()
                 # loop is the default
                 else:
                     cov = np.array([prop_unc((jac[o], cov[o]))
-                                    for o in xrange(nobs)])
+                                    for o in range(nobs)])
                 # dense and spares are flattened, unravel them into 3-D list of
                 # observations
                 if method.lower() in ['dense', 'sparse']:
                     cov = np.array([
                         cov[(nf * o):(nf * (o + 1)), (nf * o):(nf * (o + 1))]
-                        for o in xrange(nobs)
+                        for o in range(nobs)
                     ])
             # unpack returns for original function with ungrouped arguments
             if None in cov_keys or len(cov_keys) > 0:
