@@ -8,7 +8,7 @@ before_script:
   - export PVLIB_PATH=/home/travis/build/pvlib/pvlib-python
   - echo $PVLIB_PATH
   - git clone https://github.com/pvlib/pvlib-python.git $PVLIB_PATH
-  - python /home/travis/build/SunPower/UncertaintyWrapper/get_spa.py
+  - python /home/travis/build/BreakingBytes/UncertaintyWrapper/get_spa.py
   - BUILD_DIR=$PWD
   - echo leaving $BUILD_DIR
   - cd $PVLIB_PATH/pvlib/spa_c_files/
