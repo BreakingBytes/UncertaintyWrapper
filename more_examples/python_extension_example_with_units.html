@@ -1,64 +1,54 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Python Extension Example with Units &mdash; Uncertainty Wrapper Paleozoic Era documentation</title>
-    
+    <meta charset="utf-8" />
+    <title>Python Extension Example with Units &#8212; Uncertainty Wrapper Terreneuvian Series documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     'Paleozoic Era',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
-    <link rel="top" title="Uncertainty Wrapper Paleozoic Era documentation" href="../index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="API" href="../api.html" />
     <link rel="prev" title="Complex Example" href="complex_example.html" />
    
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">  
+  </head><body>
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="python-extension-example-with-units">
 <span id="id1"></span><h1>Python Extension Example with Units<a class="headerlink" href="#python-extension-example-with-units" title="Permalink to this headline">¶</a></h1>
-<p>Often Python packages contain extensions in C/C++ which can&#8217;t be tested using
+<p>Often Python packages contain extensions in C/C++ which can’t be tested using
 automatic differentiation. The Numdidfftools is an alternative package that can
 calculate derivatives more accurately than the central finite difference
 approximation.</p>
-<p>An example of using <a class="reference internal" href="../api.html#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal"><span class="pre">unc_wrapper_args()</span></code></a> with a
+<p>An example of using <a class="reference internal" href="../api.html#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">unc_wrapper_args()</span></code></a> with a
 Python extension written in C/C++ is in the tests called
-<a class="reference internal" href="../api.html#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos" title="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos"><code class="xref py py-func docutils literal"><span class="pre">test_solpos()</span></code></a>. This
-test using C/C++ code from NREL that is called using Python <code class="docutils literal"><span class="pre">ctypes</span></code> module.</p>
-<p>This example also demonstrates using Pint&#8217;s units wrapper. When using the units
-wrapper, you must use <a class="reference internal" href="../api.html#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal"><span class="pre">unc_wrapper_args()</span></code></a> and
-specify the indices of the positional arguments which corresond to the covariance
-matrix. Also, two additional <code class="docutils literal"><span class="pre">None,</span> <span class="pre">None</span></code> should be appended to the units
-wrapper return values because otherwise Pint uses <code class="docutils literal"><span class="pre">zip(out_units,</span> <span class="pre">retvals)</span></code>
-and therefore the covariance and Jacobian matrices will get dropped.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="nd">@UREG.wraps</span><span class="p">((</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
-            <span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="s1">&#39;Pa&#39;</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;degC&#39;</span><span class="p">))</span>
-<span class="nd">@unc_wrapper_args</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<a class="reference internal" href="../api.html#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos" title="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos"><code class="xref py py-func docutils literal notranslate"><span class="pre">test_solpos()</span></code></a>. This
+test using C/C++ code from NREL that is called using Python <code class="docutils literal notranslate"><span class="pre">ctypes</span></code> module.</p>
+<p>This example also demonstrates calculating covariance for multiple
+observations using <a class="reference internal" href="../api.html#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">unc_wrapper_args()</span></code></a> to
+specify the indices of the positional arguments which corresond to the
+covariance matrix.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@unc_wrapper_args</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="c1"># indices specify positions of independent variables:</span>
 <span class="c1"># 1: latitude, 2: longitude, 3: pressure, 4: altitude, 5: temperature</span>
 <span class="k">def</span> <span class="nf">spa</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">altitude</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
@@ -72,11 +62,11 @@ and therefore the covariance and Jacobian matrices will get dropped.</p>
 </pre></div>
 </div>
 <p>Then test it out.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">times</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s1">&#39;2015/1/1&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2015/1/2&#39;</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;1h&#39;</span><span class="p">,</span>
-                         <span class="n">tz</span><span class="o">=</span><span class="n">PST</span><span class="p">)</span><span class="o">.</span><span class="n">tz_convert</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span>
-<span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span> <span class="o">=</span> <span class="mf">37.0</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">deg</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.0</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">deg</span>
-<span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span> <span class="o">=</span> <span class="mf">101325.0</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">Pa</span><span class="p">,</span> <span class="n">UREG</span><span class="o">.</span><span class="n">Quantity</span><span class="p">(</span><span class="mf">22.0</span><span class="p">,</span> <span class="n">UREG</span><span class="o">.</span><span class="n">degC</span><span class="p">)</span>
-<span class="n">altitude</span> <span class="o">=</span> <span class="mf">0.0</span> <span class="o">*</span> <span class="n">UREG</span><span class="o">.</span><span class="n">m</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">times</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="s1">&#39;2015/1/1&#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;2015/1/2&#39;</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s1">&#39;1h&#39;</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">PST</span><span class="p">))</span><span class="o">.</span><span class="n">tz_convert</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span>
+<span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span> <span class="o">=</span> <span class="mf">37.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">122.0</span>  <span class="c1"># degrees</span>
+<span class="n">pressure</span><span class="p">,</span> <span class="n">temperature</span> <span class="o">=</span> <span class="mf">101325.0</span><span class="p">,</span> <span class="mf">22.0</span>  <span class="c1"># Pa, degC</span>
+<span class="n">altitude</span> <span class="o">=</span> <span class="mf">0.0</span>
 <span class="c1"># standard deviation of 1% assuming normal distribution</span>
 <span class="n">covariance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">([</span><span class="mf">0.0001</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
 <span class="n">ze</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">jac</span> <span class="o">=</span> <span class="n">spa</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">pressure</span><span class="p">,</span> <span class="n">altitude</span><span class="p">,</span>
@@ -84,43 +74,42 @@ and therefore the covariance and Jacobian matrices will get dropped.</p>
 </pre></div>
 </div>
 <p>The results are:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ze</span>
-<span class="go">&lt;Quantity([         nan          nan          nan          nan          nan</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ze</span>
+<span class="go">&lt;ndarray([         nan          nan          nan          nan          nan</span>
 <span class="go">          nan          nan          nan  84.10855021  74.98258957</span>
 <span class="go">  67.47442104  62.27279883  60.00799371  61.01651321  65.14311785</span>
 <span class="go">  71.83729124  80.41979434  89.92923993          nan          nan</span>
-<span class="go">          nan          nan          nan          nan          nan], &#39;deg&#39;)&gt;</span>
+<span class="go">          nan          nan          nan          nan          nan],</span>
+<span class="go">dtype=&#39;float&#39;)&gt;</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">az</span>
-<span class="go">&lt;Quantity([ 349.29771499   40.21062767   66.71930375   80.93018543   90.85288686</span>
+<span class="go">&lt;ndarray([ 349.29771499   40.21062767   66.71930375   80.93018543   90.85288686</span>
 <span class="go">   99.21242575  107.18121735  115.45045069  124.56418347  135.02313717</span>
 <span class="go">  147.24740279  161.37157806  176.92280365  192.74232655  207.51976817</span>
 <span class="go">  220.49410796  231.60091006  241.18407504  249.7263611   257.75154961</span>
-<span class="go">  265.87317048  275.01453439  287.07887655  307.28364551  348.92138471], &#39;deg&#39;)&gt;</span>
+<span class="go">  265.87317048  275.01453439  287.07887655  307.28364551  348.92138471],</span>
+<span class="go">dtype=&#39;float&#39;)&gt;</span>
 </pre></div>
 </div>
-<p>Note that Pint corrects the ambient temperature from Kelvin to Celsius and also
-converted Pascals to millibar. Finally Pint appends the specified units to the
-return values.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c1"># covariance at 8AM</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">times</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+<p>Note: previous versions of uncertainty wrapper worked with Pint to check
+units, but unfortunatley this is no longer supported.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">idx</span> <span class="o">=</span> <span class="mi">8</span>  <span class="c1"># covariance at 8AM</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">times</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
 <span class="go">Timestamp(&#39;2015-01-01 08:00:00-0800&#39;, tz=&#39;US/Pacific&#39;, offset=&#39;H&#39;)</span>
-</pre></div>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nf</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># number of dependent variables: [ze, az]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">cov</span><span class="p">[(</span><span class="n">nf</span> <span class="o">*</span> <span class="n">idx</span><span class="p">):(</span><span class="n">nf</span> <span class="o">*</span> <span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="n">nf</span> <span class="o">*</span> <span class="n">idx</span><span class="p">):(</span><span class="n">nf</span> <span class="o">*</span> <span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))]</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nf</span> <span class="o">=</span> <span class="mi">2</span>  <span class="c1"># number of dependent variables: [ze, az]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">cov</span><span class="p">[(</span><span class="n">nf</span> <span class="o">*</span> <span class="n">idx</span><span class="p">):(</span><span class="n">nf</span> <span class="o">*</span> <span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)),</span> <span class="p">(</span><span class="n">nf</span> <span class="o">*</span> <span class="n">idx</span><span class="p">):(</span><span class="n">nf</span> <span class="o">*</span> <span class="p">(</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))]</span>
 <span class="go">[[ 0.66082282, -0.61487518],</span>
 <span class="go"> [-0.61487518,  0.62483904]]</span>
-</pre></div>
-</div>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cov</span><span class="p">[(</span><span class="n">nf</span> <span class="o">*</span> <span class="n">idx</span><span class="p">),</span> <span class="p">(</span><span class="n">nf</span> <span class="o">*</span> <span class="n">idx</span><span class="p">)])</span> <span class="o">/</span> <span class="n">ze</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>  <span class="c1"># standard deviation</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cov</span><span class="p">[(</span><span class="n">nf</span> <span class="o">*</span> <span class="n">idx</span><span class="p">),</span> <span class="p">(</span><span class="n">nf</span> <span class="o">*</span> <span class="n">idx</span><span class="p">)])</span> <span class="o">/</span> <span class="n">ze</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>  <span class="c1"># standard deviation</span>
 <span class="go">0.0096710802029002577</span>
 </pre></div>
 </div>
 <p>This tells us that the standard deviation of the zenith is 1% if the input has a standard deviation
-of 1%. That&#8217;s reasonable.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nargs</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># number of independent args</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">jac</span><span class="p">[</span><span class="n">nf</span><span class="o">*</span><span class="p">(</span><span class="n">idx</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span><span class="n">nf</span><span class="o">*</span><span class="n">idx</span><span class="p">,</span> <span class="n">nargs</span><span class="o">*</span><span class="p">(</span><span class="n">idx</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span><span class="n">nargs</span><span class="o">*</span><span class="n">idx</span><span class="p">]</span>  <span class="c1"># Jacobian at 8AM</span>
+of 1%. That’s reasonable.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">nargs</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># number of independent args</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jac</span><span class="p">[</span><span class="n">nf</span><span class="o">*</span><span class="p">(</span><span class="n">idx</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span><span class="n">nf</span><span class="o">*</span><span class="n">idx</span><span class="p">,</span> <span class="n">nargs</span><span class="o">*</span><span class="p">(</span><span class="n">idx</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span><span class="n">nargs</span><span class="o">*</span><span class="n">idx</span><span class="p">]</span>  <span class="c1"># Jacobian at 8AM</span>
 <span class="go">[[  5.56075143e-01,  -6.44623321e-01,  -1.42364184e-06, 0.00000000e+00,   1.06672083e-10],</span>
 <span class="go"> [  8.29163154e-02,   6.47436098e-01,   0.00000000e+00, 0.00000000e+00,   0.00000000e+00]]</span>
 </pre></div>
@@ -130,15 +119,17 @@ and more sensitive to latitude than azimuth is.</p>
 <p>Perhaps the most interesting outcome is the negative covariance between Zenith and Azimuth. From
 <a class="reference external" href="https://en.wikipedia.org/wiki/Covariance">Wikipedia</a></p>
 <blockquote>
-<div>... when the greater values of one variable mainly correspond to the lesser values of the other,
-the covariance is negative.</div></blockquote>
+<div><p>… when the greater values of one variable mainly correspond to the lesser values of the other,
+the covariance is negative.</p>
+</div></blockquote>
 <p>In other words when the error in Zenith increases, the error in Azimuth decreases. This is not
-uncommon but it&#8217;s not always intuitively obvious; we generally think that to get the largest error
+uncommon but it’s not always intuitively obvious; we generally think that to get the largest error
 we should choose the largest errors for all independent variables.</p>
 </div>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -158,10 +149,12 @@ we should choose the largest errors for all independent variables.</p>
 
 
 
+
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=SunPower&repo=UncertaintyWrapper&type=watch&count=true&size=large"
+<iframe src="https://ghbtns.com/github-btn.html?user=BreakingBytes&repo=UncertaintyWrapper&type=watch&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
+
 
 
 
@@ -169,10 +162,10 @@ we should choose the largest errors for all independent variables.</p>
     
 
 <p>
-<a href="https://travis-ci.org/SunPower/UncertaintyWrapper">
+<a class="badge" href="https://travis-ci.org/BreakingBytes/UncertaintyWrapper">
     <img
-        alt="https://secure.travis-ci.org/SunPower/UncertaintyWrapper.png?branch=master"
-        src="https://secure.travis-ci.org/SunPower/UncertaintyWrapper.png?branch=master"
+        alt="https://secure.travis-ci.org/BreakingBytes/UncertaintyWrapper.svg?branch=master"
+        src="https://secure.travis-ci.org/BreakingBytes/UncertaintyWrapper.svg?branch=master"
     />
 </a>
 </p>
@@ -182,24 +175,21 @@ we should choose the largest errors for all independent variables.</p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="complex_example.html">Complex Example</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Python Extension Example with Units</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python Extension Example with Units</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 </ul>
 
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
+<script>$('#searchbox').show(0);</script><div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
@@ -216,16 +206,16 @@ we should choose the largest errors for all independent variables.</p>
       &copy;2016, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/more_examples/python_extension_example_with_units.txt"
+      <a href="../_sources/more_examples/python_extension_example_with_units.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
     
-    <a href="https://github.com/SunPower/UncertaintyWrapper" class="github">
+    <a href="https://github.com/BreakingBytes/UncertaintyWrapper" class="github">
         <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
     

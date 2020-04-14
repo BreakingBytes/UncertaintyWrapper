@@ -13,15 +13,11 @@ Python extension written in C/C++ is in the tests called
 :func:`~uncertainty_wrapper.tests.test_uncertainty_wrapper.test_solpos`. This
 test using C/C++ code from NREL that is called using Python ``ctypes`` module.
 
-This example also demonstrates using Pint's units wrapper. When using the units
-wrapper, you must use :func:`~uncertainty_wrapper.core.unc_wrapper_args` and
-specify the indices of the positional arguments which corresond to the covariance
-matrix. Also, two additional ``None, None`` should be appended to the units
-wrapper return values because otherwise Pint uses ``zip(out_units, retvals)``
-and therefore the covariance and Jacobian matrices will get dropped. ::
+This example also demonstrates calculating covariance for multiple
+observations using :func:`~uncertainty_wrapper.core.unc_wrapper_args` to
+specify the indices of the positional arguments which corresond to the
+covariance matrix.::
 
-    @UREG.wraps(('deg', 'deg', None, None),
-                (None, 'deg', 'deg', 'Pa', 'm', 'degC'))
     @unc_wrapper_args(1, 2, 3, 4, 5)
     # indices specify positions of independent variables:
     # 1: latitude, 2: longitude, 3: pressure, 4: altitude, 5: temperature
@@ -36,11 +32,11 @@ and therefore the covariance and Jacobian matrices will get dropped. ::
 
 Then test it out. ::
 
-    times = pd.DatetimeIndex(start='2015/1/1', end='2015/1/2', freq='1h',
-                             tz=PST).tz_convert(UTC)
-    latitude, longitude = 37.0 * UREG.deg, -122.0 * UREG.deg
-    pressure, temperature = 101325.0 * UREG.Pa, UREG.Quantity(22.0, UREG.degC)
-    altitude = 0.0 * UREG.m
+    times = pd.DatetimeIndex(pd.date_range(
+        start='2015/1/1', end='2015/1/2', freq='1h', tz=PST)).tz_convert(UTC)
+    latitude, longitude = 37.0, -122.0  # degrees
+    pressure, temperature = 101325.0, 22.0  # Pa, degC
+    altitude = 0.0
     # standard deviation of 1% assuming normal distribution
     covariance = np.diag([0.0001] * 5)
     ze, az, cov, jac = spa(times, latitude, longitude, pressure, altitude,
@@ -49,25 +45,26 @@ Then test it out. ::
 The results are::
 
     >>> ze
-    <Quantity([         nan          nan          nan          nan          nan
+    <ndarray([         nan          nan          nan          nan          nan
               nan          nan          nan  84.10855021  74.98258957
       67.47442104  62.27279883  60.00799371  61.01651321  65.14311785
       71.83729124  80.41979434  89.92923993          nan          nan
-              nan          nan          nan          nan          nan], 'deg')>
+              nan          nan          nan          nan          nan],
+    dtype='float')>
 
     >>> az
-    <Quantity([ 349.29771499   40.21062767   66.71930375   80.93018543   90.85288686
+    <ndarray([ 349.29771499   40.21062767   66.71930375   80.93018543   90.85288686
        99.21242575  107.18121735  115.45045069  124.56418347  135.02313717
       147.24740279  161.37157806  176.92280365  192.74232655  207.51976817
       220.49410796  231.60091006  241.18407504  249.7263611   257.75154961
-      265.87317048  275.01453439  287.07887655  307.28364551  348.92138471], 'deg')>
+      265.87317048  275.01453439  287.07887655  307.28364551  348.92138471],
+    dtype='float')>
 
-Note that Pint corrects the ambient temperature from Kelvin to Celsius and also
-converted Pascals to millibar. Finally Pint appends the specified units to the
-return values.
+Note: previous versions of uncertainty wrapper worked with Pint to check
+units, but unfortunatley this is no longer supported. ::
 
     >>> idx = 8  # covariance at 8AM
-    >>> print times[idx]
+    >>> times[idx]
     Timestamp('2015-01-01 08:00:00-0800', tz='US/Pacific', offset='H')
     
     >>> nf = 2  # number of dependent variables: [ze, az]
@@ -82,7 +79,7 @@ This tells us that the standard deviation of the zenith is 1% if the input has a
 of 1%. That's reasonable.
 
     >>> nargs = 5  # number of independent args
-    >>> print jac[nf*(idx-1):nf*idx, nargs*(idx-1):nargs*idx]  # Jacobian at 8AM
+    >>> jac[nf*(idx-1):nf*idx, nargs*(idx-1):nargs*idx]  # Jacobian at 8AM
     [[  5.56075143e-01,  -6.44623321e-01,  -1.42364184e-06, 0.00000000e+00,   1.06672083e-10],
      [  8.29163154e-02,   6.47436098e-01,   0.00000000e+00, 0.00000000e+00,   0.00000000e+00]]
 

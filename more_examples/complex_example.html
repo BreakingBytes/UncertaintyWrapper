@@ -1,49 +1,43 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Complex Example &mdash; Uncertainty Wrapper Paleozoic Era documentation</title>
-    
+    <meta charset="utf-8" />
+    <title>Complex Example &#8212; Uncertainty Wrapper Terreneuvian Series documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     'Paleozoic Era',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
-    <link rel="top" title="Uncertainty Wrapper Paleozoic Era documentation" href="../index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Python Extension Example with Units" href="python_extension_example_with_units.html" />
     <link rel="prev" title="Getting Started" href="../getting_started.html" />
    
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">  
+  </head><body>
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="complex-example">
 <span id="id1"></span><h1>Complex Example<a class="headerlink" href="#complex-example" title="Permalink to this headline">¶</a></h1>
-<p>A more complex example from the <a class="reference internal" href="../api.html#module-uncertainty_wrapper.tests.test_uncertainty_wrapper" title="uncertainty_wrapper.tests.test_uncertainty_wrapper"><code class="xref py py-mod docutils literal"><span class="pre">test_uncertainty_wrapper</span></code></a>
-module called <a class="reference internal" href="../api.html#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV" title="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV"><code class="xref py py-func docutils literal"><span class="pre">test_IV()</span></code></a>,
+<p>A more complex example from the <a class="reference internal" href="../api.html#module-uncertainty_wrapper.tests.test_uncertainty_wrapper" title="uncertainty_wrapper.tests.test_uncertainty_wrapper"><code class="xref py py-mod docutils literal notranslate"><span class="pre">test_uncertainty_wrapper</span></code></a>
+module called <a class="reference internal" href="../api.html#uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV" title="uncertainty_wrapper.tests.test_uncertainty_wrapper.test_IV"><code class="xref py py-func docutils literal notranslate"><span class="pre">test_IV()</span></code></a>,
 includes combinations of several exponential and power operations. It contains
 9 input arguments, there 126 observations of each corresponding to different
 voltages and there are 3 return values. The calculated uncertainty using a 1%
@@ -52,12 +46,12 @@ standard deviation (square root of variance) for all 9 inputs is shown below.</p
 <p>The test compares the derivatives calculated using central finite difference
 approximation with an analytical calculation from 0.3[V] to 0.6[V]. Below 0.3[V]
 the approximations deviate from the analytical for
-<span class="math">\(\frac{\partial I_{sc}}{\partial I_{sat_{1,0}}}\)</span>,
-<span class="math">\(\frac{\partial I_{sc}}{\partial I_{sat_2}}\)</span> and
-<span class="math">\(\frac{\partial I_{sc}}{\partial E_g}\)</span> while all other independent
+<span class="math notranslate nohighlight">\(\frac{\partial I_{sc}}{\partial I_{sat_{1,0}}}\)</span>,
+<span class="math notranslate nohighlight">\(\frac{\partial I_{sc}}{\partial I_{sat_2}}\)</span> and
+<span class="math notranslate nohighlight">\(\frac{\partial I_{sc}}{\partial E_g}\)</span> while all other independent
 variables are consistently below 10e-7. The analytical derivatives are propagated
 using <a class="reference external" href="https://pythonhosted.org/algopy/">AlgoPy</a>, an automatic differentiation
-package, which requires rewriting all NumPy operations like <span class="math">\(exp\)</span> using
+package, which requires rewriting all NumPy operations like <span class="math notranslate nohighlight">\(exp\)</span> using
 AlgoPy. This makes it impractical for use in most models, but still useful for
 testing.</p>
 <img alt="../_images/IV-PV-jac-errors.png" src="../_images/IV-PV-jac-errors.png" />
@@ -65,6 +59,7 @@ testing.</p>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -84,10 +79,12 @@ testing.</p>
 
 
 
+
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=SunPower&repo=UncertaintyWrapper&type=watch&count=true&size=large"
+<iframe src="https://ghbtns.com/github-btn.html?user=BreakingBytes&repo=UncertaintyWrapper&type=watch&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
+
 
 
 
@@ -95,10 +92,10 @@ testing.</p>
     
 
 <p>
-<a href="https://travis-ci.org/SunPower/UncertaintyWrapper">
+<a class="badge" href="https://travis-ci.org/BreakingBytes/UncertaintyWrapper">
     <img
-        alt="https://secure.travis-ci.org/SunPower/UncertaintyWrapper.png?branch=master"
-        src="https://secure.travis-ci.org/SunPower/UncertaintyWrapper.png?branch=master"
+        alt="https://secure.travis-ci.org/BreakingBytes/UncertaintyWrapper.svg?branch=master"
+        src="https://secure.travis-ci.org/BreakingBytes/UncertaintyWrapper.svg?branch=master"
     />
 </a>
 </p>
@@ -107,25 +104,22 @@ testing.</p>
 <h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Complex Example</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Complex Example</a></li>
 <li class="toctree-l1"><a class="reference internal" href="python_extension_example_with_units.html">Python Extension Example with Units</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 </ul>
 
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
+<script>$('#searchbox').show(0);</script><div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
@@ -142,16 +136,16 @@ testing.</p>
       &copy;2016, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="../_sources/more_examples/complex_example.txt"
+      <a href="../_sources/more_examples/complex_example.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
     
-    <a href="https://github.com/SunPower/UncertaintyWrapper" class="github">
+    <a href="https://github.com/BreakingBytes/UncertaintyWrapper" class="github">
         <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
     

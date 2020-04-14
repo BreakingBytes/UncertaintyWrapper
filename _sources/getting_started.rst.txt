@@ -88,5 +88,10 @@ More Examples
 The next sections contain more examples cover more advanced usage. Uncertanty
 Wrapper can consider multiple inputs arguments and return values. It can also be
 used with Python extensions written in c/c++. Finally
-:func:`~uncertainty_wrapper.core.unc_wrapper_args` can be used with Pint's
-wrapper to automatically check units.
+:func:`~uncertainty_wrapper.core.unc_wrapper_args` can be used to specify which
+args are indepndent to include in the covariance and Jaconbian.
+
+Announcement
+------------
+Previous versions of Uncertainty Wrapper have worked with Pint's units wrapper
+to automatically check units, but unfortunately this is no longer supported.

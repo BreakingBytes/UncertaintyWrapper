@@ -1,63 +1,57 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Getting Started &mdash; Uncertainty Wrapper Paleozoic Era documentation</title>
-    
+    <meta charset="utf-8" />
+    <title>Getting Started &#8212; Uncertainty Wrapper Terreneuvian Series documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     'Paleozoic Era',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="Uncertainty Wrapper Paleozoic Era documentation" href="index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Complex Example" href="more_examples/complex_example.html" />
     <link rel="prev" title="Welcome to Uncertainty Wrapper’s documentation!" href="index.html" />
    
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
-  </head>
-  <body role="document">  
+  </head><body>
+  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
+          
+
           <div class="body" role="main">
             
   <div class="section" id="getting-started">
 <span id="id1"></span><h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<p>You can wrap any Python callable using <a class="reference internal" href="api.html#uncertainty_wrapper.core.unc_wrapper" title="uncertainty_wrapper.core.unc_wrapper"><code class="xref py py-func docutils literal"><span class="pre">unc_wrapper()</span></code></a>
-or <a class="reference internal" href="api.html#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal"><span class="pre">unc_wrapper_args()</span></code></a>, that does the following:</p>
+<p>You can wrap any Python callable using <a class="reference internal" href="api.html#uncertainty_wrapper.core.unc_wrapper" title="uncertainty_wrapper.core.unc_wrapper"><code class="xref py py-func docutils literal notranslate"><span class="pre">unc_wrapper()</span></code></a>
+or <a class="reference internal" href="api.html#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">unc_wrapper_args()</span></code></a>, that does the following:</p>
 <ul class="simple">
-<li>looks for <code class="docutils literal"><span class="pre">__covariance__</span></code> as a keyword argument</li>
-<li>calculates the Jacobian and covariance matrices</li>
-<li>appends the Jacobian and covariance matrices to the return values.</li>
+<li><p>looks for <code class="docutils literal notranslate"><span class="pre">__covariance__</span></code> as a keyword argument</p></li>
+<li><p>calculates the Jacobian and covariance matrices</p></li>
+<li><p>appends the Jacobian and covariance matrices to the return values.</p></li>
 </ul>
 <p>However you may need to manipulate the input arguments to match the expected
-<a class="reference internal" href="api.html#api"><span>API</span></a>.</p>
+<a class="reference internal" href="api.html#api"><span class="std std-ref">API</span></a>.</p>
 <div class="section" id="simple-example">
 <h2>Simple Example<a class="headerlink" href="#simple-example" title="Permalink to this headline">¶</a></h2>
 <p>This simple example using two input arguments and two return values is from
 <a class="reference external" href="https://github.com/mikofski/uncertainty_benchmarks">Uncertainty Benchmarks</a>:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uncertainty_wrapper</span> <span class="kn">import</span> <span class="n">unc_wrapper</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uncertainty_wrapper</span> <span class="kn">import</span> <span class="n">unc_wrapper</span>
 <span class="c1"># unc_wrapper expects input args to be 2-D NumPy arrays</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="c1"># simple test functions with multiple input arguments and return</span>
 <span class="c1"># values and whose derivatives are easily derived.</span>
@@ -77,19 +71,19 @@ or <a class="reference internal" href="api.html#uncertainty_wrapper.core.unc_wra
     <span class="k">return</span> <span class="n">avg</span>
 
 <span class="c1"># uses @wraps from functools so docstrings should work</span>
-<span class="k">print</span> <span class="n">example</span><span class="o">.</span><span class="n">__doc__</span>
+<span class="nb">print</span> <span class="n">example</span><span class="o">.</span><span class="vm">__doc__</span>
 <span class="c1"># Example of unc_wrapper usage</span>
 
 <span class="c1"># reshape args as row stack since there is only one observation and</span>
 <span class="c1"># unc_wrapper expects there to be multiple observations</span>
 <span class="n">AVG</span> <span class="o">=</span> <span class="n">AVG</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">NARGS</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-<span class="k">print</span> <span class="n">AVG</span>
+<span class="nb">print</span> <span class="n">AVG</span>
 <span class="c1"># [[ 1.80222955]</span>
 <span class="c1">#  [ 5.62897685]]</span>
 
 <span class="c1"># the wrapped example now takes a second argument called</span>
 <span class="c1"># __covariance__</span>
-<span class="k">print</span> <span class="n">COV</span>
+<span class="nb">print</span> <span class="n">COV</span>
 <span class="c1"># [[ 0.06798386  0.05971218]</span>
 <span class="c1">#  [ 0.05971218  0.09359305]]</span>
 
@@ -100,19 +94,19 @@ or <a class="reference internal" href="api.html#uncertainty_wrapper.core.unc_wra
 <span class="c1"># squeeze out extra dimension we added since there&#39;s only one</span>
 <span class="c1"># observation and display results</span>
 <span class="n">avg</span> <span class="o">=</span> <span class="n">avg</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
-<span class="k">print</span> <span class="n">avg</span>
+<span class="nb">print</span> <span class="n">avg</span>
 <span class="c1"># [ 55.22282851  28.43734901]</span>
 
-<span class="k">print</span> <span class="n">cov</span>
+<span class="nb">print</span> <span class="n">cov</span>
 <span class="c1"># [[ 1164.60425675   790.5452895 ]</span>
 <span class="c1">#  [  415.45944116   294.07938566]]</span>
 
-<span class="k">print</span> <span class="n">jac</span>
+<span class="nb">print</span> <span class="n">jac</span>
 <span class="c1"># [[ 14.86241279  14.86241279]</span>
 <span class="c1">#  [ -3.6044591   11.2579537 ]]</span>
 
 <span class="c1"># compare to analytical derivatives</span>
-<span class="k">print</span> <span class="n">G</span><span class="p">(</span><span class="n">AVG</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+<span class="nb">print</span> <span class="n">G</span><span class="p">(</span><span class="n">AVG</span><span class="p">)</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
 <span class="c1"># [[ 14.86241279  14.86241279]</span>
 <span class="c1">#  [ -3.6044591   11.2579537 ]]</span>
 </pre></div>
@@ -121,19 +115,25 @@ or <a class="reference internal" href="api.html#uncertainty_wrapper.core.unc_wra
 <div class="section" id="more-examples">
 <h2>More Examples<a class="headerlink" href="#more-examples" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><a class="reference internal" href="more_examples/complex_example.html#complex-example"><span>Complex Example</span></a></li>
-<li><a class="reference internal" href="more_examples/python_extension_example_with_units.html#python-extension-example-with-units"><span>Python Extension Example with Units</span></a></li>
+<li><p><a class="reference internal" href="more_examples/complex_example.html#complex-example"><span class="std std-ref">Complex Example</span></a></p></li>
+<li><p><a class="reference internal" href="more_examples/python_extension_example_with_units.html#python-extension-example-with-units"><span class="std std-ref">Python Extension Example with Units</span></a></p></li>
 </ul>
 <p>The next sections contain more examples cover more advanced usage. Uncertanty
 Wrapper can consider multiple inputs arguments and return values. It can also be
 used with Python extensions written in c/c++. Finally
-<a class="reference internal" href="api.html#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal"><span class="pre">unc_wrapper_args()</span></code></a> can be used with Pint&#8217;s
-wrapper to automatically check units.</p>
+<a class="reference internal" href="api.html#uncertainty_wrapper.core.unc_wrapper_args" title="uncertainty_wrapper.core.unc_wrapper_args"><code class="xref py py-func docutils literal notranslate"><span class="pre">unc_wrapper_args()</span></code></a> can be used to specify which
+args are indepndent to include in the covariance and Jaconbian.</p>
+</div>
+<div class="section" id="announcement">
+<h2>Announcement<a class="headerlink" href="#announcement" title="Permalink to this headline">¶</a></h2>
+<p>Previous versions of Uncertainty Wrapper have worked with Pint’s units wrapper
+to automatically check units, but unfortunately this is no longer supported.</p>
 </div>
 </div>
 
 
           </div>
+          
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -153,10 +153,12 @@ wrapper to automatically check units.</p>
 
 
 
+
 <p>
-<iframe src="https://ghbtns.com/github-btn.html?user=SunPower&repo=UncertaintyWrapper&type=watch&count=true&size=large"
+<iframe src="https://ghbtns.com/github-btn.html?user=BreakingBytes&repo=UncertaintyWrapper&type=watch&count=true&size=large&v=2"
   allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
 </p>
+
 
 
 
@@ -164,10 +166,10 @@ wrapper to automatically check units.</p>
     
 
 <p>
-<a href="https://travis-ci.org/SunPower/UncertaintyWrapper">
+<a class="badge" href="https://travis-ci.org/BreakingBytes/UncertaintyWrapper">
     <img
-        alt="https://secure.travis-ci.org/SunPower/UncertaintyWrapper.png?branch=master"
-        src="https://secure.travis-ci.org/SunPower/UncertaintyWrapper.png?branch=master"
+        alt="https://secure.travis-ci.org/BreakingBytes/UncertaintyWrapper.svg?branch=master"
+        src="https://secure.travis-ci.org/BreakingBytes/UncertaintyWrapper.svg?branch=master"
     />
 </a>
 </p>
@@ -175,9 +177,10 @@ wrapper to automatically check units.</p>
 
 <h3>Navigation</h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Getting Started</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#simple-example">Simple Example</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#more-examples">More Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#announcement">Announcement</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="more_examples/complex_example.html">Complex Example</a></li>
@@ -187,22 +190,19 @@ wrapper to automatically check units.</p>
 
 
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
+    </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script><div class="relations">
+<script>$('#searchbox').show(0);</script><div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Uncertainty Wrapper&#8217;s documentation!</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Uncertainty Wrapper’s documentation!</a></li>
       <li>Next: <a href="more_examples/complex_example.html" title="next chapter">Complex Example</a></li>
   </ul></li>
 </ul>
@@ -215,16 +215,16 @@ wrapper to automatically check units.</p>
       &copy;2016, SunPower.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
-      <a href="_sources/getting_started.txt"
+      <a href="_sources/getting_started.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
     
-    <a href="https://github.com/SunPower/UncertaintyWrapper" class="github">
+    <a href="https://github.com/BreakingBytes/UncertaintyWrapper" class="github">
         <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
     
