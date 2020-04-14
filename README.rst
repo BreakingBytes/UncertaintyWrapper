@@ -56,28 +56,28 @@ Releases are named after
 `geological eons, periods and epochs <https://en.wikipedia.org/wiki/Geologic_time_scale>`_.
 
 `v0.4.1 <https://github.com/BreakingBytes/UncertaintyWrapper/releases/tag/v0.4.1>`_ `Paleozoic Era <https://en.wikipedia.org/wiki/Paleozoic>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * Jagged arrays of covariance keys work now.
 * simplify
 
 `v0.4 <https://github.com/BreakingBytes/UncertaintyWrapper/releases/tag/v0.4>`_ `Phanerozoic Era <https://en.wikipedia.org/wiki/Phanerozoic>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * Fixes #5, ``ValueError`` if covariance keys have multiple observations
 * fix covariance cross terms not scaled correctly
 
 `v0.3.3 <https://github.com/BreakingBytes/UncertaintyWrapper/releases/tag/v0.3.3>`_ `Neoproterozoic Era <https://en.wikipedia.org/wiki/Neoproterozoic>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * Fixes #4, ``ValueError`` if just one observation
 
 `v0.3.2 <https://github.com/BreakingBytes/UncertaintyWrapper/releases/tag/v0.3.2>`_ `Mesoproterozoic Era <https://en.wikipedia.org/wiki/Mesoproterozoic>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * Fixes #2, don't need to tile scalar x for multiple observations
 * Fixes #3, use sparse matrices for dot product instead of dense
 * uses pvlib example instead of proprietary solar_utils
 
 
 `v0.3.1 <https://github.com/BreakingBytes/UncertaintyWrapper/releases/tag/v0.3.1>`_ `Paleoproterozoic Era <https://en.wikipedia.org/wiki/Paleoproterozoic>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Fixes #1 works with Pint's @ureg.wraps()
 * Use indices for positional arguments. Don't use inspect.argspec since not
@@ -87,7 +87,7 @@ Releases are named after
 
 
 `v0.3 <https://github.com/BreakingBytes/UncertaintyWrapper/releases/tag/v0.3>`_ `Proterozoic Eon <https://en.wikipedia.org/wiki/Proterozoic>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * new ``unc_wrapper_args()`` allows selection of independent variables that the
   partial derivatives are with respect to and also grouping those arguments
@@ -101,13 +101,13 @@ Releases are named after
 
 
 `v0.2.1 <https://github.com/BreakingBytes/UncertaintyWrapper/releases/tag/v0.2>`_ `Eoarchean Era <https://en.wikipedia.org/wiki/Eoarchean>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * update documentation
 
 
 `v0.2 <https://github.com/BreakingBytes/UncertaintyWrapper/releases/tag/v0.2>`_ `Archean Eon <https://en.wikipedia.org/wiki/Archean>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * Fix nargs and nf order mixup in Jacobian
 * add more complex test
@@ -117,7 +117,7 @@ Releases are named after
 
 
 `v0.1 <https://github.com/BreakingBytes/UncertaintyWrapper/releases/tag/v0.1>`_ `Hadean Eon <https://en.wikipedia.org/wiki/Hadean>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * adds covariance to output
 * allows __covariance__ to be passed as input

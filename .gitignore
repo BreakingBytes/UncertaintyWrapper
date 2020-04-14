@@ -23,6 +23,8 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+venv/
+pvlib*/
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -69,3 +71,6 @@ UncertaintyWrapper.sublime-workspace
 .project
 .pydevproject
 .spyderproject
+.vscode
+
+
