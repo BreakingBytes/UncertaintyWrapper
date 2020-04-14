@@ -17,7 +17,6 @@ import pandas as pd
 import pvlib
 
 
-#UREG = pint.UnitRegistry()
 PST = pytz.timezone('US/Pacific')
 UTC = pytz.UTC
 T0 = 298.15  # [K] reference temperature

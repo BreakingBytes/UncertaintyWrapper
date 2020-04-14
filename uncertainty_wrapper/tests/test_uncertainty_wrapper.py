@@ -276,8 +276,6 @@ def plot_pv_jac(pv_jac, pv_jac_algopy, Vd=VD):
     return fig
 
 
-#@UREG.wraps(('deg', 'deg', None, None),
-#            (None, 'deg', 'deg', 'Pa', 'm', 'degC'))
 @unc_wrapper_args(1, 2, 3, 4, 5)
 # indices specify positions of independent variables:
 # 1: latitude, 2: longitude, 3: pressure, 4: altitude, 5: temperature
@@ -313,9 +311,7 @@ def test_solpos(method='loop'):
     latitude, longitude = 37.0, -122.0
     pressure, temperature = 101325.0, 22.0
     altitude = 0.0
-    #latitude, longitude = 37.0 * UREG.deg, -122.0 * UREG.deg
-    #pressure, temperature = 101325.0 * UREG.Pa, UREG.Quantity(22.0, UREG.degC)
-    #altitude = 0.0 * UREG.m
+
     # standard deviation of 1% assuming normal distribution
     covariance = np.diag([0.0001] * 5)
     ze, az, cov, jac = spa(times, latitude, longitude, pressure, altitude,

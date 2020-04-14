@@ -55,6 +55,11 @@ History
 Releases are named after
 `geological eons, periods and epochs <https://en.wikipedia.org/wiki/Geologic_time_scale>`_.
 
+v0.4.2 Terreneuvian Series
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+* futurize
+* remove pint
+
 `v0.4.1 <https://github.com/BreakingBytes/UncertaintyWrapper/releases/tag/v0.4.1>`_ `Paleozoic Era <https://en.wikipedia.org/wiki/Paleozoic>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * Jagged arrays of covariance keys work now.
