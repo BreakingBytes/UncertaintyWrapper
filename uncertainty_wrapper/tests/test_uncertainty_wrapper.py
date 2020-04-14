@@ -2,9 +2,12 @@
 Tests for :func:`~uncertainty_wrapper.unc_wrapper` and
 :func:`~uncertainty_wrapper.unc_wrapper_args`
 """
+from __future__ import division
 
 # import ok_, np, pd,unc_wrapper, unc_wrapper_args, KB, QE,
 # pvlib, plt, UREG, PST and LOGGER from .tests
+from builtins import range
+from past.utils import old_div
 from uncertainty_wrapper.tests import *
 from uncertainty_wrapper.tests.test_algopy import IV_algopy_jac, solpos_nd_jac
 
@@ -116,20 +119,20 @@ def IV(x, Vd):
     so that :class:~`uncertianty_wrapper.core.unc_wrapper` can be used.
     """
     Ee, Tc, Rs, Rsh, Isat1_0, Isat2, Isc0, alpha_Isc, Eg = x
-    Vt = Tc * KB / QE
+    Vt = old_div(Tc * KB, QE)
     Isc = Ee * Isc0 * (1.0 + (Tc - T0) * alpha_Isc)
     Isat1 = (
-        Isat1_0 * (Tc ** 3.0 / T0 ** 3.0) *
-        np.exp(Eg * QE / KB * (1.0 / T0 - 1.0 / Tc))
+        Isat1_0 * (old_div(Tc ** 3.0, T0 ** 3.0)) *
+        np.exp(old_div(Eg * QE, KB) * (1.0 / T0 - 1.0 / Tc))
     )
     Vd_sc = Isc * Rs  # at short circuit Vc = 0 
-    Id1_sc = Isat1 * (np.exp(Vd_sc / Vt) - 1.0)
+    Id1_sc = Isat1 * (np.exp(old_div(Vd_sc, Vt)) - 1.0)
     Id2_sc = Isat2 * (np.exp(Vd_sc / 2.0 / Vt) - 1.0)
-    Ish_sc = Vd_sc / Rsh
+    Ish_sc = old_div(Vd_sc, Rsh)
     Iph = Isc + Id1_sc + Id2_sc + Ish_sc
-    Id1 = Isat1 * (np.exp(Vd / Vt) - 1.0)
+    Id1 = Isat1 * (np.exp(old_div(Vd, Vt)) - 1.0)
     Id2 = Isat2 * (np.exp(Vd / 2.0 / Vt) - 1.0)
-    Ish = Vd / Rsh
+    Ish = old_div(Vd, Rsh)
     Ic = Iph - Id1 - Id2 - Ish
     Vc = Vd - Ic * Rs
     return np.array([Ic, Vc, Ic * Vc])
@@ -144,19 +147,19 @@ def Voc(x):
            'Isat1_0=%g[A]','Isat2=%g[A]','Isc0=%g[A]','alpha_Isc=%g[]',
            'Eg=%g[eV]']
     LOGGER.debug('\n' + '\n'.join(msg) + '\n', *x)
-    Vt = Tc * KB / QE
+    Vt = old_div(Tc * KB, QE)
     LOGGER.debug('Vt=%g[V]', Vt)
     Isc = Ee * Isc0 * (1.0 + (Tc - T0) * alpha_Isc)
     LOGGER.debug('Isc=%g[A]', Isc)
     Isat1 = (
-        Isat1_0 * (Tc ** 3.0 / T0 ** 3.0) *
-        np.exp(Eg * QE / KB * (1.0 / T0 - 1.0 / Tc))
+        Isat1_0 * (old_div(Tc ** 3.0, T0 ** 3.0)) *
+        np.exp(old_div(Eg * QE, KB) * (1.0 / T0 - 1.0 / Tc))
     )
     LOGGER.debug('Isat1=%g[A]', Isat1)
     Vd_sc = Isc * Rs  # at short circuit Vc = 0 
-    Id1_sc = Isat1 * (np.exp(Vd_sc / Vt) - 1.0)
+    Id1_sc = Isat1 * (np.exp(old_div(Vd_sc, Vt)) - 1.0)
     Id2_sc = Isat2 * (np.exp(Vd_sc / 2.0 / Vt) - 1.0)
-    Ish_sc = Vd_sc / Rsh
+    Ish_sc = old_div(Vd_sc, Rsh)
     Iph = Isc + Id1_sc + Id2_sc + Ish_sc
     # estimate Voc
     delta = Isat2 ** 2.0 + 4.0 * Isat1 * (Iph + Isat1 + Isat2)
@@ -197,14 +200,14 @@ def test_IV(method='sparse'):
     pv_jac = jflatten(pv_jac)
     pv_jac_algopy = IV_algopy_jac(*X_algopy, Vd=VD)
     nVd = pv_jac_algopy.shape[1]
-    for n in xrange(nVd // 2, nVd):
+    for n in range(nVd // 2, nVd):
         irow, icol = 3 * n, 9 * n
         jrow, jcol = 3 + irow, 9 +icol
         pv_jac_n = pv_jac[irow:jrow, icol:jcol]
         pv_jac_algopy_n = pv_jac_algopy[:, n, n::VD.size]
         LOGGER.debug('pv jac at Vd = %g[V]:\n%r', VD[n], pv_jac_n)
         LOGGER.debug('pv jac AlgoPy at Vd = %g[V]:\n%r', VD[n], pv_jac_algopy_n)
-        reldiff = pv_jac_n / pv_jac_algopy_n - 1.0
+        reldiff = old_div(pv_jac_n, pv_jac_algopy_n) - 1.0
         LOGGER.debug('reldiff at Vd = %g[V]:\n%r', VD[n], reldiff)
         resnorm = np.linalg.norm(reldiff)
         LOGGER.debug('resnorm at Vd = %g[V]: %r', VD[n], resnorm)
@@ -253,13 +256,13 @@ def plot_pv_jac(pv_jac, pv_jac_algopy, Vd=VD):
         'firebrick', 'goldenrod', 'sage', 'lime', 'seagreen', 'turquoise',
         'royalblue', 'indigo', 'fuchsia'
     ]
-    for m in xrange(3):
-        for n in xrange(9):
+    for m in range(3):
+        for n in range(9):
             pv_jac_n = pv_jac[m::3, n::9].diagonal()
             pv_jac_algopy_n = pv_jac_algopy[
                 m, :, n * 126:(n + 1) * 126
             ].diagonal()
-            reldiff = np.abs(pv_jac_n / pv_jac_algopy_n - 1.0)
+            reldiff = np.abs(old_div(pv_jac_n, pv_jac_algopy_n) - 1.0)
             ax[m].semilogy(Vd, reldiff, colorcycle[n])
         ax[m].grid()
         ax[m].legend(
@@ -273,8 +276,8 @@ def plot_pv_jac(pv_jac, pv_jac_algopy, Vd=VD):
     return fig
 
 
-@UREG.wraps(('deg', 'deg', None, None),
-            (None, 'deg', 'deg', 'Pa', 'm', 'degC'))
+#@UREG.wraps(('deg', 'deg', None, None),
+#            (None, 'deg', 'deg', 'Pa', 'm', 'degC'))
 @unc_wrapper_args(1, 2, 3, 4, 5)
 # indices specify positions of independent variables:
 # 1: latitude, 2: longitude, 3: pressure, 4: altitude, 5: temperature
@@ -304,11 +307,15 @@ def test_solpos(method='loop'):
     """
     Test solar position calculation using NREL's SOLPOS.
     """
-    times = pd.DatetimeIndex(start='2015/1/1', end='2015/1/2', freq='1h',
-                             tz=PST).tz_convert(UTC)
-    latitude, longitude = 37.0 * UREG.deg, -122.0 * UREG.deg
-    pressure, temperature = 101325.0 * UREG.Pa, UREG.Quantity(22.0, UREG.degC)
-    altitude = 0.0 * UREG.m
+    times = pd.DatetimeIndex(
+        pd.date_range(start='2015/1/1', end='2015/1/2', freq='1h',
+                      tz=PST)).tz_convert(UTC)
+    latitude, longitude = 37.0, -122.0
+    pressure, temperature = 101325.0, 22.0
+    altitude = 0.0
+    #latitude, longitude = 37.0 * UREG.deg, -122.0 * UREG.deg
+    #pressure, temperature = 101325.0 * UREG.Pa, UREG.Quantity(22.0, UREG.degC)
+    #altitude = 0.0 * UREG.m
     # standard deviation of 1% assuming normal distribution
     covariance = np.diag([0.0001] * 5)
     ze, az, cov, jac = spa(times, latitude, longitude, pressure, altitude,
@@ -318,12 +325,12 @@ def test_solpos(method='loop'):
     jac = jflatten(jac)
     jac_nd = solpos_nd_jac(times, latitude, longitude, pressure, altitude,
                            temperature)
-    for n in xrange(times.size):
+    for n in range(times.size):
         r, c = 2 * n, 5 * n
         # some rows which numdifftools returned nan
         if n in [0,  8, 17, 24]:
             continue
-        ok_(np.allclose(jac[r:(r + 2), c:(c + 5)], jac_nd[n], equal_nan=True))
+        ok_(np.allclose(jac[r:(r + 2), c:(c + 5)], jac_nd[:,:,n], equal_nan=True))
     return ze, az, cov, jac, jac_nd
 
 
